@@ -244,30 +244,38 @@
   "quasi_combination": {
     "a": {
       "surviving_quasi": [
+        "AGE",
         "MEDICATION",
         "PROFESSION"
       ],
       "dims_used": [
-        "MEDICATION",
-        "PROFESSION"
+        "AGE",
+        "PROFESSION",
+        "MEDICATION"
       ],
-      "expected_matches": 3504.0,
-      "singles_out": false
+      "expected_matches": 50.1,
+      "singles_out": false,
+      "illustrative": true,
+      "verdict_robust": true
     },
     "b": {
       "surviving_quasi": [
         "AGE",
-        "DATE",
         "LOCATION",
         "MEDICATION",
         "PROFESSION"
       ],
       "dims_used": [
         "AGE",
-        "MEDICATION"
+        "LOCATION",
+        "MEDICATION",
+        "PROFESSION"
       ],
-      "expected_matches": 8342.86,
-      "singles_out": false
+      "expected_matches": 1.7,
+      "singles_out": false,
+      "illustrative": true,
+      "verdict_robust": false
     }
-  }
+  },
+  "quasi_combination_note": "ILLUSTRATIVE singling-out (method demo, not a re-identification probability). Naive product of per-quasi fractions assumes the quasi-identifiers are statistically independent. They are not (profession/city/age/medication correlate), so this OVERSTATES uniqueness — the real matching population is larger and the person is LESS singled out than the point estimate implies."
 }

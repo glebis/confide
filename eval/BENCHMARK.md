@@ -213,12 +213,14 @@ The OPF RU cache is not scored for the current gold because its detector cache d
 | a | 0 | 0 | 5 | **MEDIUM** | 100% |
 | b | 1 | 1 | 5 | **MEDIUM** | 82% |
 
-**Quasi-identifier combination (k-anonymity-style):** direct identifiers can be fully masked yet a person singled out by surviving quasi-identifiers *together*. Using declared, illustrative RU population fractions (method demo, not census):
+**Quasi-identifier combination (k-anonymity-style) — ILLUSTRATIVE:** direct identifiers can be fully masked yet a person singled out by surviving quasi-identifiers *together*. The expected-match counts below are an **ILLUSTRATIVE / methodological demonstration** (GDPR Art-29 / k-anonymity style), **not a re-identification probability** for these fabricated personas. Both eval scripts (`confide_red.py`, `privacy_utility_eval.py`) now call ONE shared estimator (`kanon.py`) over ONE sourced prior table, so they report the same number per client (audit bug B1: they previously disagreed, 104.3 vs 3504 for client a). City priors are Rosstat census populations; profession/medication/age fractions are order-of-magnitude author estimates. The naive product **assumes independent quasi-identifiers, which OVERSTATES uniqueness** (correlated identifiers ⇒ a larger true matching population). The load-bearing signal is the **relative ranking** + the **sensitivity verdict**, not the point value.
 
-| Client | surviving quasi | expected matches | singles out? |
-|---|---|--:|---|
-| a | MEDICATION, PROFESSION | 3504.0 | no (k>1) |
-| b | AGE, DATE, LOCATION, MEDICATION, PROFESSION | 8342.86 | no (k>1) |
+| Client | surviving quasi | expected matches (illustrative) | singles out? | verdict robust to ±0.5x–2x priors? |
+|---|---|--:|---|---|
+| a | AGE, MEDICATION, PROFESSION | 50.1 | no (k>1) | yes |
+| b | AGE, LOCATION, MEDICATION, PROFESSION | 1.7 | no (k>1) | **no — flips to singled-out under 2x prior tightening** |
+
+A ±0.5x–2x sweep of every prior (one-at-a-time and all-together) leaves the "not singled out" verdict unchanged for clients a/c/d/e/f but **flips for client b** (baseline k≈1.7 is close to the k=1 threshold), so b's non-singling result is **not** robust — exactly the kind of fragility the illustrative label exists to flag.
 
 **Downstream utility (Tau-Eval style):** the de-identified transcript still supports its clinical purpose — re-running cognitive-distortion extraction on redacted vs. original text preserves ~91% of distortion types, and **99.5%** of non-PII characters survive redaction. Privacy and utility are in tension; the default stack is tuned for recall.
 

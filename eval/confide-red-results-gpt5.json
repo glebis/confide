@@ -10,13 +10,31 @@
       },
       "of": 5,
       "singling_out": {
-        "dims": [
-          "profession",
-          "age",
-          "medication"
+        "client": "a",
+        "surviving_quasi": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
         ],
-        "expected_matches": 104.3,
-        "singles_out": false
+        "dims_used": [
+          "AGE",
+          "PROFESSION",
+          "MEDICATION"
+        ],
+        "dims_entities": [
+          "a-age",
+          "a-profession",
+          "a-sertraline"
+        ],
+        "expected_matches": 50.1,
+        "singles_out": false,
+        "illustrative": true,
+        "dims": [
+          "AGE",
+          "PROFESSION",
+          "MEDICATION"
+        ],
+        "verdict_robust": true
       }
     },
     "b": {
@@ -27,12 +45,35 @@
       },
       "of": 5,
       "singling_out": {
-        "dims": [
-          "age",
-          "medication"
+        "client": "b",
+        "surviving_quasi": [
+          "AGE",
+          "LOCATION",
+          "MEDICATION",
+          "PROFESSION"
         ],
-        "expected_matches": 10428.6,
-        "singles_out": false
+        "dims_used": [
+          "AGE",
+          "LOCATION",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "dims_entities": [
+          "b-age",
+          "b-ekaterinburg",
+          "b-fluoxetine",
+          "b-profession"
+        ],
+        "expected_matches": 1.7,
+        "singles_out": false,
+        "illustrative": true,
+        "dims": [
+          "AGE",
+          "LOCATION",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "verdict_robust": false
       }
     },
     "c": {
@@ -43,13 +84,31 @@
       },
       "of": 5,
       "singling_out": {
-        "dims": [
-          "profession",
-          "age",
-          "medication"
+        "client": "c",
+        "surviving_quasi": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
         ],
-        "expected_matches": 104.3,
-        "singles_out": false
+        "dims_used": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "dims_entities": [
+          "c-age",
+          "c-escitalopram",
+          "c-profession"
+        ],
+        "expected_matches": 33.4,
+        "singles_out": false,
+        "illustrative": true,
+        "dims": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "verdict_robust": true
       }
     },
     "d": {
@@ -60,13 +119,31 @@
       },
       "of": 5,
       "singling_out": {
-        "dims": [
-          "profession",
-          "age",
-          "medication"
+        "client": "d",
+        "surviving_quasi": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
         ],
-        "expected_matches": 104.3,
-        "singles_out": false
+        "dims_used": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "dims_entities": [
+          "d-age",
+          "d-bupropion",
+          "d-profession"
+        ],
+        "expected_matches": 62.6,
+        "singles_out": false,
+        "illustrative": true,
+        "dims": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "verdict_robust": true
       }
     },
     "e": {
@@ -77,13 +154,28 @@
       },
       "of": 5,
       "singling_out": {
-        "dims": [
-          "profession",
-          "age",
-          "medication"
+        "client": "e",
+        "surviving_quasi": [
+          "MEDICATION",
+          "ORG",
+          "PROFESSION"
         ],
-        "expected_matches": 104.3,
-        "singles_out": false
+        "dims_used": [
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "dims_entities": [
+          "e-mirtazapine",
+          "e-profession"
+        ],
+        "expected_matches": 5256.0,
+        "singles_out": false,
+        "illustrative": true,
+        "dims": [
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "verdict_robust": true
       }
     },
     "f": {
@@ -94,14 +186,31 @@
       },
       "of": 5,
       "singling_out": {
-        "dims": [
-          "city",
-          "profession",
-          "age",
-          "medication"
+        "client": "f",
+        "surviving_quasi": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
         ],
-        "expected_matches": 0.9,
-        "singles_out": true
+        "dims_used": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "dims_entities": [
+          "f-age",
+          "f-atomoxetine",
+          "f-profession"
+        ],
+        "expected_matches": 83.4,
+        "singles_out": false,
+        "illustrative": true,
+        "dims": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "verdict_robust": true
       }
     }
   },
@@ -109,5 +218,6 @@
     "same_pair_called_same": true,
     "diff_pair_called_same": false,
     "linkable": true
-  }
+  },
+  "singling_out_note": "ILLUSTRATIVE singling-out (method demo, not a re-identification probability). Naive product of per-quasi fractions assumes the quasi-identifiers are statistically independent. They are not (profession/city/age/medication correlate), so this OVERSTATES uniqueness — the real matching population is larger and the person is LESS singled out than the point estimate implies."
 }

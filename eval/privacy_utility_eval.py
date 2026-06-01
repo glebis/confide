@@ -29,6 +29,8 @@ import os
 import re
 import urllib.request
 
+import kanon  # shared singling-out estimator (one prior table, one survivor method)
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, "detector-cache")
 GOLD = os.path.join(HERE, "..", "sessions-ru", "pii-eval-ru.jsonl")
@@ -134,50 +136,24 @@ def extract_distortions(text, tag):
     return out
 
 
-# Quasi-combination (k-anonymity) priors. DECLARED & ILLUSTRATIVE order-of-magnitude
-# population fractions for Russia (~146M). Not authoritative demographics — they show
-# the *method* (RAT-Bench uses US census the same way): a surviving quasi combination
-# multiplies down the expected matching population; if it drops below 1, the residual
-# text singles the person out even with every direct identifier masked.
-RU_POP = 146_000_000
-PRIORS = {  # entity_id -> fraction of the population matching that value
-    "a-kaluga": 330_000 / RU_POP, "a-yandex": 25_000 / RU_POP,
-    "a-profession": 0.006, "a-age": 1 / 70, "a-sertraline": 0.004,
-    "b-kostroma": 270_000 / RU_POP, "b-moscow": 13_000_000 / RU_POP,
-    "b-kontur": 10_000 / RU_POP, "b-zavolzhsky": 90_000 / RU_POP,
-    "b-profession": 0.02, "b-age": 1 / 70, "b-fluoxetine": 0.004,
-}
-
-
-def quasi_combination(gold, caches):
-    """For each client: which quasi entities SURVIVE the default mask, and what is the
-    expected matching population of their combination (k-anonymity-style singling-out)."""
-    surv = {}
-    for r in gold:
-        preds = merge_intervals(sum((caches[d].get(r["doc_id"], []) for d in DEFAULT_COMBO), []))
-        for s in r["spans"]:
-            if s["identifier_class"] != "quasi":
-                continue
-            masked = any(p["start"] < s["end"] and s["start"] < p["end"] for p in preds)
-            e = surv.setdefault(r["client"], {}).setdefault(s["entity_id"],
-                                {"type": s["type"], "masked": True})
-            if not masked:
-                e["masked"] = False
+# Quasi-combination (k-anonymity) singling-out is delegated to the shared
+# `kanon` module so this script and confide_red.py compute the IDENTICAL
+# expected-match count for the same client (audit bug B1). The priors live in
+# kanon.PRIORS (sourced) and the numbers are ILLUSTRATIVE — see kanon docstring.
+def quasi_combination(clients):
+    """Shared, entity-aware singling-out estimate + a sensitivity sweep per client."""
+    surv = kanon.surviving_quasi()
     out = {}
-    for cl, ents in surv.items():
-        survivors = {eid: e for eid, e in ents.items() if not e["masked"]}
-        frac = 1.0
-        used = []
-        for eid in survivors:
-            if eid in PRIORS:
-                frac *= PRIORS[eid]
-                used.append((eid, survivors[eid]["type"]))
-        expected = RU_POP * frac if used else None
+    for cl in clients:
+        s = kanon.singling_out(cl, surv.get(cl, {}))
+        sw = kanon.sensitivity(cl, surv.get(cl, {}))
         out[cl] = {
-            "surviving_quasi": sorted({e["type"] for e in survivors.values()}),
-            "dims_used": [t for _, t in used],
-            "expected_matches": round(expected, 2) if expected is not None else None,
-            "singles_out": (expected is not None and expected < 1.0),
+            "surviving_quasi": s["surviving_quasi"],
+            "dims_used": s["dims_used"],
+            "expected_matches": s["expected_matches"],
+            "singles_out": s["singles_out"],
+            "illustrative": True,
+            "verdict_robust": sw["verdict_robust"],
         }
     return out
 
@@ -209,7 +185,10 @@ def main():
                                  "calls_per_client": 1, "topk": TOPK,
                                  "background_knowledge": "redacted transcript only"},
                "privacy": {}, "utility": {},
-               "quasi_combination": quasi_combination(gold, caches)}
+               "quasi_combination": quasi_combination(["a", "b"]),
+               "quasi_combination_note": (
+                   "ILLUSTRATIVE singling-out (method demo, not a re-identification "
+                   "probability). " + kanon.independence_caveat())}
 
     # ---- PRIVACY: top-k attack ----
     for cl in ["a", "b"]:
@@ -298,19 +277,26 @@ def main():
             a = results["privacy"][cl]["attrs"][attr]
             cells.append("✓" if a["top3"] else "·")
         md.append(f"| {cl} | " + " | ".join(cells) + " |")
-    md += ["", "## Quasi-identifier combination (k-anonymity-style singling-out)", "",
+    md += ["", "## Quasi-identifier combination (k-anonymity-style singling-out) — ILLUSTRATIVE", "",
+           "> **ILLUSTRATIVE / methodological demonstration, not a re-identification "
+           "probability.** Computed by the shared `kanon` estimator (identical to "
+           "CONFIDE-Red). The personas are synthetic, so these counts show *how* a "
+           "surviving quasi-identifier combination is assessed (GDPR Art-29 / "
+           f"k-anonymity; RU pop ≈ {kanon.RU_POP/1e6:.0f}M), not a precise probability. "
+           "The load-bearing signal is the **relative ranking** and the **sensitivity "
+           "verdict**, not the point value.", "",
+           "_" + kanon.independence_caveat() + "_", "",
            "Direct identifiers can be perfectly masked and a person still singled out by "
-           "the *combination* of surviving quasi-identifiers. Using declared, illustrative "
-           f"RU population fractions (pop ≈ {RU_POP/1e6:.0f}M; **method demo, not census**), "
-           "the surviving combination multiplies down to an expected number of matching "
-           "people; below 1 means singling-out.", "",
-           "| Client | surviving quasi types | expected matches | singles out? |",
-           "|---|---|--:|---|"]
+           "the *combination* of surviving quasi-identifiers; an expected matching "
+           "population below 1 would mean singling-out.", "",
+           "| Client | surviving quasi types | expected matches (illustrative) | singles out? | verdict robust to ±0.5x–2x priors? |",
+           "|---|---|--:|---|---|"]
     for cl in ("a", "b"):
         q = results["quasi_combination"].get(cl, {})
         em = q.get("expected_matches")
         md.append(f"| {cl} | {', '.join(q.get('surviving_quasi', [])) or '—'} | "
-                  f"{em if em is not None else '—'} | {'**YES**' if q.get('singles_out') else 'no'} |")
+                  f"{em if em is not None else '—'} | {'**YES**' if q.get('singles_out') else 'no'} | "
+                  f"{'yes' if q.get('verdict_robust') else '**no (flips)**'} |")
     md += ["", "## Utility — downstream CBT-signal preservation (orig vs redacted)", "",
            "Does the de-identified transcript still support the clinical analysis it "
            "exists for? We extract cognitive-distortion types from the original and the "
