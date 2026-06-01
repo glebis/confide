@@ -45,6 +45,10 @@ names" is never mistaken for "this is safe to send to the cloud."
   sessions of the same person.
 - **Bigger isn't automatically better** — a one-line date regex recovered a heavy
   transformer's entire Russian advantage at ~500× the speed.
+- **Harm ≠ identifier-strength** — an email is a strong linker but low therapy-harm, while
+  a *medication* implies a diagnosis. CONFIDE therefore reports **harm-weighted recall**
+  alongside plain recall; the gap between the two is itself a finding (see
+  [`HARM-TAXONOMY.md`](HARM-TAXONOMY.md)).
 
 ## Storage & isolation (real data)
 
@@ -58,6 +62,36 @@ public datasets via `python3 confide.py datasets list` (see `eval/DATASETS.md`).
 Pinned environment + Docker (`eval/Dockerfile`, `eval/requirements.lock`), an append-only
 run registry (`eval/runs/`), and full docs: `eval/REPRODUCIBILITY.md`, `eval/ETHICS.md`,
 `eval/DATASHEET.md`, `eval/EXPLAINER.md`.
+
+A benchmark is only as trustworthy as its reporting choices are explicit.
+[`eval/REPORTING.md`](eval/REPORTING.md) documents exactly what CONFIDE puts in the headline
+and what it leaves out, and why — recall-led (a missed leak is the real failure), no raw
+real data, the OPF privacy filter kept as a lesson rather than a recommendation, and no
+re-identification recipe.
+
+## Documentation map
+
+| Doc | What it answers |
+|---|---|
+| **Method & results** | |
+| [`eval/REPORTING.md`](eval/REPORTING.md) | What the benchmark includes/omits, and why (recall-led, no raw data, no re-id recipe). |
+| [`eval/RESEARCH-FINDINGS.md`](eval/RESEARCH-FINDINGS.md) | Deep-research positioning vs prior de-id benchmarks, methods, and datasets (needs-verification). |
+| [`eval/BENCHMARK.md`](eval/BENCHMARK.md) | The full layered-detector ablation results and scoring method. |
+| [`eval/CONFIDE-RED-RESULTS.md`](eval/CONFIDE-RED-RESULTS.md) | Red-team re-identification results (inference / singling-out / linkability). |
+| **Data** | |
+| [`eval/DATASHEET.md`](eval/DATASHEET.md) | Datasheet / data statement: provenance, composition, limits of the synthetic corpus. |
+| [`eval/DATASETS.md`](eval/DATASETS.md) | Public datasets to extend the benchmark, fetched via the CLI. |
+| **Severity & privacy** | |
+| [`HARM-TAXONOMY.md`](HARM-TAXONOMY.md) | Why harm ≠ identifier-strength, and how harm-weighted recall is computed. |
+| [`eval/ETHICS.md`](eval/ETHICS.md) | Ethics statement and responsible-use policy (ACL / NeurIPS / Menlo / Belmont norms). |
+| [`ISOLATION.md`](ISOLATION.md) | Red/green data flow, no-network containers, macOS VMs, sops/age encryption. |
+| [`THREE-LOCKS.md`](THREE-LOCKS.md) | Device + encrypted store + per-file isolation, with a storage checklist for real data. |
+| **Reproducibility** | |
+| [`eval/REPRODUCIBILITY.md`](eval/REPRODUCIBILITY.md) | Keeping the benchmark comparable over time; versioning, re-run policy, cost. |
+| [`eval/requirements.lock`](eval/requirements.lock) | Pinned dependencies for a deterministic environment. |
+| [`eval/Dockerfile`](eval/Dockerfile) / [`eval/run-benchmark.sh`](eval/run-benchmark.sh) | Containerised, one-command benchmark run. |
+| **Plain-language** | |
+| [`eval/EXPLAINER.md`](eval/EXPLAINER.md) | ELI5 → ELI14 explainer plus ready-to-paste blurbs for non-specialists. |
 
 > ⚠️ All transcripts in this repository are **synthetic** (fictional clients). Real client
 > data never enters it and must not. CONFIDE-Red attacks run only against fabricated
