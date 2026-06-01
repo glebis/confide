@@ -3,7 +3,8 @@
 Documentation for the **CONFIDE-Bench** bilingual (RU/EN) synthetic psychotherapy-transcript
 de-identification benchmark, following *Datasheets for Datasets* (Gebru et al., 2021)
 and *Data Statements for NLP* (Bender & Friedman, 2018). See `BENCHMARK.md` for results
-and `RESEARCH-FINDINGS.md` for positioning.
+and `SOURCES.md` for checked source links. `RESEARCH-FINDINGS.md` is a working
+positioning memo and is explicitly marked needs-verification.
 
 > **Not a compliance instrument.** Benchmark performance is **not** HIPAA or GDPR
 > anonymisation certification. Types map loosely to HIPAA Safe-Harbor / GDPR identifier
@@ -25,8 +26,8 @@ and `RESEARCH-FINDINGS.md` for positioning.
 
 ### 2. Composition
 - **Instances.** Four datasets:
-  - **RU-synth** — 10 synthetic Russian therapy sessions (2 fictional clients × 5),
-    189 gold PII mention-spans (v2, post-IAA adjudication).
+  - **RU-synth** — 30 synthetic Russian therapy sessions (6 fictional clients × 5),
+    1,058 gold PII mention-spans (v2, post-IAA adjudication).
   - **RU-adversarial** — 16 short Russian snippets, 20 spans, probing hard forms
     (patronymics, transliteration, handles, SNILS/INN/passport, code-switching).
   - **EN-synth** — 32 curated English therapy-style snippets, 46 spans.
@@ -42,16 +43,18 @@ and `RESEARCH-FINDINGS.md` for positioning.
   EN-real is real generic PII text (ai4privacy), not therapy.
 - **Sensitive content.** Simulated mental-health disclosures (anxiety, perfectionism,
   family conflict). Fictional, but written to read as clinically plausible.
-- **Splits.** Person-disjoint: RU client-a = `dev`, client-b = `test`.
+- **Splits.** Person-disjoint: RU clients a/c/e = `dev` (15 docs, 526 spans);
+  clients b/d/f = `test` (15 docs, 532 spans).
 - **Errors/noise.** Small N — per-type numbers are directional. Gold is located from
-  answer-key surface forms then hand-verified; IAA (seed) reports entity-F1 0.78 /
-  κ 0.67 vs an independent annotator, with 19 blind spots adjudicated into v2.
+  answer-key surface forms then hand-verified; the seed LLM-assisted consistency check
+  reports entity-F1 0.880 / κ 0.794 versus a single automated second annotator, with
+  10 candidate blind spots queued for adjudication. This is not human IAA.
 
 ### 3. Collection / generation process
 - RU transcripts and their PII inventories were authored as masterclass demo material
   (the answer keys explicitly label themselves "planted signal, not exact ground truth").
 - Gold spans are located programmatically (Cyrillic-morphology-aware regex over the raw
-  transcripts) from the two answer-key inventories, then hand-verified.
+  transcripts) from six answer-key inventories, then hand-verified.
 - EN-synth is curated; EN-real is sampled from ai4privacy's published validation split.
 
 ### 4. Preprocessing / labeling
@@ -88,9 +91,11 @@ and `RESEARCH-FINDINGS.md` for positioning.
 - **Language variety.** Russian (`ru-RU`) — colloquial therapy dialogue with morphology,
   patronymics, diminutives, transliteration and RU↔EN code-switching; English (`en-US/GB`)
   — curated therapy-style + generic ai4privacy text.
-- **Speaker / author demographic.** Fictional clients: "client-a" (Марина, ~34, marketer)
-  and "client-b" (Игорь, ~41, backend developer). No real individuals; demographics are
-  invented narrative scaffolding.
+- **Speaker / author demographic.** Fictional clients: "client-a" (Марина, ~34,
+  marketer), "client-b" (Игорь, ~41, backend developer), "client-c" (Алина, ~29,
+  UX designer), "client-d" (Роман, ~45, entrepreneur), "client-e" (Вера, ~37,
+  teacher), and "client-f" (Тимур, ~23, student-programmer). No real individuals;
+  demographics are invented narrative scaffolding.
 - **Annotator demographic / provenance.** A1 gold: pattern-derived from author-written
   answer keys, hand-verified by the benchmark author. A2 (IAA): independent zero-shot
   annotation by GPT-5 (via Codex), committed at `eval/iaa-annotator2-seed.json`.
@@ -99,6 +104,6 @@ and `RESEARCH-FINDINGS.md` for positioning.
 - **Text characteristics.** Turn-taking dialogue with self-disclosure, family/social-graph
   references, and narrative quasi-identifiers — the material that makes therapy text both
   useful and re-identifying.
-- **Provenance appendix.** RU answer keys: `sessions-ru/client-{a,b}/ANSWER-KEY.md`.
+- **Provenance appendix.** RU answer keys: `sessions-ru/client-{a..f}/ANSWER-KEY.md`.
   EN-real: `ai4privacy/pii-masking-300k`. Reconstruction/utility method: Staab et al.,
   RAT-Bench, Tau-Eval (see `RESEARCH-FINDINGS.md` §10; verify before citing).

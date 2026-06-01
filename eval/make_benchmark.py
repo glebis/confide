@@ -17,7 +17,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DATASETS = [
     ("ru", "RU-synth", "Russian synthetic therapy series (6 clients, 30 sessions)"),
     ("en", "EN-synth", "English curated therapy-style snippets"),
-    ("en-real", "EN-real", "Real ai4privacy/pii-masking-300k slice (English validation)"),
+    ("en-real", "EN-real", "External public slice of ai4privacy/pii-masking-300k — "
+     "generic, non-therapy, non-clinical PII used only as an external EN anchor "
+     "(real generic PII, not synthetic; no clinical data)"),
     ("ru-adv", "RU-adversarial", "Russian robustness probe (16 snippets: patronymics, "
      "transliteration, diminutives, VK/Telegram handles, SNILS/INN/passport, abbreviated "
      "addresses, code-switching)"),
@@ -139,11 +141,15 @@ def main():
       "Privacy Filter, and a local qwen LLM) for de-identifying therapy transcripts, "
       "and quantify which layer earns its compute — especially which PII types *require* "
       "an LLM to catch.")
-    A("- **Composition.** Four datasets (see per-dataset sections). The Russian therapy "
-      "set is **fully synthetic and fictional** — no real patients — hand-built from six "
-      "synthetic client inventories. The English sets are a curated synthetic slice and a "
-      "real `ai4privacy/pii-masking-300k` validation slice; the RU-adversarial set probes "
-      "hard forms such as transliteration, handles, and structured IDs.")
+    A("- **Composition & provenance.** Four datasets (see per-dataset sections). Every "
+      "**therapy transcript** — the Russian series and the EN-synth slice — is **fully "
+      "synthetic and fictional** (no real patients), hand-built from synthetic client "
+      "inventories. **EN-real is the one exception:** an external public slice of "
+      "`ai4privacy/pii-masking-300k` containing **generic, non-therapy, non-clinical** PII; "
+      "it is real generic PII (not synthetic the way the therapy corpus is) carried "
+      "unmodified under that dataset's license and used **only as an external EN anchor** — "
+      "it holds no real clinical/therapy data. The RU-adversarial set probes hard forms "
+      "such as transliteration, handles, and structured IDs.")
     A("- **Languages.** Russian (`ru`), English (`en`).")
     A("- **PII taxonomy (canonical).** PERSON, LOCATION, ORG, PHONE, EMAIL, URL, ID, "
       "DATE, MEDICATION, AGE, PROFESSION. Each RU entity is also tagged **direct** vs "
@@ -159,6 +165,11 @@ def main():
       "text; spelled-out digit strings are out of scope for the regex layer by design.")
     A("- **Splits.** Person-disjoint: clients a/c/e = `dev`, clients b/d/f = `test` "
       "(each client is a distinct synthetic person → no profile leakage across splits).")
+    A("- **Preregistration & power.** The fixed metrics, ★ defaults, dev/test protocol, and "
+      "a small honest power analysis (entity-recall CI half-width ≈ ±0.05 at N=30 → minimum "
+      "detectable difference ≈ 0.10; the corpus is underpowered for small effects, so "
+      "comparisons are reported with CIs, not significance stars) are preregistered in "
+      "`PREREGISTRATION.md`.")
     A("- **Adversarial robustness (RU-adversarial probe).** The full stack catches 19/20 "
       "adversarial forms — SNILS/INN/passport (regex), VK/Telegram handles (regex), "
       "patronymics/diminutives (Natasha+qwen), code-switching (qwen). The **one leak is a "

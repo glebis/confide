@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Build the Russian gold PII dataset from the two synthetic answer keys.
+"""Build the Russian gold PII dataset from synthetic answer keys.
 
-Source of truth: sessions-ru/client-{a,b}/ANSWER-KEY.md §9/§10 (embedded PII
-inventory). The answer keys give *values*; this script locates every surface
-form (incl. Russian morphological variants) across all 10 session transcripts
+Source of truth: sessions-ru/client-{a..f}/ANSWER-KEY.md embedded PII
+inventories. The answer keys give *values*; this script locates every surface
+form (incl. Russian morphological variants) across all 30 session transcripts
 and emits char-offset gold spans.
 
 Output: ../sessions-ru/pii-eval-ru.jsonl — one row per session, schema:
@@ -196,7 +196,30 @@ def find_spans(text, entities):
         if kept and s["start"] < kept[-1]["end"] and s["entity_id"] == kept[-1]["entity_id"]:
             continue  # nested/overlapping same-entity match already covered
         kept.append(s)
-    return kept
+    # Drop spurious spans fully contained inside a different-entity *structured*
+    # span. A case-insensitive name pattern (e.g. "Timur") otherwise matches the
+    # local-part of an email ("timur.kh@example.com"), producing a bogus PERSON
+    # nested inside the EMAIL. Structured spans (EMAIL/URL/ID) are opaque atomic
+    # identifiers — no real sub-entity lives inside them — so anything strictly
+    # contained in one (and of a different entity) is dropped. Legitimate
+    # same-text-different-context mentions elsewhere in the text are untouched,
+    # because containment is checked per character offset, not per surface form.
+    STRUCTURED = {"EMAIL", "URL", "ID"}
+    structured = [s for s in kept if s["type"] in STRUCTURED]
+    cleaned = []
+    for s in kept:
+        if s["type"] in STRUCTURED:
+            cleaned.append(s)
+            continue
+        contained = any(
+            st["entity_id"] != s["entity_id"]
+            and st["start"] <= s["start"] and s["end"] <= st["end"]
+            and (st["end"] - st["start"]) > (s["end"] - s["start"])
+            for st in structured
+        )
+        if not contained:
+            cleaned.append(s)
+    return cleaned
 
 
 # TAB-style protected-person roles per entity (review #2: person_role). The
@@ -207,6 +230,14 @@ ROLE = {
     "b-igor": "client", "b-svetlana": "partner", "b-alexey": "relative",
     "b-pavel": "third_party", "b-kontur": "institution", "b-sber": "institution",
     "b-igor-latin": "client", "b-ekaterinburg": "institution",
+    "c-alina": "client", "c-maksim": "partner", "c-zaytseva": "clinician",
+    "c-boss": "third_party", "c-alliance": "institution", "c-avito": "institution",
+    "d-roman": "client", "d-natalya": "partner", "d-morozov": "clinician",
+    "d-artem": "third_party", "d-insight": "institution", "d-sibtrans": "institution",
+    "e-vera": "client", "e-dmitry": "partner", "e-sonya": "relative",
+    "e-sokolova": "clinician", "e-larisa": "third_party", "e-school": "institution",
+    "f-timur": "client", "f-timur-latin": "client", "f-gulnara": "relative",
+    "f-vasilyev": "clinician", "f-denis": "third_party", "f-kfu": "institution",
 }
 
 # CRITICAL overrides (HARM-TAXONOMY.md): entity_ids to escalate from their

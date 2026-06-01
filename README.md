@@ -38,13 +38,15 @@ names" is never mistaken for "this is safe to send to the cloud."
 
 ## Headline findings
 
-- **Some PII only an LLM catches** — medications, ages, professions, contextual dates are
-  ~0% for regex + NER; only the local LLM layer recovers them.
+- **Some quasi-PII is still LLM-dependent** — ages, professions, medications, and
+  contextual/spelled-out dates are near-zero for regex + NER; the local LLM improves
+  coverage but still leaves measurable gaps.
 - **Removing direct identifiers is necessary but not sufficient** — quasi-identifiers
   survive and an LLM attacker can still infer attributes, especially across multiple
   sessions of the same person.
-- **Bigger isn't automatically better** — a one-line date regex recovered a heavy
-  transformer's entire Russian advantage at ~500× the speed.
+- **Bigger isn't automatically better** — deterministic rules handle numeric dates and
+  structured IDs faster and more reproducibly than a heavy transformer; OPF is kept as a
+  comparison layer, not the Russian default.
 - **Harm ≠ identifier-strength** — an email is a strong linker but low therapy-harm, while
   a *medication* implies a diagnosis. CONFIDE therefore reports **harm-weighted recall**
   alongside plain recall; the gap between the two is itself a finding (see
@@ -88,14 +90,22 @@ re-identification recipe.
 | [`THREE-LOCKS.md`](THREE-LOCKS.md) | Device + encrypted store + per-file isolation, with a storage checklist for real data. |
 | **Reproducibility** | |
 | [`eval/REPRODUCIBILITY.md`](eval/REPRODUCIBILITY.md) | Keeping the benchmark comparable over time; versioning, re-run policy, cost. |
+| [`eval/SOURCES.md`](eval/SOURCES.md) | Primary/near-primary sources checked for publishable methodology claims. |
 | [`eval/requirements.lock`](eval/requirements.lock) | Pinned dependencies for a deterministic environment. |
 | [`eval/Dockerfile`](eval/Dockerfile) / [`eval/run-benchmark.sh`](eval/run-benchmark.sh) | Containerised, one-command benchmark run. |
 | **Plain-language** | |
 | [`eval/EXPLAINER.md`](eval/EXPLAINER.md) | ELI5 → ELI14 explainer plus ready-to-paste blurbs for non-specialists. |
 
-> ⚠️ All transcripts in this repository are **synthetic** (fictional clients). Real client
-> data never enters it and must not. CONFIDE-Red attacks run only against fabricated
-> personas. Benchmark performance is **not** HIPAA or GDPR anonymisation certification.
+> ⚠️ **Provenance, stated precisely.** Every **therapy/coaching transcript** in this
+> repository (the RU and EN-synth sessions) is **fully synthetic** — fictional clients,
+> invented identifiers; no real client data ever enters it and none must. The one
+> exception is **EN-real**, a small slice of the public `ai4privacy/pii-masking-300k`
+> benchmark: that is **generic, non-therapy, non-clinical** PII text used only as an
+> **external anchor** for the EN detectors. It contains **no real therapy/clinical data**,
+> but it is *not* "synthetic" the way the therapy corpus is — it is real generic PII from a
+> public dataset, carried unmodified under that dataset's license. CONFIDE-Red attacks run
+> only against the fabricated therapy personas. Benchmark performance is **not** HIPAA or
+> GDPR anonymisation certification.
 
 CONFIDE grew out of the *Psychodemia · AI & Mental Health* masterclass (31 May 2026); the
 original masterclass materials are in `README-masterclass.md`.

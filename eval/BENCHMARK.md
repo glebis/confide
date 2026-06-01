@@ -7,13 +7,14 @@
 > Full datasheet + data statement: **`DATASHEET.md`**. Summary below.
 
 - **Motivation.** Compare detector layers (regex, Natasha RU-NER, the OpenAI Privacy Filter, and a local qwen LLM) for de-identifying therapy transcripts, and quantify which layer earns its compute — especially which PII types *require* an LLM to catch.
-- **Composition.** Four datasets (see per-dataset sections). The Russian therapy set is **fully synthetic and fictional** — no real patients — hand-built from six synthetic client inventories. The English sets are a curated synthetic slice and a real `ai4privacy/pii-masking-300k` validation slice; the RU-adversarial set probes hard forms such as transliteration, handles, and structured IDs.
+- **Composition & provenance.** Four datasets (see per-dataset sections). Every **therapy transcript** — the Russian series and the EN-synth slice — is **fully synthetic and fictional** (no real patients), hand-built from synthetic client inventories. **EN-real is the one exception:** an external public slice of `ai4privacy/pii-masking-300k` containing **generic, non-therapy, non-clinical** PII; it is real generic PII (not synthetic the way the therapy corpus is) carried unmodified under that dataset's license and used **only as an external EN anchor** — it holds no real clinical/therapy data. The RU-adversarial set probes hard forms such as transliteration, handles, and structured IDs.
 - **Languages.** Russian (`ru`), English (`en`).
 - **PII taxonomy (canonical).** PERSON, LOCATION, ORG, PHONE, EMAIL, URL, ID, DATE, MEDICATION, AGE, PROFESSION. Each RU entity is also tagged **direct** vs **quasi**-identifier (TAB), and `llm_required` where deterministic layers structurally cannot catch it (medication, age, profession, and some contextual or spelled-out dates).
 - **Collection / labeling.** RU gold is located programmatically from curated surface-form patterns (Cyrillic-morphology-aware) over the raw transcripts, then hand-verified; every mention carries an `entity_id` for entity-level scoring.
 - **Uses.** De-identification tool comparison; teaching. **Not** a clinical instrument; synthetic RU content must not be treated as real patient data.
 - **Limitations.** Small N (each miss moves recall several points); synthetic RU text; spelled-out digit strings are out of scope for the regex layer by design.
 - **Splits.** Person-disjoint: clients a/c/e = `dev`, clients b/d/f = `test` (each client is a distinct synthetic person → no profile leakage across splits).
+- **Preregistration & power.** The fixed metrics, ★ defaults, dev/test protocol, and a small honest power analysis (entity-recall CI half-width ≈ ±0.05 at N=30 → minimum detectable difference ≈ 0.10; the corpus is underpowered for small effects, so comparisons are reported with CIs, not significance stars) are preregistered in `PREREGISTRATION.md`.
 - **Adversarial robustness (RU-adversarial probe).** The full stack catches 19/20 adversarial forms — SNILS/INN/passport (regex), VK/Telegram handles (regex), patronymics/diminutives (Natasha+qwen), code-switching (qwen). The **one leak is a Latin-transliterated Russian name** ("Sergey Volkov"): Natasha is Cyrillic-only, regex has no name rule, and qwen missed it — an argument for an English/Latin NER (OPF) when transliteration is expected.
 - **License & compliance.** Synthetic/fictional content, released for research and teaching. **Benchmark success is NOT HIPAA or GDPR compliance.** Types map loosely to HIPAA Safe-Harbor / GDPR identifier concepts, but the mapping is illustrative, not legal certification; GDPR identifiability is context-dependent and HIPAA offers distinct Safe-Harbor vs Expert-Determination routes. Any *real* session data must go through consent + ethics review and must not be re-identified.
 
@@ -29,7 +30,7 @@ _Citations: Pilán et al., *The Text Anonymization Benchmark*, Computational Lin
 
 ## RU-synth — Russian synthetic therapy series (6 clients, 30 sessions)
 
-**30 documents, 1059 gold PII mentions.** ★ marks the proposed default stack for this language.
+**30 documents, 1058 gold PII mentions.** ★ marks the proposed default stack for this language.
 
 _Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **0.84** (CI **0.81–0.86**); entity recall 0.62 (CI 0.57–0.67) — wide, as small N demands; treat point estimates as directional._
 
@@ -37,20 +38,20 @@ _Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **
 
 | Combo | MaskCov F2 (rel) | MaskCov R | Type F2 | Macro-F1 | Ent-R (TAB) | Harm-wtd R | Direct-R | Quasi-R | Preds |
 |---|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| regex | **0.048** | 0.039 | 0.047 | 0.362 | 0.352 | 0.260 | 0.327 | 0.373 | 50 |
-| natasha | **0.762** | 0.788 | 0.756 | 0.199 | 0.306 | 0.355 | 0.388 | 0.237 | 1146 |
+| regex | **0.047** | 0.038 | 0.047 | 0.362 | 0.352 | 0.260 | 0.327 | 0.373 | 50 |
+| natasha | **0.762** | 0.788 | 0.757 | 0.199 | 0.306 | 0.355 | 0.388 | 0.237 | 1146 |
 | ollama | **0.105** | 0.093 | 0.092 | 0.252 | 0.157 | 0.091 | 0.265 | 0.068 | 360 |
 | natasha+regex | **0.792** | 0.826 | 0.786 | 0.561 | 0.657 | 0.615 | 0.714 | 0.610 | 1196 |
-| natasha+ollama | **0.744** | 0.814 | 0.733 | 0.398 | 0.444 | 0.429 | 0.653 | 0.271 | 1447 |
-| regex+ollama | **0.131** | 0.116 | 0.121 | 0.381 | 0.380 | 0.286 | 0.327 | 0.424 | 392 |
-| natasha+regex+ollama ★ | **0.761** | 0.838 | 0.752 | 0.527 | 0.667 | 0.623 | 0.714 | 0.627 | 1479 |
+| natasha+ollama | **0.744** | 0.815 | 0.734 | 0.398 | 0.444 | 0.429 | 0.653 | 0.271 | 1447 |
+| regex+ollama | **0.131** | 0.115 | 0.121 | 0.381 | 0.380 | 0.286 | 0.327 | 0.424 | 392 |
+| natasha+regex+ollama ★ | **0.761** | 0.837 | 0.753 | 0.527 | 0.667 | 0.623 | 0.714 | 0.627 | 1479 |
 
 ### Dev / test split (★ stack, reporting only — nothing tuned on test)
 
 | Split | Docs | Gold | MaskCov R | MaskCov F2 | Ent-R (TAB) | Harm-wtd R |
 |---|--:|--:|--:|--:|--:|--:|
 | dev | 15 | 526 | 0.869 | 0.766 | 0.704 | 0.673 |
-| test | 15 | 533 | 0.807 | 0.755 | 0.630 | 0.576 |
+| test | 15 | 532 | 0.806 | 0.755 | 0.630 | 0.576 |
 
 ### Per-category recall (relaxed, type-agnostic) — *which layer catches what*
 
@@ -102,7 +103,7 @@ _Bootstrap 95% CI (2000 resamples, opf+regex+ollama ★): coverage recall **0.89
 | philter | 0.62 | 1.00 | 0.14 | 1.00 | 1.00 | 1.00 | 0.67 |
 | presidio+regex+ollama | 1.00 | 1.00 | 0.57 | 1.00 | 1.00 | 1.00 | 1.00 |
 
-## EN-real — Real ai4privacy/pii-masking-300k slice (English validation)
+## EN-real — External public slice of ai4privacy/pii-masking-300k — generic, non-therapy, non-clinical PII used only as an external EN anchor (real generic PII, not synthetic; no clinical data)
 
 **15 documents, 80 gold PII mentions.** ★ marks the proposed default stack for this language.
 
@@ -230,7 +231,7 @@ The pattern-derived gold (A1) was checked against an **independent** from-scratc
 
 ## Stricter headline check (containment)
 
-Beyond relaxed (≥1-char) overlap, a **containment** metric requires ≥80% of an identifier to be masked. For the RU default, containment recall is **0.836** vs relaxed **0.838**; strict exact-span recall is **0.717**. The small relaxed/containment gap means the headline is not driven by 1-character touches, while the strict gap mostly reflects boundary differences.
+Beyond relaxed (≥1-char) overlap, a **containment** metric requires ≥80% of an identifier to be masked. For the RU default, containment recall is **0.836** vs relaxed **0.837**; strict exact-span recall is **0.717**. The small relaxed/containment gap means the headline is not driven by 1-character touches, while the strict gap mostly reflects boundary differences.
 
 ## Known limitations
 
