@@ -1,0 +1,32 @@
+{"doc_id": "en-000", "spans": []}
+{"doc_id": "en-001", "spans": []}
+{"doc_id": "en-002", "spans": []}
+{"doc_id": "en-003", "spans": []}
+{"doc_id": "en-004", "spans": []}
+{"doc_id": "en-005", "spans": []}
+{"doc_id": "en-006", "spans": []}
+{"doc_id": "en-007", "spans": []}
+{"doc_id": "en-008", "spans": []}
+{"doc_id": "en-009", "spans": [{"start": 56, "end": 70, "type": "ID", "source": "regex"}]}
+{"doc_id": "en-010", "spans": []}
+{"doc_id": "en-011", "spans": []}
+{"doc_id": "en-012", "spans": []}
+{"doc_id": "en-013", "spans": []}
+{"doc_id": "en-014", "spans": []}
+{"doc_id": "en-015", "spans": []}
+{"doc_id": "en-016", "spans": []}
+{"doc_id": "en-017", "spans": []}
+{"doc_id": "en-018", "spans": [{"start": 31, "end": 69, "type": "URL", "source": "regex"}]}
+{"doc_id": "en-019", "spans": []}
+{"doc_id": "en-020", "spans": []}
+{"doc_id": "en-021", "spans": []}
+{"doc_id": "en-022", "spans": []}
+{"doc_id": "en-023", "spans": []}
+{"doc_id": "en-024", "spans": []}
+{"doc_id": "en-025", "spans": []}
+{"doc_id": "en-026", "spans": []}
+{"doc_id": "en-027", "spans": []}
+{"doc_id": "en-028", "spans": []}
+{"doc_id": "en-029", "spans": []}
+{"doc_id": "en-030", "spans": [{"start": 3, "end": 13, "type": "DATE", "source": "regex"}]}
+{"doc_id": "en-031", "spans": []}

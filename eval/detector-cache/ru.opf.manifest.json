@@ -1,0 +1,21 @@
+{
+  "dataset": "ru",
+  "detector": "opf",
+  "n_docs": 10,
+  "n_spans": 104,
+  "invalid_spans": 0,
+  "doc_ids": [
+    "ru-a-s01",
+    "ru-a-s02",
+    "ru-a-s03",
+    "ru-a-s04",
+    "ru-a-s05",
+    "ru-b-s01",
+    "ru-b-s02",
+    "ru-b-s03",
+    "ru-b-s04",
+    "ru-b-s05"
+  ],
+  "code_sha": "opf-transformers-route",
+  "model": "openai/privacy-filter"
+}

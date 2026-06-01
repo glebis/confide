@@ -1,0 +1,72 @@
+{
+  "model": "qwen2.5-3b-instruct",
+  "engine": "openai",
+  "clients": {
+    "a": {
+      "single_best_recovered": 2,
+      "of": 6,
+      "bulk_recovered": 1,
+      "bulk_of": 6,
+      "cross_session_gain": -1,
+      "bulk_guess": {
+        "profession": [
+          "Marketer",
+          "Markeeter"
+        ],
+        "employer": [
+          "<X>",
+          "«<X>»"
+        ],
+        "city": [
+          "<X>",
+          "<X>"
+        ],
+        "age": [
+          "<X>",
+          "<X>"
+        ],
+        "medication": [
+          "Sertraline",
+          "Сертралин"
+        ],
+        "other_clues": [
+          "<X> и рост с младшей позиции — это, вообще-то, говорит, что вас там ценят.",
+          "Мама в <X> живёт.",
+          "Сама не заметила, как осталась одна с работой и <X>."
+        ]
+      }
+    },
+    "b": {
+      "single_best_recovered": 1,
+      "of": 6,
+      "bulk_recovered": 1,
+      "bulk_of": 6,
+      "cross_session_gain": 0,
+      "bulk_guess": {
+        "profession": [
+          "programmer",
+          "web developer"
+        ],
+        "employer": [
+          "<X>",
+          "remote work"
+        ],
+        "city": [
+          "<X>",
+          "Eкатеринбург"
+        ],
+        "age": [
+          "41"
+        ],
+        "medication": [
+          "fluoxetine 20 mg"
+        ],
+        "other_clues": [
+          "perfectionism and procrastination",
+          "feeling of failure",
+          "burnout symptoms"
+        ]
+      }
+    }
+  }
+}

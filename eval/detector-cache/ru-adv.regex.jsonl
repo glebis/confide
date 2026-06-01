@@ -1,0 +1,16 @@
+{"doc_id": "ru-adv-00", "spans": []}
+{"doc_id": "ru-adv-01", "spans": []}
+{"doc_id": "ru-adv-02", "spans": []}
+{"doc_id": "ru-adv-03", "spans": []}
+{"doc_id": "ru-adv-04", "spans": [{"start": 27, "end": 40, "type": "URL", "source": "regex"}]}
+{"doc_id": "ru-adv-05", "spans": [{"start": 22, "end": 38, "type": "URL", "source": "regex"}]}
+{"doc_id": "ru-adv-06", "spans": [{"start": 16, "end": 29, "type": "URL", "source": "regex"}]}
+{"doc_id": "ru-adv-07", "spans": [{"start": 35, "end": 49, "type": "ID", "source": "regex"}]}
+{"doc_id": "ru-adv-08", "spans": [{"start": 26, "end": 38, "type": "ID", "source": "regex"}]}
+{"doc_id": "ru-adv-09", "spans": [{"start": 11, "end": 22, "type": "ID", "source": "regex"}]}
+{"doc_id": "ru-adv-10", "spans": []}
+{"doc_id": "ru-adv-11", "spans": []}
+{"doc_id": "ru-adv-12", "spans": []}
+{"doc_id": "ru-adv-13", "spans": []}
+{"doc_id": "ru-adv-14", "spans": []}
+{"doc_id": "ru-adv-15", "spans": []}

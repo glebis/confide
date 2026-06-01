@@ -1,0 +1,127 @@
+{
+  "ts": "2026-06-01T15:16:34+00:00",
+  "kind": "score_bench",
+  "dataset": "ru",
+  "privacy": "synthetic",
+  "git_commit": "ba01de3",
+  "git_dirty": true,
+  "code_sha": "7d9ec96230b4",
+  "runner_sha": "854892510356",
+  "model": null,
+  "versions": {
+    "python": "3.13.9",
+    "torch": "2.9.1",
+    "transformers": "5.9.0"
+  },
+  "host": {
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "metrics": {
+    "n_docs": 30,
+    "n_gold": 713,
+    "default_coverage_recall": 0.788,
+    "default_coverage_f2": 0.766,
+    "default_entity_recall": 0.561
+  },
+  "extra": {
+    "combos": {
+      "regex": {
+        "support": 713,
+        "c": 27,
+        "fp": 10,
+        "fn": 686,
+        "p": 0.73,
+        "r": 0.038,
+        "f1": 0.072,
+        "f2": 0.047,
+        "macro_f1": 0.171,
+        "macro_r": 0.179
+      },
+      "natasha": {
+        "support": 713,
+        "c": 535,
+        "fp": 220,
+        "fn": 178,
+        "p": 0.688,
+        "r": 0.75,
+        "f1": 0.718,
+        "f2": 0.737,
+        "macro_f1": 0.213,
+        "macro_r": 0.277
+      },
+      "ollama": {
+        "support": 713,
+        "c": 0,
+        "fp": 0,
+        "fn": 713,
+        "p": 0.0,
+        "r": 0.0,
+        "f1": 0.0,
+        "f2": 0.0,
+        "macro_f1": 0.0,
+        "macro_r": 0.0
+      },
+      "natasha+regex": {
+        "support": 713,
+        "c": 562,
+        "fp": 230,
+        "fn": 151,
+        "p": 0.69,
+        "r": 0.788,
+        "f1": 0.736,
+        "f2": 0.766,
+        "macro_f1": 0.384,
+        "macro_r": 0.456
+      },
+      "natasha+ollama": {
+        "support": 713,
+        "c": 535,
+        "fp": 220,
+        "fn": 178,
+        "p": 0.688,
+        "r": 0.75,
+        "f1": 0.718,
+        "f2": 0.737,
+        "macro_f1": 0.213,
+        "macro_r": 0.277
+      },
+      "regex+ollama": {
+        "support": 713,
+        "c": 27,
+        "fp": 10,
+        "fn": 686,
+        "p": 0.73,
+        "r": 0.038,
+        "f1": 0.072,
+        "f2": 0.047,
+        "macro_f1": 0.171,
+        "macro_r": 0.179
+      },
+      "natasha+regex+ollama ★": {
+        "support": 713,
+        "c": 562,
+        "fp": 230,
+        "fn": 151,
+        "p": 0.69,
+        "r": 0.788,
+        "f1": 0.736,
+        "f2": 0.766,
+        "macro_f1": 0.384,
+        "macro_r": 0.456
+      },
+      "opf+natasha+regex+ollama": {
+        "support": 713,
+        "c": 580,
+        "fp": 249,
+        "fn": 133,
+        "p": 0.681,
+        "r": 0.813,
+        "f1": 0.741,
+        "f2": 0.783,
+        "macro_f1": 0.426,
+        "macro_r": 0.528
+      }
+    }
+  }
+}

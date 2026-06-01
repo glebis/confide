@@ -1,0 +1,8 @@
+# Layer 1 (Natasha — Russian NER). Pure-pip deps.
+natasha
+setuptools
+pymorphy2-dicts-ru
+# Layer 2 (deterministic regex): emails/URLs via scrubadub, phones via libphonenumber.
+scrubadub
+phonenumbers
+# Layer 3 (Ollama) is a system install (https://ollama.com) + `ollama pull qwen2.5:3b`.

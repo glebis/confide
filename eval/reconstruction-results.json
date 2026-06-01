@@ -1,0 +1,62 @@
+{
+  "default_combo": "natasha+regex+ollama",
+  "A_quasi_survival": {
+    "a": {
+      "quasi_entities": 11,
+      "survived": 3,
+      "survival_rate": 0.273,
+      "survivors_by_type": [
+        "MEDICATION",
+        "PROFESSION"
+      ]
+    },
+    "b": {
+      "quasi_entities": 15,
+      "survived": 5,
+      "survival_rate": 0.333,
+      "survivors_by_type": [
+        "AGE",
+        "DATE",
+        "LOCATION",
+        "MEDICATION",
+        "PROFESSION"
+      ]
+    }
+  },
+  "B_inference_attack": {
+    "a": {
+      "guess": {
+        "profession": "Маркетолог",
+        "employer": "<ORG>",
+        "city": "<LOCATION>",
+        "age": "",
+        "medication": "Сертралин (100 мг)",
+        "other_clues": "одиночество, матери <LOCATION>"
+      },
+      "recovered": [
+        "profession",
+        "medication"
+      ],
+      "n_recovered": 2,
+      "n_tested": 5
+    },
+    "b": {
+      "guess": {
+        "profession": "<PROFESSION>",
+        "employer": "<ORG>",
+        "city": "<LOCATION>",
+        "age": "<AGE>",
+        "medication": "",
+        "other_clues": "прокрастинация (перфекционистского типа — «если не идеально, то никак»), низкая самооценка, признаки выгорания. Доминирующие искажения: выраженное долженствование (пронизывает речь); навешивание ярлыков («неудачник», «бездарь», «лентяй»); эмоциональное обоснование («чувствую, что разочаровываю, значит так и есть»); обесценивание позитивного (похвала «не считается», успех — «повезло»); предсказание будущего («не сработает»)."
+      },
+      "recovered": [],
+      "n_recovered": 0,
+      "n_tested": 5
+    }
+  },
+  "C_over_redaction": {
+    "redacted_spans": 193,
+    "false_positives": 39,
+    "over_redaction_rate": 0.202
+  }
+}

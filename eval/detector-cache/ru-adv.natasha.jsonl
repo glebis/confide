@@ -1,0 +1,16 @@
+{"doc_id": "ru-adv-00", "spans": [{"start": 28, "end": 46, "type": "PERSON", "source": "natasha"}]}
+{"doc_id": "ru-adv-01", "spans": []}
+{"doc_id": "ru-adv-02", "spans": [{"start": 19, "end": 25, "type": "PERSON", "source": "natasha"}, {"start": 41, "end": 59, "type": "PERSON", "source": "natasha"}]}
+{"doc_id": "ru-adv-03", "spans": [{"start": 10, "end": 16, "type": "PERSON", "source": "natasha"}, {"start": 27, "end": 44, "type": "PERSON", "source": "natasha"}]}
+{"doc_id": "ru-adv-04", "spans": []}
+{"doc_id": "ru-adv-05", "spans": [{"start": 18, "end": 20, "type": "ORG", "source": "natasha"}]}
+{"doc_id": "ru-adv-06", "spans": []}
+{"doc_id": "ru-adv-07", "spans": []}
+{"doc_id": "ru-adv-08", "spans": []}
+{"doc_id": "ru-adv-09", "spans": []}
+{"doc_id": "ru-adv-10", "spans": []}
+{"doc_id": "ru-adv-11", "spans": [{"start": 18, "end": 26, "type": "LOCATION", "source": "natasha"}]}
+{"doc_id": "ru-adv-12", "spans": [{"start": 45, "end": 50, "type": "LOCATION", "source": "natasha"}]}
+{"doc_id": "ru-adv-13", "spans": []}
+{"doc_id": "ru-adv-14", "spans": []}
+{"doc_id": "ru-adv-15", "spans": [{"start": 3, "end": 9, "type": "PERSON", "source": "natasha"}, {"start": 11, "end": 20, "type": "PERSON", "source": "natasha"}]}
