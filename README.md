@@ -46,6 +46,13 @@ names" is never mistaken for "this is safe to send to the cloud."
 - **Bigger isn't automatically better** — a one-line date regex recovered a heavy
   transformer's entire Russian advantage at ~500× the speed.
 
+## Storage & isolation (real data)
+
+CONFIDE is local-first. For real session data: **`THREE-LOCKS.md`** (device + encrypted
+store + per-file/isolation, with a storage checklist) and **`ISOLATION.md`** (red/green
+flow, no-network containers, macOS VMs, sops/age encryption). Extend the benchmark with
+public datasets via `python3 confide.py datasets list` (see `eval/DATASETS.md`).
+
 ## Reproducibility & ethics
 
 Pinned environment + Docker (`eval/Dockerfile`, `eval/requirements.lock`), an append-only
