@@ -102,3 +102,18 @@ It enforces three invariants:
 Full regeneration order (the checker prints this on failure):
 `score_bench.py` (per dataset) → `bootstrap_ci.py` (per dataset) → `iaa_eval.py` →
 `make_benchmark.py` → `make_tufte_report.py` → `check_artifacts.py`.
+
+### Continuous verification (CI)
+
+`make check` is **enforced in CI**: the GitHub Actions workflow
+`.github/workflows/check-artifacts.yml` runs it on every `push` and `pull_request`,
+and the build **fails on artifact drift**. The job is deterministic, LLM-free, and
+network-free — it runs only stdlib Python (3.11) against the committed gold and
+detector caches (the JSONL is in the repo); it does **not** install or require
+Ollama / OPF / Presidio / torch / transformers, and needs no network. The pre-existing
+`⚠` warnings about the stale RU `opf` cache and legacy `opf` manifests are non-fatal
+and do not fail CI.
+
+**Contributors: run `make check` (from `eval/`) before committing.** If it exits
+non-zero, regenerate the artifacts in the order above and re-run until it passes —
+otherwise CI will reject the change.
