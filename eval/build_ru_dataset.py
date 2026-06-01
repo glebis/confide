@@ -36,6 +36,11 @@ import json
 import os
 import re
 
+# Single source of truth for the type->harm-level mapping (HARM-TAXONOMY.md).
+# Imported from the scorer so the gold builder and harm_weighted_recall agree;
+# do NOT define a second, conflicting mapping here.
+from score_bench import HARM_LEVEL
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 RU = os.path.join(HERE, "..", "sessions-ru")
 
@@ -204,6 +209,17 @@ ROLE = {
     "b-igor-latin": "client", "b-ekaterinburg": "institution",
 }
 
+# CRITICAL overrides (HARM-TAXONOMY.md): entity_ids to escalate from their
+# type-default level to "critical". CRITICAL is reserved for context-sensitive
+# cases — an abuser/perpetrator's name, a survivor's location, or identity paired
+# with a stigmatised/safety-relevant disclosure — NOT a type default. Add an
+# entity_id here only when the synthetic narrative clearly justifies it. The
+# current synthetic third parties (a-boss = an employer, b-pavel = a generic
+# acquaintance) carry no abuse/safety framing, so this set is intentionally
+# empty-but-present: the schema supports escalation without fabricating severity.
+CRITICAL_ENTITY_IDS = set()  # e.g. {"x-abuser", "x-shelter-location"}
+
+
 # Turn markers come in two forms across the corpus (Codex audit #2):
 #   client-a inline:  **00:00:04 Т:**
 #   client-b split:   **00:00** … Т:   (speaker on/after the bold timestamp)
@@ -245,6 +261,12 @@ def enrich(span, text, turns):
             break
     span["speaker_turn_id"] = tid
     span["speaker"] = spk
+    # harm: per-span qualitative severity for clinician review. Default = the
+    # type's level from the shared HARM_LEVEL map (single source of truth in
+    # score_bench.py); escalate to "critical" only for declared context-sensitive
+    # entities (CRITICAL_ENTITY_IDS). typ is already canonical here.
+    span["harm"] = ("critical" if eid in CRITICAL_ENTITY_IDS
+                    else HARM_LEVEL.get(typ, "medium"))
     return span
 
 
