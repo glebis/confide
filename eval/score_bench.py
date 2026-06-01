@@ -61,6 +61,10 @@ COMBOS = {
         ("regex+ollama",          ["regex", "ollama"]),
         ("opf+regex+ollama ★",    ["opf", "regex", "ollama"]),
         ("natasha+regex+ollama",  ["natasha", "regex", "ollama"]),
+        # --- Established off-the-shelf baselines (Codex audit R3) -------------
+        ("presidio",              ["presidio"]),
+        ("philter",               ["philter"]),
+        ("presidio+regex+ollama", ["presidio", "regex", "ollama"]),
     ],
 }
 COMBOS["en-real"] = COMBOS["en"]
@@ -82,6 +86,12 @@ CANON = {
     "PRIVATE_PERSON": "PERSON", "PRIVATE_ADDRESS": "LOCATION", "PRIVATE_EMAIL": "EMAIL",
     "PRIVATE_PHONE": "PHONE", "PRIVATE_URL": "URL", "PRIVATE_DATE": "DATE",
     "ACCOUNT_NUMBER": "ID", "SECRET": "ID",
+    # Presidio entity types are pre-mapped to the canonical raw labels above in
+    # run_detectors._PRESIDIO_KEEP (PERSON/LOCATION/PHONE/EMAIL/URL/DATE/ID/ORG/AGE),
+    # so they need no extra entries. Philter emits the same labels plus OTHER, an
+    # untyped redaction that counts for type-agnostic span coverage but never
+    # satisfies a type-aware match (canon to itself; no gold span is type OTHER).
+    "OTHER": "OTHER",
     # ai4privacy gold native labels seen in the EN-real slice get canon'd in load_gold
 }
 
@@ -139,15 +149,24 @@ def load_detector(dataset, det, gold_ids=None, docs_sha=None):
     man_path = os.path.join(CACHE, f"{dataset}.{det}.manifest.json")
     if os.path.exists(man_path):
         man = json.load(open(man_path, encoding="utf-8"))
-        if man.get("invalid_spans") and (dataset,det,"inv") not in _WARNED:
-            _WARNED.add((dataset,det,"inv"))
-            print(f"  ⚠ {dataset}/{det}: manifest reports {man['invalid_spans']} invalid spans")
-        if gold_ids is not None and set(man.get("doc_ids", [])) != set(gold_ids) and (dataset,det,"stale") not in _WARNED:
-            _WARNED.add((dataset,det,"stale"))
-            print(f"  ⚠ {dataset}/{det}: cache doc set differs from gold — STALE cache, re-run detectors")
-        if docs_sha is not None and man.get("docs_sha") and man["docs_sha"] != docs_sha and (dataset,det,"text") not in _WARNED:
-            _WARNED.add((dataset,det,"text"))
-            print(f"  ⚠ {dataset}/{det}: transcript text changed since cache was built — re-run detectors")
+        if man.get("invalid_spans"):
+            if (dataset,det,"inv") not in _WARNED:
+                _WARNED.add((dataset,det,"inv"))
+                print(f"  ⚠ {dataset}/{det}: manifest reports {man['invalid_spans']} invalid spans")
+            return None
+        if gold_ids is not None and set(man.get("doc_ids", [])) != set(gold_ids):
+            if (dataset,det,"stale") not in _WARNED:
+                _WARNED.add((dataset,det,"stale"))
+                print(f"  ⚠ {dataset}/{det}: cache doc set differs from gold — STALE cache, re-run detectors")
+            return None
+        if docs_sha is not None and man.get("docs_sha") and man["docs_sha"] != docs_sha:
+            if (dataset,det,"text") not in _WARNED:
+                _WARNED.add((dataset,det,"text"))
+                print(f"  ⚠ {dataset}/{det}: transcript text changed since cache was built — re-run detectors")
+            return None
+        if docs_sha is not None and not man.get("docs_sha") and (dataset,det,"notextsha") not in _WARNED:
+            _WARNED.add((dataset,det,"notextsha"))
+            print(f"  ⚠ {dataset}/{det}: legacy manifest has no transcript hash — doc IDs only were validated")
     elif (dataset,det,"nomani") not in _WARNED:
         _WARNED.add((dataset,det,"nomani"))
         print(f"  ⚠ {dataset}/{det}: no manifest — cannot validate")

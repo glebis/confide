@@ -15,7 +15,7 @@ import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATASETS = [
-    ("ru", "RU-synth", "Russian synthetic therapy series (client-a + client-b, 10 sessions)"),
+    ("ru", "RU-synth", "Russian synthetic therapy series (6 clients, 30 sessions)"),
     ("en", "EN-synth", "English curated therapy-style snippets"),
     ("en-real", "EN-real", "Real ai4privacy/pii-masking-300k slice (English validation)"),
     ("ru-adv", "RU-adversarial", "Russian robustness probe (16 snippets: patronymics, "
@@ -40,7 +40,6 @@ def leaderboard(res):
     lines += [head, sep]
     for name, e in res["combos"].items():
         if e.get("status") == "missing-cache":
-            lines.append(f"| {name} | _(cache missing: {'+'.join(e['members'])})_ |" + " |" * (8 if has_ent else 5))
             continue
         cr, tr = e["coverage_relaxed"], e["type_relaxed"]
         if has_ent and "entity_level" in e:
@@ -58,7 +57,10 @@ def leaderboard(res):
 def per_category(res):
     """Recall per canonical type for each combo — surfaces LLM-required types."""
     combos = [(n, e) for n, e in res["combos"].items() if isinstance(e, dict) and "coverage_relaxed_per_type" in e]
-    types = sorted({t for _, e in combos for t in e["coverage_relaxed_per_type"]})
+    # only show types that have gold support somewhere (drops e.g. Philter's
+    # untyped OTHER, which has zero gold support and would add an all-"—" column).
+    types = sorted({t for _, e in combos for t, m in e["coverage_relaxed_per_type"].items()
+                    if m.get("support")})
     lines = ["| Combo | " + " | ".join(types) + " |",
              "|---|" + "|".join("--:" for _ in types) + "|"]
     for name, e in combos:
@@ -68,6 +70,17 @@ def per_category(res):
             cells.append(f"{m['r']:.2f}" if m and m["support"] else "—")
         lines.append(f"| {name} | " + " | ".join(cells) + " |")
     return "\n".join(lines)
+
+
+def default_combo(res):
+    for name, e in res["combos"].items():
+        if "★" in name and isinstance(e, dict) and "coverage_relaxed" in e:
+            return name, e
+    return None, None
+
+
+def fmt_delta(a, b):
+    return f"{b - a:+.3f}"
 
 
 def main():
@@ -87,15 +100,17 @@ def main():
       "Privacy Filter, and a local qwen LLM) for de-identifying therapy transcripts, "
       "and quantify which layer earns its compute — especially which PII types *require* "
       "an LLM to catch.")
-    A("- **Composition.** Three datasets (see per-dataset sections). The Russian set is "
-      "**fully synthetic and fictional** — no real patients — hand-built from two answer-key "
-      "PII inventories. The English sets are a curated synthetic slice and a real "
-      "`ai4privacy/pii-masking-300k` validation slice.")
+    A("- **Composition.** Four datasets (see per-dataset sections). The Russian therapy "
+      "set is **fully synthetic and fictional** — no real patients — hand-built from six "
+      "synthetic client inventories. The English sets are a curated synthetic slice and a "
+      "real `ai4privacy/pii-masking-300k` validation slice; the RU-adversarial set probes "
+      "hard forms such as transliteration, handles, and structured IDs.")
     A("- **Languages.** Russian (`ru`), English (`en`).")
     A("- **PII taxonomy (canonical).** PERSON, LOCATION, ORG, PHONE, EMAIL, URL, ID, "
       "DATE, MEDICATION, AGE, PROFESSION. Each RU entity is also tagged **direct** vs "
       "**quasi**-identifier (TAB), and `llm_required` where deterministic layers "
-      "structurally cannot catch it (medication/age/date/profession).")
+      "structurally cannot catch it (medication, age, profession, and some contextual or "
+      "spelled-out dates).")
     A("- **Collection / labeling.** RU gold is located programmatically from curated "
       "surface-form patterns (Cyrillic-morphology-aware) over the raw transcripts, then "
       "hand-verified; every mention carries an `entity_id` for entity-level scoring.")
@@ -103,8 +118,8 @@ def main():
       "instrument; synthetic RU content must not be treated as real patient data.")
     A("- **Limitations.** Small N (each miss moves recall several points); synthetic RU "
       "text; spelled-out digit strings are out of scope for the regex layer by design.")
-    A("- **Splits.** Person-disjoint: client-a = `dev`, client-b = `test` (each client is "
-      "a distinct synthetic person → no profile leakage across splits).")
+    A("- **Splits.** Person-disjoint: clients a/c/e = `dev`, clients b/d/f = `test` "
+      "(each client is a distinct synthetic person → no profile leakage across splits).")
     A("- **Adversarial robustness (RU-adversarial probe).** The full stack catches 19/20 "
       "adversarial forms — SNILS/INN/passport (regex), VK/Telegram handles (regex), "
       "patronymics/diminutives (Natasha+qwen), code-switching (qwen). The **one leak is a "
@@ -132,7 +147,8 @@ def main():
     A("")
     A("_Citations: Pilán et al., *The Text Anonymization Benchmark*, Computational "
       "Linguistics 2022; Stubbs et al., *2014 i2b2/UTHealth de-identification*, JBI 2015; "
-      "Microsoft Presidio-research evaluation framework; ai4privacy/pii-masking-300k._")
+      "Microsoft Presidio-research evaluation framework; ai4privacy/pii-masking-300k. "
+      "Checked source links are listed in `SOURCES.md`._")
     A("")
 
     for ds, short, desc in DATASETS:
@@ -165,6 +181,91 @@ def main():
         A(per_category(res))
         A("")
 
+    # Established off-the-shelf baselines (Codex audit R3): Presidio + Philter.
+    # Tables above already auto-include the presidio/philter/presidio+regex+ollama
+    # rows (they come straight from the bench-results.json combos). Here we add the
+    # interpretive narrative + the unique-capability finding so a regeneration of
+    # BENCHMARK.md keeps it.
+    en_res, enr_res = load("en"), load("en-real")
+
+    def _cell(res, combo, path):
+        if not res:
+            return None
+        e = res["combos"].get(combo)
+        if not isinstance(e, dict) or "coverage_relaxed" not in e:
+            return None
+        d = e
+        for k in path:
+            d = d[k]
+        return d
+
+    if en_res and ("presidio" in en_res["combos"]):
+        A("## Established baselines — Microsoft Presidio & Philter (Codex audit R3)")
+        A("")
+        A("To anchor CONFIDE's metrics against a known, off-the-shelf system, two "
+          "established de-identifiers run on the same gold via the same cache/manifest "
+          "pipeline as every other detector:")
+        A("")
+        A("- **Microsoft Presidio** (`presidio-analyzer`, spaCy `en_core_web_sm` — the "
+          "*small* model, chosen under a ~1.8 GiB disk constraint; `en_core_web_lg` "
+          "would raise PERSON/LOCATION recall somewhat). Run on **en** and **en-real** "
+          "only. Presidio's RU support is spaCy-NER-dependent and weak, so it is **not** "
+          "reported on the RU datasets to avoid misrepresenting it — a documented scope "
+          "limit, not a measured RU score.")
+        A("- **Philter** (`philter-lite`, UCSF clinical de-id, `philter_delta.toml` HIPAA "
+          "Safe-Harbor rule set; needs NLTK `averaged_perceptron_tagger_eng`). English "
+          "clinical-notes tool; run on **en** and **en-real**.")
+        A("")
+        p_f2 = _cell(en_res, "presidio", ["coverage_relaxed", "f2"])
+        s_f2 = _cell(en_res, "opf+regex+ollama ★", ["coverage_relaxed", "f2"])
+        p_t = _cell(en_res, "presidio", ["type_relaxed", "f1"])
+        s_t = _cell(en_res, "opf+regex+ollama ★", ["type_relaxed", "f1"])
+        pr_f2 = _cell(enr_res, "presidio", ["coverage_relaxed", "f2"])
+        pr_r = _cell(enr_res, "presidio", ["coverage_relaxed", "r"])
+        sr_f2 = _cell(enr_res, "opf+regex+ollama ★", ["coverage_relaxed", "f2"])
+        A(f"**Headline finding.** Neither off-the-shelf system beats the therapy-tuned "
+          f"CONFIDE stack on type-aware F1. On the easy curated EN set Presidio's coverage "
+          f"F2 ({p_f2:.3f}) marginally exceeds the stack ({s_f2:.3f}) thanks to a broad "
+          f"`DATE_TIME` recognizer, but its type-aware F1 is much lower ({p_t:.3f} vs "
+          f"{s_t:.3f}). On the harder **real** ai4privacy slice Presidio collapses to "
+          f"{pr_r:.3f} coverage recall ({pr_f2:.3f} F2 vs {sr_f2:.3f}) — generic NER + "
+          f"structured recognizers don't cover the bespoke ID/markup formats. Philter is "
+          f"high-recall but emits nearly everything as untyped `OTHER`, unusable for "
+          f"type-aware redaction. **This is the expected, valid baseline result: a generic "
+          f"system is not a therapy-tuned one.**")
+        A("")
+        A("### Unique capabilities (what the baselines catch that the stack does not)")
+        A("")
+        A("Diffing gold spans missed by `opf+regex+ollama` but caught (relaxed overlap) "
+          "by each baseline:")
+        A("")
+        A("- **Presidio `DATE_TIME` catches colloquial/relative dates the stack misses** on "
+          "EN-synth: *\"last Tuesday\"*, *\"12 December\"*, *\"last Thursday\"*, *\"19th of "
+          "the month\"*, plus a bare account fragment *\"8842\"* (5 gold spans) — a genuine "
+          "complementary signal that overlaps the v2-gold note that the stack under-catches "
+          "relative dates. On EN-real, Presidio caught **0** spans the stack missed.")
+        A("- **Philter** caught 1 unique span on EN-synth (*\"12 December\"*) and 1 on "
+          "EN-real (a 2-letter country code *\"GB\"*). Breadth offset by no usable typing.")
+        A("- Presidio's **structured recognizers** (US_SSN, IBAN, credit card, bank/"
+          "passport/driver-licence, crypto, IP) are a capability the regex layer lacks in "
+          "principle, but on this gold they did **not** out-recall the stack: stack ID "
+          "recall is 1.00 on EN-real vs Presidio's 0.30. A potential robustness asset on "
+          "other corpora, not a measured win here.")
+        A("")
+        A("**Takeaway:** the only coverage a baseline adds over the stack is "
+          "**relative/colloquial dates** (Presidio `DATE_TIME`) — argues for adding a "
+          "relative-date recognizer or ensembling Presidio's date layer, not adopting "
+          "Presidio wholesale.")
+        A("")
+        A("<!-- GRAPHICS-TODO: add a grouped bar chart \"CONFIDE stack vs established "
+          "baselines\" with two metrics per combo — Coverage F2 (headline) and Type-aware "
+          "micro-F1 — for {opf+regex+ollama ★, presidio, philter, presidio+regex+ollama}, "
+          "one panel EN-synth + one EN-real. Data: {en,en-real}-bench-results.json at "
+          "combos[name].coverage_relaxed.f2 and combos[name].type_relaxed.f1. Story: "
+          "baselines can edge on coverage but fall far behind on type-aware F1 and collapse "
+          "on the real slice. -->")
+        A("")
+
     # Reconstruction / re-identification + limitations
     rec = os.path.join(HERE, "reconstruction-results.json")
     A("## Reconstruction & re-identification (what survives)")
@@ -189,21 +290,37 @@ def main():
     else:
         A("See `reconstruction-RESULTS.md` (run `reconstruct_attack.py`).")
     A("")
-    A("## Key finding — OPF is NOT weak on Russian")
+    A("## OPF on Russian — optional, not a default")
     A("")
-    A("The README's prior assumption (\"OPF is English-first and weak on Russian\") is "
-      "**contradicted by measurement**. Adding OPF to the RU stack lifts coverage recall "
-      "0.865→**0.953**, entity recall 0.541→**0.838**, and quasi-identifier recall "
-      "0.304→**0.739**. The lift is almost entirely one type: **DATE 0.00→0.91** — OPF's "
-      "`private_date` catches the `DD.MM.YYYY` session dates that *no other layer* caught. "
-      "It does NOT help medication/age/profession (still need qwen).")
-    A("")
-    A("**Bang-for-buck — fix shipped.** OPF costs ~227s/doc on MPS (vs regex 0.44s, "
-      "ollama 14s). Since its whole RU advantage was dates, a numeric-date rule was added "
-      "to the regex layer. Result: the LLM-free-of-OPF default `natasha+regex+ollama` now "
-      "reaches **0.924** recall / **0.811** entity recall / **0.739** quasi-recall — "
-      "matching OPF's quasi-recall exactly and within 0.03 of its coverage recall, at "
-      "~500× the speed. OPF's residual edge is spelled-out dates + perfect PERSON.")
+    ru_res = load("ru")
+    if ru_res:
+        base_name, base = default_combo(ru_res)
+        opf = ru_res["combos"].get("opf+natasha+regex+ollama")
+        if base and isinstance(opf, dict) and "coverage_relaxed" in opf:
+            b_cov, o_cov = base["coverage_relaxed"], opf["coverage_relaxed"]
+            b_ent, o_ent = base.get("entity_level"), opf.get("entity_level")
+            b_quasi = b_ent["by_class"].get("quasi", {}).get("recall") if b_ent else None
+            o_quasi = o_ent["by_class"].get("quasi", {}).get("recall") if o_ent else None
+            A(f"On the current RU corpus, adding OPF to `{base_name.replace(' ★','')}` changes "
+              f"coverage recall **{b_cov['r']:.3f}→{o_cov['r']:.3f}** "
+              f"({fmt_delta(b_cov['r'], o_cov['r'])}) and F2 "
+              f"**{b_cov['f2']:.3f}→{o_cov['f2']:.3f}** "
+              f"({fmt_delta(b_cov['f2'], o_cov['f2'])}).")
+            if b_ent and o_ent:
+                A(f"Entity recall changes **{b_ent['entity_recall']:.3f}→{o_ent['entity_recall']:.3f}** "
+                  f"({fmt_delta(b_ent['entity_recall'], o_ent['entity_recall'])}); quasi recall "
+                  f"changes **{b_quasi:.3f}→{o_quasi:.3f}** "
+                  f"({fmt_delta(b_quasi, o_quasi)}).")
+            A("That residual lift is useful as a comparison point, but OPF is not the default "
+              "RU layer: regex/Natasha/qwen remains the local-first stack, and OPF should be "
+              "re-run whenever the RU gold changes before its row is cited.")
+        else:
+            A("The OPF RU cache is not scored for the current gold because its detector cache "
+              "does not validate against the current document set. This is intentional: stale "
+              "detector outputs are excluded rather than mixed into headline results. Re-run "
+              "`run_detectors.py --dataset ru --detectors opf` before citing an OPF-on-RU row.")
+    else:
+        A("Run `score_bench.py --dataset ru --out-prefix ru-` to refresh the OPF comparison.")
     A("")
     # Privacy–utility (P1)
     pu = os.path.join(HERE, "privacy-utility-results.json")
@@ -271,20 +388,32 @@ def main():
           "check, the Latin frontmatter name, quasi-professions (тимлид/бэкенд/младший "
           "специалист), and the employer city. Relative dates (\"в прошлый четверг\") were "
           "explicitly **scoped out** (fuzzy quasi-temporal, often clinical content). This "
-          "*lowered* RU default recall **0.93 → 0.86** — not a regression but a more complete, "
-          "harder gold: every spelled-out identifier and the transliterated name now **leak** "
-          "(no layer catches them), arguing for a spelled-digit normalizer + a Latin-NER.")
+          "makes the current v2 gold harder and more complete: spelled-out identifiers and "
+          "transliterated names are now counted as leaks when no layer catches them, arguing "
+          "for a spelled-digit normalizer + a Latin-NER.")
         A("")
     A("## Stricter headline check (containment)")
     A("")
-    A("Beyond relaxed (≥1-char) overlap, a **containment** metric requires ≥80% of an "
-      "identifier to be masked. For the RU default, containment recall equals relaxed "
-      "(0.93) — i.e. catches are not 1-char-overlap artifacts; when the stack flags a PII "
-      "it masks essentially all of it. Strict exact-span recall is 0.83 (boundary "
-      "differences only).")
+    ru_res = load("ru")
+    _, ru_default = default_combo(ru_res) if ru_res else (None, None)
+    if ru_default:
+        rel = ru_default["coverage_relaxed"]["r"]
+        cont = ru_default["coverage_containment"]["r"]
+        strict = ru_default["coverage_strict"]["r"]
+        A("Beyond relaxed (≥1-char) overlap, a **containment** metric requires ≥80% of an "
+          f"identifier to be masked. For the RU default, containment recall is **{cont:.3f}** "
+          f"vs relaxed **{rel:.3f}**; strict exact-span recall is **{strict:.3f}**. The small "
+          "relaxed/containment gap means the headline is not driven by 1-character touches, "
+          "while the strict gap mostly reflects boundary differences.")
+    else:
+        A("Beyond relaxed (≥1-char) overlap, a **containment** metric requires ≥80% of an "
+          "identifier to be masked. Run the RU scorer to populate this audit check.")
     A("")
     A("## Known limitations")
     A("")
+    A("- **Presidio/Philter are generic baselines** (not therapy-tuned, EN-only, Presidio "
+      "on the *small* spaCy model); their lower scores are expected and reported as an "
+      "anchor, not a failure. Presidio RU is intentionally unscored (weak spaCy-RU NER).")
     A("- **Small N** — each miss moves recall several points; treat per-type numbers as "
       "directional.")
     A("- **Synthetic RU data** — fictional; not real patient text.")
@@ -296,8 +425,8 @@ def main():
       "deterministic; qwen runs at temperature 0 and the IAA seed annotation is committed "
       "for reproducibility, but exact spans can vary run-to-run. The bootstrap CIs and the "
       "detector manifests bound and date the measurements.")
-    A("- Confidence intervals (bootstrap, 95%) are reported per dataset above; with N as "
-      "small as 10–32 they are wide by design.")
+    A("- Bootstrap confidence-interval support is included in `bootstrap_ci.py`; report the "
+      "CI files only after they have been regenerated for the current gold and caches.")
     A("")
 
     path = os.path.join(HERE, "BENCHMARK.md")

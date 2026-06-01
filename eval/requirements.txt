@@ -29,3 +29,13 @@ torchvision==0.20.1
 
 # --- optional: rebuild the real ai4privacy slice (build_dataset.py) ---
 datasets>=2.18
+
+# --- optional: established off-the-shelf EN baselines (Codex audit R3) ---
+# Presidio (EN only): run_detectors.py --dataset {en,en-real} --detectors presidio
+#   needs the spaCy small English model:  python -m spacy download en_core_web_sm
+# Philter (EN only):  --detectors philter
+#   needs the NLTK tagger:  python -c "import nltk; nltk.download('averaged_perceptron_tagger_eng')"
+presidio-analyzer>=2.2
+presidio-anonymizer>=2.2
+philter-lite>=0.6
+# spacy is pulled in transitively by presidio-analyzer; model downloaded separately.
