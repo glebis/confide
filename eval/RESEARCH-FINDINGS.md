@@ -3,8 +3,8 @@
 > **Provenance:** external deep-research agent (pasted 2026-06-01), produced from
 > `eval/RESEARCH-PROMPT.md`. Citations in the original were footnote markers (￼)
 > without resolved URLs — **treat every claim as needs-verification** before it
-> goes into a paper. This file is the working record; verify sources against the
-> annotated bibliography (§10) before citing.
+> goes into a paper. This file is the working record; checked sources for the
+> publishable methodology claims are tracked separately in `SOURCES.md`.
 
 ## 1. Executive summary
 
@@ -42,7 +42,7 @@ context-dependent.
 | i2b2/n2c2 2014 | EN longitudinal, 1304 rec/296 pat | real | 7 cat / 25 subcat, double-annot+arbitration | strict micro-F1 ~.936; CRF+rules win |
 | n2c2 CEGS N-GRID 2016 | EN **psychiatric intake notes**, 1000 rec | real | 7 cat / 30 subcat | closest mental-health ancestor; sight-unseen F1 .799 → trained .914 (domain shift) |
 | MIMIC-III/IV(-Note) | EN critical-care EHR/notes | real, DUA | rule+neural de-id pipeline | PHI realism + access norms |
-| MEDDOCAN 2019 | ES clinical cases, 1000 synth | synth | 29 types (GDPR/HIPAA) | non-EN clinical precedent, guidelines |
+| MEDDOCAN 2019 | ES clinical cases, 1000 synth | synth | ~22 types / 9 categories (GDPR/HIPAA) | non-EN clinical precedent, guidelines |
 | **TAB 2022** | EN ECHR legal, 1268 cases | real | direct/quasi/no-mask, confidential, coref/entity-IDs | **best methodological ancestor** (DOI 10.1162/coli_a_00458) |
 | CodE Alltag (S/XL) | DE email, ~800 + XL | real, pseudonymized | people/loc/date/IDs/social | informal/message-like de-id |
 | ai4privacy 200k/300k/2M | broad synth chat/business; 2M multilingual | synth | 2M: 32 locales, 98 types | broad taxonomy; dataset-card evidence |
