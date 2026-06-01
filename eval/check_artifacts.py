@@ -78,6 +78,10 @@ def rescore(dataset):
                                 "recall": round(v[0] / v[1], 3) if v[1] else 0.0}
                             for k, v in by_type.items()},
             }
+        if "★" in name:
+            bs = sb.split_headline(gold, preds, has_entity)
+            if bs:
+                entry["by_split"] = bs
         results["combos"][name] = entry
     return results
 

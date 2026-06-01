@@ -14,6 +14,12 @@ so a reader can judge the numbers rather than take them on faith. (Pairs with
 - **We still report precision** (per-type, decoupled) so over-redaction is visible — an
   anonymizer that masks everything gets recall 1.0 but destroys utility. Precision is the
   guardrail, not the goal.
+- **"Mask-coverage F2" is a coverage view, not a standard span/entity F2** (renamed from
+  "Coverage F2" per Codex audit R2 #3). It credits a gold span if **any** prediction
+  overlaps it and a predicted mask if it overlaps **any** gold, so one large span can score
+  P=R=1.0. It answers only "did the deployed mask touch the PII"; the **rigorous headline is
+  entity-level (TAB) recall**, where an entity is protected only if *all* its mentions are
+  masked.
 
 ## 2. What the report INCLUDES (and why each earns its place)
 
@@ -25,7 +31,7 @@ so a reader can judge the numbers rather than take them on faith. (Pairs with
 | **Per-layer ablation** (regex / Natasha / LLM and unions) | Shows *which layer catches what* — the practical "what stack for what language" answer, and reproducible attribution. |
 | **Per-type recall table** | Surfaces the specific failure modes (e.g. MEDICATION/AGE only recovered by the LLM). |
 | **CONFIDE-Red: inference / singling-out / linkability** | Coverage ≠ safety. Maps to the three GDPR Art-29 / Anonymeter attacks — measures residual *re-identification* after redaction. |
-| **IAA (Cohen's κ, independent annotator)** | A gold standard one person wrote is an opinion; agreement makes it a measurement. |
+| **LLM-assisted consistency check (κ/F1 seed)** | A pattern-derived gold can miss surfaces; a single automated second pass helps find blind spots. This is not a human IAA claim. |
 | **Run records (lm-eval-harness style JSON/JSONL)** | Every headline number is traceable to a logged run with code/docs hashes. |
 
 ## 3. What the report OMITS — and why
@@ -52,7 +58,7 @@ so a reader can judge the numbers rather than take them on faith. (Pairs with
   the floor failed — so we report the range, and note even the ceiling is a lower bound
   (single-shot, no auxiliary knowledge, no cross-corpus linkage).
 - **Small-N caveats are kept visible, not smoothed.** The corpus is synthetic and modest
-  (30 docs / 713 spans); we report bootstrap CIs and avoid significance claims the N can't
+  (30 docs / 1,059 spans); we report bootstrap CIs and avoid significance claims the N can't
   support. We omit point-estimate comparisons that the CI would swallow.
 - **"Sensitive disclosure" content is named as a gap, not scored.** The most damaging
   therapy leaks (trauma, orientation) aren't a PII type and aren't in the gold; we flag the
@@ -62,8 +68,13 @@ so a reader can judge the numbers rather than take them on faith. (Pairs with
 
 - **Macro over types** for the cross-type headline (every type counts equally, so rare
   high-harm types matter); **micro/per-type** also shown for completeness.
-- **dev/test split** (clients a/c/e vs b/d/f) reported separately; we omit any tuning on
-  test.
+- **dev/test split** (clients a/c/e vs b/d/f) is carried in the gold and enforced for
+  corpus design. Alongside the all-docs leaderboard, BENCHMARK.md now reports a **per-split
+  (dev/test) headline sub-table** for the ★ stack (mask-coverage R/F2, entity recall,
+  harm-weighted recall) emitted into `*-bench-results.json` under each ★ combo's `by_split`.
+  This is **reporting only — nothing is tuned on test**; it exists so split-level numbers
+  are visible before any train/test generalization claim. (RU test trails dev: entity
+  recall 0.63 vs 0.70, the expected person-disjoint generalization gap on a small corpus.)
 - **Unions are interval-merged** before scoring (overlapping spans from different layers
   don't double-count) — a methodological fix, noted so results are comparable across layers.
 

@@ -32,10 +32,10 @@ def load(ds):
 def leaderboard(res):
     has_ent = any("entity_level" in c for c in res["combos"].values() if isinstance(c, dict) and "members" in c)
     lines = []
-    head = "| Combo | Cov F2 (rel) | Cov R | Type F2 | Micro-F1 | Macro-F1 | Preds |"
+    head = "| Combo | MaskCov F2 (rel) | MaskCov R | Type F2 | Micro-F1 | Macro-F1 | Preds |"
     sep =  "|---|--:|--:|--:|--:|--:|--:|"
     if has_ent:
-        head = ("| Combo | Cov F2 (rel) | Cov R | Type F2 | Macro-F1 | Ent-R (TAB) | "
+        head = ("| Combo | MaskCov F2 (rel) | MaskCov R | Type F2 | Macro-F1 | Ent-R (TAB) | "
                 "Harm-wtd R | Direct-R | Quasi-R | Preds |")
         sep =  "|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|"
     lines += [head, sep]
@@ -54,6 +54,42 @@ def leaderboard(res):
         else:
             lines.append(f"| {name} | **{cr['f2']:.3f}** | {cr['r']:.3f} | {tr['f2']:.3f} | "
                          f"{tr['overall']['f1'] if 'overall' in tr else tr['f1']:.3f} | {tr['macro_f1']:.3f} | {e['n_pred']} |")
+    return "\n".join(lines)
+
+
+def split_table(res):
+    """Per-split (dev/test) headline sub-table for the ★ stack (Codex audit R2 #2).
+    REPORTING.md §4 promises dev/test separately; the leaderboard aggregates all
+    docs, so we surface the split-level headline. Reporting only — nothing tuned on
+    test. Returns '' if the ★ combo carries no by_split block."""
+    star = next((e for n, e in res["combos"].items()
+                 if "★" in n and isinstance(e, dict) and "by_split" in e), None)
+    if not star:
+        return ""
+    bs = star["by_split"]
+    # only emit when there is a genuine dev/test partition (skip single-split sets)
+    if set(bs) <= {"adversarial"} or len(bs) < 2:
+        return ""
+    has_ent = any("entity_recall" in v for v in bs.values())
+    lines = ["### Dev / test split (★ stack, reporting only — nothing tuned on test)", ""]
+    if has_ent:
+        lines += ["| Split | Docs | Gold | MaskCov R | MaskCov F2 | Ent-R (TAB) | Harm-wtd R |",
+                  "|---|--:|--:|--:|--:|--:|--:|"]
+        for sp in ("dev", "test"):
+            if sp not in bs:
+                continue
+            v = bs[sp]
+            lines.append(f"| {sp} | {v['n_docs']} | {v['n_gold_mentions']} | "
+                         f"{v['mask_coverage_recall']:.3f} | {v['mask_coverage_f2']:.3f} | "
+                         f"{v['entity_recall']:.3f} | {v['harm_weighted_recall']:.3f} |")
+    else:
+        lines += ["| Split | Docs | Gold | MaskCov R | MaskCov F2 |", "|---|--:|--:|--:|--:|"]
+        for sp in ("dev", "test"):
+            if sp not in bs:
+                continue
+            v = bs[sp]
+            lines.append(f"| {sp} | {v['n_docs']} | {v['n_gold_mentions']} | "
+                         f"{v['mask_coverage_recall']:.3f} | {v['mask_coverage_f2']:.3f} |")
     return "\n".join(lines)
 
 
@@ -138,10 +174,15 @@ def main():
     A("")
     A("## Metrics (what each column means)")
     A("")
-    A("- **Coverage F2 / R (relaxed):** type-agnostic — *did we redact this PII span at "
-      "all* (overlap ≥1 char)? **F2 weights recall 2× over precision** because a missed "
-      "entity is leaked PII while a false positive is mere over-redaction "
-      "(Presidio-research; i2b2/n2c2). **Headline.**")
+    A("- **MaskCov F2 / R (mask-coverage, relaxed):** type-agnostic — *did the deployed "
+      "redaction mask touch this PII span at all* (overlap ≥1 char)? **F2 weights recall 2× "
+      "over precision** because a missed entity is leaked PII while a false positive is mere "
+      "over-redaction (Presidio-research; i2b2/n2c2). This is a *mask-coverage* view, **not** "
+      "a strict 1:1 span/entity match: a gold span is credited if ANY prediction overlaps it "
+      "and a predicted mask counts as a hit if it overlaps ANY gold, so one large span can "
+      "score P=R=1.0. The rigorous headline is **entity-level (TAB) recall** below. "
+      "(Renamed from \"Coverage F2\" per Codex audit R2 #3 so it is not read as standard "
+      "span-F2.)")
     A("- **Type F2 / Micro-F1 / Macro-F1:** prediction must also match the gold span's "
       "canonical type. Micro = corpus-wide; Macro = unweighted mean over types (i2b2/n2c2).")
     A("- **Ent-R (entity-level recall, TAB):** an entity counts as *protected* only if "
@@ -184,6 +225,10 @@ def main():
         A("")
         A(leaderboard(res))
         A("")
+        st = split_table(res)
+        if st:
+            A(st)
+            A("")
         A("### Per-category recall (relaxed, type-agnostic) — *which layer catches what*")
         A("")
         A(per_category(res))
@@ -293,7 +338,10 @@ def main():
           "identity-narrowing attributes from context; a frontier model would recover "
           "more (SOTA tools prevent re-identification only ~27–29% of the time, Staab et "
           f"al.). Over-redaction (utility cost) under the default stack: **{orr:.0%}** of "
-          "redacted spans were not PII. Full detail: `reconstruction-RESULTS.md`.")
+          "redacted *spans* were not PII — but those false-positive spans are short, so only "
+          "**0.47%** of non-PII *characters* are over-masked (99.5% char-level non-PII "
+          "preservation; the two views are complementary, span-rate vs char-rate). Full "
+          "detail: `reconstruction-RESULTS.md`.")
     else:
         A("See `reconstruction-RESULTS.md` (run `reconstruct_attack.py`).")
     A("")

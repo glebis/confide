@@ -954,6 +954,16 @@
             "recall": 1.0
           }
         }
+      },
+      "by_split": {
+        "adversarial": {
+          "n_docs": 16,
+          "n_gold_mentions": 20,
+          "mask_coverage_recall": 0.95,
+          "mask_coverage_f2": 0.887,
+          "entity_recall": 0.95,
+          "harm_weighted_recall": 0.925
+        }
       }
     }
   }

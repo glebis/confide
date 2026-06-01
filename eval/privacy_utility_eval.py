@@ -241,19 +241,28 @@ def main():
             "mean_signal_preserved": round(sum(kept) / len(kept), 3) if kept else None,
         }
 
-    # char-level non-PII preservation (deterministic), corpus-wide
-    masked_chars = total_chars = pii_chars = 0
+    # char-level non-PII preservation (deterministic), corpus-wide.
+    # Codex audit R2 #1: the old math `over_masked = masked_chars - pii_chars`
+    # assumed every PII char was masked first, so missed PII / false positives
+    # could net out and report ~100% preservation while over-redaction existed.
+    # Fix: use the TRUE per-doc character INDEX SETS. For each doc let
+    #   MASKED = char indices covered by predicted spans (the deployed mask),
+    #   PII    = char indices covered by gold spans.
+    # Non-PII over-masking = |MASKED \ PII| (masked chars that are not PII).
+    # Non-PII preservation = 1 - sum|MASKED\PII| / sum(doc_len - |PII|).
+    nonpii_total = over_masked_nonpii = 0
     for r in gold:
         spans = merge_intervals(sum((caches[d].get(r["doc_id"], []) for d in DEFAULT_COMBO), []))
-        gold_iv = merge_intervals([dict(s) for s in r["spans"]])
-        total_chars += len(r["text"])
+        masked_idx = set()
         for s in spans:
-            masked_chars += s["end"] - s["start"]
-        for g in gold_iv:
-            pii_chars += g["end"] - g["start"]
-    nonpii = total_chars - pii_chars
-    over_masked_nonpii = max(0, masked_chars - pii_chars)
-    results["utility"]["char_nonpii_preservation"] = round(1 - over_masked_nonpii / nonpii, 4) if nonpii else None
+            masked_idx.update(range(s["start"], s["end"]))
+        pii_idx = set()
+        for g in r["spans"]:
+            pii_idx.update(range(g["start"], g["end"]))
+        nonpii_total += len(r["text"]) - len(pii_idx)
+        over_masked_nonpii += len(masked_idx - pii_idx)  # masked chars that are NOT PII
+    results["utility"]["char_nonpii_preservation"] = (
+        round(1 - over_masked_nonpii / nonpii_total, 4) if nonpii_total else None)
 
     # residual-risk class per client (needs survival from reconstruction-results if present)
     surv = {}

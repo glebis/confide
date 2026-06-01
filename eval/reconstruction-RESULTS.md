@@ -28,3 +28,5 @@ _Even a 3B local model reconstructs identity-narrowing attributes from context a
 
 Under the default stack, **39 of 193** redacted spans (**20%**) were not gold PII — the readability price paid for recall. In de-id this is the cheap error (over-redaction costs readability; a miss leaks PII).
 
+Those false-positive spans are short, so the **character-level** over-redaction is far smaller: only **0.47%** of non-PII characters are over-masked (**99.5%** non-PII char preservation, computed from true per-doc index sets as `|MASKED \ PII| / (doc_len − |PII|)` — see `privacy-utility-RESULTS.md`). The span-rate (20%) and char-rate (0.47%) are complementary views of the same over-redaction, not a contradiction: many small spurious masks, little total text lost.
+

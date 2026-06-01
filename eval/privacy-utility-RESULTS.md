@@ -34,6 +34,6 @@ Does the de-identified transcript still support the clinical analysis it exists 
 | a | 100% |
 | b | 82% |
 
-**Char-level non-PII preservation:** 100.0% of non-PII text survives redaction (the deterministic utility floor; complement of over-redaction).
+**Char-level non-PII preservation:** 99.5% of non-PII text survives redaction (the deterministic utility floor; complement of over-redaction). Computed from true per-doc character index sets — non-PII over-masking is `|MASKED \ PII|` (predicted-mask chars that are not gold-PII), so missed PII and false positives can no longer net out to a falsely perfect 100%.
 
 _Privacy↑ and utility↑ are in tension: the same masking that lowers attacker success also risks erasing clinical signal. The default stack is tuned for recall (privacy); this table is the cost side._

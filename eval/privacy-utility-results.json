@@ -239,7 +239,7 @@
       ],
       "mean_signal_preserved": 0.82
     },
-    "char_nonpii_preservation": 1.0
+    "char_nonpii_preservation": 0.9953
   },
   "quasi_combination": {
     "a": {

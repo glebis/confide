@@ -1032,14 +1032,14 @@
       },
       "type_relaxed": {
         "support": 1059,
-        "c": 846,
-        "fp": 663,
-        "fn": 213,
-        "p": 0.542,
-        "r": 0.799,
-        "f1": 0.646,
-        "f2": 0.73,
-        "macro_f1": 0.387,
+        "c": 850,
+        "fp": 659,
+        "fn": 209,
+        "p": 0.545,
+        "r": 0.803,
+        "f1": 0.649,
+        "f2": 0.733,
+        "macro_f1": 0.398,
         "macro_r": 0.472
       },
       "coverage_relaxed_per_type": {
@@ -1551,14 +1551,14 @@
       },
       "type_relaxed": {
         "support": 1059,
-        "c": 873,
-        "fp": 668,
-        "fn": 186,
-        "p": 0.548,
-        "r": 0.824,
-        "f1": 0.659,
-        "f2": 0.749,
-        "macro_f1": 0.516,
+        "c": 877,
+        "fp": 664,
+        "fn": 182,
+        "p": 0.551,
+        "r": 0.828,
+        "f1": 0.662,
+        "f2": 0.752,
+        "macro_f1": 0.527,
         "macro_r": 0.655
       },
       "coverage_relaxed_per_type": {
@@ -1751,6 +1751,24 @@
             "total": 6,
             "recall": 0.167
           }
+        }
+      },
+      "by_split": {
+        "dev": {
+          "n_docs": 15,
+          "n_gold_mentions": 526,
+          "mask_coverage_recall": 0.869,
+          "mask_coverage_f2": 0.766,
+          "entity_recall": 0.704,
+          "harm_weighted_recall": 0.673
+        },
+        "test": {
+          "n_docs": 15,
+          "n_gold_mentions": 533,
+          "mask_coverage_recall": 0.807,
+          "mask_coverage_f2": 0.755,
+          "entity_recall": 0.63,
+          "harm_weighted_recall": 0.576
         }
       }
     },
