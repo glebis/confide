@@ -35,9 +35,9 @@ so a reader can judge the numbers rather than take them on faith. (Pairs with
   leave the machine. We omit raw real text by design — that's the entire thesis, and the
   numbers on real data are reported as distributions, never examples (`ETHICS.md`).
 - **OPF is not a default layer** — it's reported as a **lesson, not a recommendation.** On
-  CPU it ran ~2 s/line, didn't finish 10 KB docs, and broke JSON; its one RU advantage
-  (dates) was recovered by a date regex at ~500× the speed. We keep the measurement to show
-  *why* it was replaced, and omit it from the recommended stack.
+  the current RU corpus it must be backed by a detector cache that validates against the
+  current gold; stale OPF caches are excluded by the scorer. We keep OPF as a comparison
+  layer, while the recommended RU stack stays local-first: regex + Natasha + qwen.
 - **Precision is not the headline** (see §1) — included but never leading.
 - **No accuracy / no micro-F1-as-headline.** Class imbalance (PERSON dominates) makes a
   single micro number flattering; we report **per-type** and **macro** so rare-but-critical
@@ -45,9 +45,12 @@ so a reader can judge the numbers rather than take them on faith. (Pairs with
 - **CONFIDE-Red successes are reported as rates on synthetic personas, not as recovered
   identities.** We omit any worked example of *how* to re-identify a real person — the suite
   measures resistance; it is not a de-anonymization recipe. Attributes are fabricated.
-- **Single-model attacker numbers are labelled, not generalized.** CONFIDE-Red ran with one
-  small local model (qwen2.5:3b); we report that attacker's results and explicitly do **not**
-  claim them as an upper bound — a frontier attacker would do better. Stated as a floor.
+- **Attacker numbers are reported as a floor AND a ceiling, both labelled.** CONFIDE-Red is
+  run twice: a weak local model (qwen2.5:3b) as the **floor** and a frontier model (gpt-5,
+  synthetic data only) as the **ceiling** (`CONFIDE-RED-COMPARISON.md`). The stronger
+  attacker recovered ~2.6× more attributes (9/30 → 23/30) and succeeded at linkability where
+  the floor failed — so we report the range, and note even the ceiling is a lower bound
+  (single-shot, no auxiliary knowledge, no cross-corpus linkage).
 - **Small-N caveats are kept visible, not smoothed.** The corpus is synthetic and modest
   (30 docs / 713 spans); we report bootstrap CIs and avoid significance claims the N can't
   support. We omit point-estimate comparisons that the CI would swallow.
