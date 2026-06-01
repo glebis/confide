@@ -56,12 +56,24 @@ def llm_json(prompt, temperature=0.3):
     api = os.environ.get("LLM_API", "ollama").lower()
     base = os.environ.get("LLM_BASE_URL", os.environ.get("OLLAMA_HOST", "http://localhost:11434")).rstrip("/")
     msgs = [{"role": "user", "content": prompt}]
+    headers = {"Content-Type": "application/json"}
     if api == "openai":
-        url, body = base + "/v1/chat/completions", {"model": MODEL, "messages": msgs, "temperature": temperature, "max_tokens": 400, "stream": False}
+        # Reasoning models (gpt-5 / o1 / o3) reject `temperature` and use `max_completion_tokens`.
+        reasoning = re.match(r"^(gpt-5|o1|o3)", MODEL or "")
+        body = {"model": MODEL, "messages": msgs, "stream": False}
+        if reasoning:
+            body["max_completion_tokens"] = 4000
+        else:
+            body["temperature"] = temperature
+            body["max_tokens"] = 400
+        url = base + "/v1/chat/completions"
+        key = os.environ.get("OPENAI_API_KEY") or os.environ.get("LLM_API_KEY")
+        if key:
+            headers["Authorization"] = "Bearer " + key
     else:
         url, body = base + "/api/chat", {"model": MODEL, "messages": msgs, "stream": False, "options": {"temperature": temperature, "num_predict": 400}}
-    req = urllib.request.Request(url, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=180) as r:
+    req = urllib.request.Request(url, data=json.dumps(body).encode(), headers=headers)
+    with urllib.request.urlopen(req, timeout=300) as r:
         d = json.loads(r.read())
     out = d["choices"][0]["message"]["content"] if api == "openai" else d["message"]["content"]
     out = re.sub(r"<think>.*?</think>", "", out, flags=re.DOTALL)
@@ -83,8 +95,29 @@ def merge(spans):
     return out
 
 
+# The redactor (defense) is held FIXED across attacker runs so floor-vs-ceiling
+# compares only the attacker. run_ollama() reads LLM_API/LLM_BASE_URL from env,
+# so when the ATTACKER uses a cloud model we must pin the redactor back to the
+# local Ollama qwen2.5:3b for the duration of the redaction call.
+REDACTOR_MODEL = os.environ.get("REDACTOR_MODEL", "qwen2.5:3b")
+REDACTOR_API = os.environ.get("REDACTOR_API", "ollama")
+REDACTOR_BASE = os.environ.get("REDACTOR_BASE_URL", "http://localhost:11434")
+
+
 def redact(text, anonymize):
-    iv = merge(anonymize.run_natasha(text) + anonymize.run_regex(text) + anonymize.run_ollama(text, MODEL))
+    saved = {k: os.environ.get(k) for k in ("LLM_API", "LLM_BASE_URL", "OLLAMA_HOST")}
+    os.environ["LLM_API"] = REDACTOR_API
+    os.environ["LLM_BASE_URL"] = REDACTOR_BASE
+    os.environ.pop("OLLAMA_HOST", None)
+    try:
+        ollama_spans = anonymize.run_ollama(text, REDACTOR_MODEL)
+    finally:
+        for k, v in saved.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+    iv = merge(anonymize.run_natasha(text) + anonymize.run_regex(text) + ollama_spans)
     o, last = [], 0
     for s, e in iv:
         o.append(text[last:s]); o.append("<X>"); last = e
@@ -169,7 +202,8 @@ def main():
                                   "linkable": (same is True and diff is False)}
         print(f"[red] linkability: same-pair→same={same}, diff-pair→same={diff}, linkable={results['linkability']['linkable']}")
 
-    json.dump(results, open(os.path.join(HERE, "confide-red-results.json"), "w"), ensure_ascii=False, indent=2)
+    suffix = os.environ.get("CONFIDE_RED_SUFFIX", "")
+    json.dump(results, open(os.path.join(HERE, f"confide-red-results{suffix}.json"), "w"), ensure_ascii=False, indent=2)
     md = ["# CONFIDE-Red — re-identification of anonymized transcripts", "",
           f"Attacker `{results['model']}` via {results['engine']}. Three GDPR Art-29 attacks "
           "(inference / singling-out / linkability) against the CONFIDE-redacted output. "
@@ -192,7 +226,7 @@ def main():
            "_Prompt-strategy spread shows which framing the anonymizer is least robust to. "
            "Rising recovery + singling-out + linkability are the three ways therapy de-id "
            "fails after the names are gone._"]
-    open(os.path.join(HERE, "CONFIDE-RED-RESULTS.md"), "w").write("\n".join(md) + "\n")
+    open(os.path.join(HERE, f"CONFIDE-RED-RESULTS{suffix}.md"), "w").write("\n".join(md) + "\n")
     print("[red] wrote CONFIDE-RED-RESULTS.md + .json")
 
 
