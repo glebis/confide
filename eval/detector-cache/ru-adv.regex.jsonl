@@ -11,6 +11,6 @@
 {"doc_id": "ru-adv-10", "spans": []}
 {"doc_id": "ru-adv-11", "spans": []}
 {"doc_id": "ru-adv-12", "spans": []}
-{"doc_id": "ru-adv-13", "spans": []}
-{"doc_id": "ru-adv-14", "spans": []}
+{"doc_id": "ru-adv-13", "spans": [{"start": 27, "end": 51, "type": "EMAIL", "source": "scrubadub"}]}
+{"doc_id": "ru-adv-14", "spans": [{"start": 28, "end": 45, "type": "PHONE", "source": "phonenumbers"}]}
 {"doc_id": "ru-adv-15", "spans": []}
