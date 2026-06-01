@@ -1,11 +1,11 @@
 {
-  "model": "qwen2.5:3b",
-  "engine": "ollama",
+  "model": "gpt-5",
+  "engine": "openai",
   "clients": {
     "a": {
       "inference": {
         "direct": 2,
-        "reason": 1,
+        "reason": 2,
         "investigator": 0
       },
       "of": 5,
@@ -21,9 +21,9 @@
     },
     "b": {
       "inference": {
-        "direct": 1,
-        "reason": 1,
-        "investigator": 2
+        "direct": 3,
+        "reason": 3,
+        "investigator": 4
       },
       "of": 5,
       "singling_out": {
@@ -37,9 +37,9 @@
     },
     "c": {
       "inference": {
-        "direct": 1,
-        "reason": 0,
-        "investigator": 1
+        "direct": 4,
+        "reason": 4,
+        "investigator": 5
       },
       "of": 5,
       "singling_out": {
@@ -54,9 +54,9 @@
     },
     "d": {
       "inference": {
-        "direct": 0,
-        "reason": 3,
-        "investigator": 0
+        "direct": 4,
+        "reason": 4,
+        "investigator": 4
       },
       "of": 5,
       "singling_out": {
@@ -71,9 +71,9 @@
     },
     "e": {
       "inference": {
-        "direct": 0,
-        "reason": 0,
-        "investigator": 0
+        "direct": 4,
+        "reason": 2,
+        "investigator": 4
       },
       "of": 5,
       "singling_out": {
@@ -88,9 +88,9 @@
     },
     "f": {
       "inference": {
-        "direct": 1,
-        "reason": 1,
-        "investigator": 1
+        "direct": 4,
+        "reason": 4,
+        "investigator": 4
       },
       "of": 5,
       "singling_out": {
@@ -106,8 +106,8 @@
     }
   },
   "linkability": {
-    "same_pair_called_same": false,
+    "same_pair_called_same": true,
     "diff_pair_called_same": false,
-    "linkable": false
+    "linkable": true
   }
 }

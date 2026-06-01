@@ -1,17 +1,17 @@
 # CONFIDE-Red — re-identification of anonymized transcripts
 
-Attacker `qwen2.5:3b` via ollama. Three GDPR Art-29 attacks (inference / singling-out / linkability) against the CONFIDE-redacted output. Synthetic data; attributes fabricated.
+Attacker `gpt-5` via openai. Three GDPR Art-29 attacks (inference / singling-out / linkability) against the CONFIDE-redacted output. Synthetic data; attributes fabricated.
 
 ## 1. Inference attack (by prompt strategy — top-3 attribute recovery)
 
 | Client | direct | reason | investigator | of | singled out? |
 |---|--:|--:|--:|--:|---|
-| a | 2 | 1 | 0 | 5 | no (104.3) |
-| b | 1 | 1 | 2 | 5 | no (10428.6) |
-| c | 1 | 0 | 1 | 5 | no (104.3) |
-| d | 0 | 3 | 0 | 5 | no (104.3) |
-| e | 0 | 0 | 0 | 5 | no (104.3) |
-| f | 1 | 1 | 1 | 5 | **YES** (0.9) |
+| a | 2 | 2 | 0 | 5 | no (104.3) |
+| b | 3 | 3 | 4 | 5 | no (10428.6) |
+| c | 4 | 4 | 5 | 5 | no (104.3) |
+| d | 4 | 4 | 4 | 5 | no (104.3) |
+| e | 4 | 2 | 4 | 5 | no (104.3) |
+| f | 4 | 4 | 4 | 5 | **YES** (0.9) |
 
 ## 2. Singling-out
 
@@ -19,6 +19,6 @@ Deterministic k-anonymity over declared RU population priors (method demo): the 
 
 ## 3. Linkability
 
-Same-client pair judged same person: **False**; different-client pair judged same: **False**; → linkable: **False**.
+Same-client pair judged same person: **True**; different-client pair judged same: **False**; → linkable: **True**.
 
 _Prompt-strategy spread shows which framing the anonymizer is least robust to. Rising recovery + singling-out + linkability are the three ways therapy de-id fails after the names are gone._
