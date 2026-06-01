@@ -1,0 +1,113 @@
+{
+  "model": "qwen2.5:3b",
+  "engine": "ollama",
+  "clients": {
+    "a": {
+      "inference": {
+        "direct": 0,
+        "reason": 0,
+        "investigator": 0
+      },
+      "of": 5,
+      "singling_out": {
+        "dims": [
+          "profession",
+          "age",
+          "medication"
+        ],
+        "expected_matches": 104.3,
+        "singles_out": false
+      }
+    },
+    "b": {
+      "inference": {
+        "direct": 1,
+        "reason": 1,
+        "investigator": 2
+      },
+      "of": 5,
+      "singling_out": {
+        "dims": [
+          "age",
+          "medication"
+        ],
+        "expected_matches": 10428.6,
+        "singles_out": false
+      }
+    },
+    "c": {
+      "inference": {
+        "direct": 1,
+        "reason": 0,
+        "investigator": 1
+      },
+      "of": 5,
+      "singling_out": {
+        "dims": [
+          "profession",
+          "age",
+          "medication"
+        ],
+        "expected_matches": 104.3,
+        "singles_out": false
+      }
+    },
+    "d": {
+      "inference": {
+        "direct": 3,
+        "reason": 0,
+        "investigator": 0
+      },
+      "of": 5,
+      "singling_out": {
+        "dims": [
+          "profession",
+          "age",
+          "medication"
+        ],
+        "expected_matches": 104.3,
+        "singles_out": false
+      }
+    },
+    "e": {
+      "inference": {
+        "direct": 0,
+        "reason": 0,
+        "investigator": 0
+      },
+      "of": 5,
+      "singling_out": {
+        "dims": [
+          "profession",
+          "age",
+          "medication"
+        ],
+        "expected_matches": 104.3,
+        "singles_out": false
+      }
+    },
+    "f": {
+      "inference": {
+        "direct": 1,
+        "reason": 1,
+        "investigator": 1
+      },
+      "of": 5,
+      "singling_out": {
+        "dims": [
+          "city",
+          "profession",
+          "age",
+          "medication"
+        ],
+        "expected_matches": 0.9,
+        "singles_out": true
+      }
+    }
+  },
+  "linkability": {
+    "same_pair_called_same": false,
+    "diff_pair_called_same": false,
+    "linkable": false
+  }
+}
