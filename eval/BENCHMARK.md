@@ -19,7 +19,7 @@
 
 ## Metrics (what each column means)
 
-- **Coverage F2 / R (relaxed):** type-agnostic — *did we redact this PII span at all* (overlap ≥1 char)? **F2 weights recall 2× over precision** because a missed entity is leaked PII while a false positive is mere over-redaction (Presidio-research; i2b2/n2c2). **Headline.**
+- **MaskCov F2 / R (mask-coverage, relaxed):** type-agnostic — *did the deployed redaction mask touch this PII span at all* (overlap ≥1 char)? **F2 weights recall 2× over precision** because a missed entity is leaked PII while a false positive is mere over-redaction (Presidio-research; i2b2/n2c2). This is a *mask-coverage* view, **not** a strict 1:1 span/entity match: a gold span is credited if ANY prediction overlaps it and a predicted mask counts as a hit if it overlaps ANY gold, so one large span can score P=R=1.0. The rigorous headline is **entity-level (TAB) recall** below. (Renamed from "Coverage F2" per Codex audit R2 #3 so it is not read as standard span-F2.)
 - **Type F2 / Micro-F1 / Macro-F1:** prediction must also match the gold span's canonical type. Micro = corpus-wide; Macro = unweighted mean over types (i2b2/n2c2).
 - **Ent-R (entity-level recall, TAB):** an entity counts as *protected* only if **all** its mentions are masked — one un-redacted recurrence is a leak.
 - **Direct-R / Quasi-R:** entity recall split by identifier class (TAB).
@@ -31,19 +31,26 @@ _Citations: Pilán et al., *The Text Anonymization Benchmark*, Computational Lin
 
 **30 documents, 1059 gold PII mentions.** ★ marks the proposed default stack for this language.
 
-_Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **0.84** (CI **0.81–0.86**); entity recall 0.64 (CI 0.59–0.68) — wide, as small N demands; treat point estimates as directional._
+_Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **0.84** (CI **0.81–0.86**); entity recall 0.62 (CI 0.57–0.67) — wide, as small N demands; treat point estimates as directional._
 
 ### Ablation leaderboard
 
-| Combo | Cov F2 (rel) | Cov R | Type F2 | Macro-F1 | Ent-R (TAB) | Harm-wtd R | Direct-R | Quasi-R | Preds |
+| Combo | MaskCov F2 (rel) | MaskCov R | Type F2 | Macro-F1 | Ent-R (TAB) | Harm-wtd R | Direct-R | Quasi-R | Preds |
 |---|--:|--:|--:|--:|--:|--:|--:|--:|--:|
 | regex | **0.048** | 0.039 | 0.047 | 0.362 | 0.352 | 0.260 | 0.327 | 0.373 | 50 |
 | natasha | **0.762** | 0.788 | 0.756 | 0.199 | 0.306 | 0.355 | 0.388 | 0.237 | 1146 |
 | ollama | **0.105** | 0.093 | 0.092 | 0.252 | 0.157 | 0.091 | 0.265 | 0.068 | 360 |
 | natasha+regex | **0.792** | 0.826 | 0.786 | 0.561 | 0.657 | 0.615 | 0.714 | 0.610 | 1196 |
-| natasha+ollama | **0.744** | 0.814 | 0.730 | 0.387 | 0.444 | 0.429 | 0.653 | 0.271 | 1447 |
+| natasha+ollama | **0.744** | 0.814 | 0.733 | 0.398 | 0.444 | 0.429 | 0.653 | 0.271 | 1447 |
 | regex+ollama | **0.131** | 0.116 | 0.121 | 0.381 | 0.380 | 0.286 | 0.327 | 0.424 | 392 |
-| natasha+regex+ollama ★ | **0.761** | 0.838 | 0.749 | 0.516 | 0.667 | 0.623 | 0.714 | 0.627 | 1479 |
+| natasha+regex+ollama ★ | **0.761** | 0.838 | 0.752 | 0.527 | 0.667 | 0.623 | 0.714 | 0.627 | 1479 |
+
+### Dev / test split (★ stack, reporting only — nothing tuned on test)
+
+| Split | Docs | Gold | MaskCov R | MaskCov F2 | Ent-R (TAB) | Harm-wtd R |
+|---|--:|--:|--:|--:|--:|--:|
+| dev | 15 | 526 | 0.869 | 0.766 | 0.704 | 0.673 |
+| test | 15 | 533 | 0.807 | 0.755 | 0.630 | 0.576 |
 
 ### Per-category recall (relaxed, type-agnostic) — *which layer catches what*
 
@@ -65,7 +72,7 @@ _Bootstrap 95% CI (2000 resamples, opf+regex+ollama ★): coverage recall **0.89
 
 ### Ablation leaderboard
 
-| Combo | Cov F2 (rel) | Cov R | Type F2 | Micro-F1 | Macro-F1 | Preds |
+| Combo | MaskCov F2 (rel) | MaskCov R | Type F2 | Micro-F1 | Macro-F1 | Preds |
 |---|--:|--:|--:|--:|--:|--:|
 | regex | **0.255** | 0.217 | 0.255 | 0.345 | 0.382 | 12 |
 | opf | **0.818** | 0.783 | 0.796 | 0.854 | 0.839 | 38 |
@@ -75,9 +82,9 @@ _Bootstrap 95% CI (2000 resamples, opf+regex+ollama ★): coverage recall **0.89
 | regex+ollama | **0.674** | 0.674 | 0.632 | 0.634 | 0.705 | 58 |
 | opf+regex+ollama ★ | **0.843** | 0.891 | 0.803 | 0.743 | 0.805 | 62 |
 | natasha+regex+ollama | **0.690** | 0.696 | 0.648 | 0.643 | 0.712 | 60 |
-| presidio | **0.907** | 0.913 | 0.574 | 0.557 | 0.477 | 51 |
+| presidio | **0.907** | 0.913 | 0.596 | 0.577 | 0.480 | 51 |
 | philter | **0.799** | 0.783 | 0.108 | 0.108 | 0.102 | 47 |
-| presidio+regex+ollama | **0.880** | 0.935 | 0.660 | 0.589 | 0.642 | 66 |
+| presidio+regex+ollama | **0.880** | 0.935 | 0.800 | 0.737 | 0.767 | 66 |
 
 ### Per-category recall (relaxed, type-agnostic) — *which layer catches what*
 
@@ -103,19 +110,19 @@ _Bootstrap 95% CI (2000 resamples, opf+regex+ollama ★): coverage recall **0.89
 
 ### Ablation leaderboard
 
-| Combo | Cov F2 (rel) | Cov R | Type F2 | Micro-F1 | Macro-F1 | Preds |
+| Combo | MaskCov F2 (rel) | MaskCov R | Type F2 | Micro-F1 | Macro-F1 | Preds |
 |---|--:|--:|--:|--:|--:|--:|
 | regex | **0.121** | 0.100 | 0.106 | 0.156 | 0.176 | 10 |
 | opf | **0.603** | 0.562 | 0.603 | 0.676 | 0.732 | 52 |
 | ollama | **0.695** | 0.700 | 0.682 | 0.675 | 0.719 | 80 |
 | opf+regex | **0.646** | 0.613 | 0.633 | 0.689 | 0.745 | 58 |
 | opf+ollama | **0.851** | 0.900 | 0.851 | 0.787 | 0.847 | 100 |
-| regex+ollama | **0.706** | 0.713 | 0.681 | 0.671 | 0.716 | 81 |
-| opf+regex+ollama ★ | **0.851** | 0.900 | 0.839 | 0.776 | 0.834 | 100 |
-| natasha+regex+ollama | **0.681** | 0.713 | 0.597 | 0.559 | 0.695 | 95 |
+| regex+ollama | **0.706** | 0.713 | 0.693 | 0.683 | 0.730 | 81 |
+| opf+regex+ollama ★ | **0.851** | 0.900 | 0.851 | 0.787 | 0.847 | 100 |
+| natasha+regex+ollama | **0.681** | 0.713 | 0.669 | 0.627 | 0.728 | 95 |
 | presidio | **0.439** | 0.412 | 0.294 | 0.328 | 0.346 | 54 |
 | philter | **0.782** | 0.787 | 0.086 | 0.084 | 0.137 | 87 |
-| presidio+regex+ollama | **0.753** | 0.800 | 0.625 | 0.576 | 0.651 | 100 |
+| presidio+regex+ollama | **0.753** | 0.800 | 0.717 | 0.659 | 0.742 | 100 |
 
 ### Per-category recall (relaxed, type-agnostic) — *which layer catches what*
 
@@ -137,11 +144,11 @@ _Bootstrap 95% CI (2000 resamples, opf+regex+ollama ★): coverage recall **0.89
 
 **16 documents, 20 gold PII mentions.** ★ marks the proposed default stack for this language.
 
-_Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **0.95** (CI **0.84–1.00**); entity recall 0.95 (CI 0.90–1.00) — wide, as small N demands; treat point estimates as directional._
+_Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **0.95** (CI **0.84–1.00**); entity recall 0.95 (CI 0.84–1.00) — wide, as small N demands; treat point estimates as directional._
 
 ### Ablation leaderboard
 
-| Combo | Cov F2 (rel) | Cov R | Type F2 | Macro-F1 | Ent-R (TAB) | Harm-wtd R | Direct-R | Quasi-R | Preds |
+| Combo | MaskCov F2 (rel) | MaskCov R | Type F2 | Macro-F1 | Ent-R (TAB) | Harm-wtd R | Direct-R | Quasi-R | Preds |
 |---|--:|--:|--:|--:|--:|--:|--:|--:|--:|
 | regex | **0.455** | 0.400 | 0.455 | 0.667 | 0.400 | 0.200 | 0.471 | 0.000 | 8 |
 | natasha | **0.389** | 0.350 | 0.389 | 0.189 | 0.350 | 0.500 | 0.353 | 0.333 | 10 |
@@ -166,7 +173,7 @@ To anchor CONFIDE's metrics against a known, off-the-shelf system, two establish
 - **Microsoft Presidio** (`presidio-analyzer`, spaCy `en_core_web_sm` — the *small* model, chosen under a ~1.8 GiB disk constraint; `en_core_web_lg` would raise PERSON/LOCATION recall somewhat). Run on **en** and **en-real** only. Presidio's RU support is spaCy-NER-dependent and weak, so it is **not** reported on the RU datasets to avoid misrepresenting it — a documented scope limit, not a measured RU score.
 - **Philter** (`philter-lite`, UCSF clinical de-id, `philter_delta.toml` HIPAA Safe-Harbor rule set; needs NLTK `averaged_perceptron_tagger_eng`). English clinical-notes tool; run on **en** and **en-real**.
 
-**Headline finding.** Neither off-the-shelf system beats the therapy-tuned CONFIDE stack on type-aware F1. On the easy curated EN set Presidio's coverage F2 (0.907) marginally exceeds the stack (0.843) thanks to a broad `DATE_TIME` recognizer, but its type-aware F1 is much lower (0.557 vs 0.743). On the harder **real** ai4privacy slice Presidio collapses to 0.412 coverage recall (0.439 F2 vs 0.851) — generic NER + structured recognizers don't cover the bespoke ID/markup formats. Philter is high-recall but emits nearly everything as untyped `OTHER`, unusable for type-aware redaction. **This is the expected, valid baseline result: a generic system is not a therapy-tuned one.**
+**Headline finding.** Neither off-the-shelf system beats the therapy-tuned CONFIDE stack on type-aware F1. On the easy curated EN set Presidio's coverage F2 (0.907) marginally exceeds the stack (0.843) thanks to a broad `DATE_TIME` recognizer, but its type-aware F1 is much lower (0.577 vs 0.743). On the harder **real** ai4privacy slice Presidio collapses to 0.412 coverage recall (0.439 F2 vs 0.851) — generic NER + structured recognizers don't cover the bespoke ID/markup formats. Philter is high-recall but emits nearly everything as untyped `OTHER`, unusable for type-aware redaction. **This is the expected, valid baseline result: a generic system is not a therapy-tuned one.**
 
 ### Unique capabilities (what the baselines catch that the stack does not)
 
@@ -189,7 +196,7 @@ Under the default RU stack (`natasha+regex+ollama`), direct identifiers are well
 | a | **27%** | MEDICATION, PROFESSION |
 | b | **33%** | AGE, DATE, LOCATION, MEDICATION, PROFESSION |
 
-A local qwen **inference attack** on the *redacted* text still reconstructs identity-narrowing attributes from context; a frontier model would recover more (SOTA tools prevent re-identification only ~27–29% of the time, Staab et al.). Over-redaction (utility cost) under the default stack: **20%** of redacted spans were not PII. Full detail: `reconstruction-RESULTS.md`.
+A local qwen **inference attack** on the *redacted* text still reconstructs identity-narrowing attributes from context; a frontier model would recover more (SOTA tools prevent re-identification only ~27–29% of the time, Staab et al.). Over-redaction (utility cost) under the default stack: **20%** of redacted *spans* were not PII — but those false-positive spans are short, so only **0.47%** of non-PII *characters* are over-masked (99.5% char-level non-PII preservation; the two views are complementary, span-rate vs char-rate). Full detail: `reconstruction-RESULTS.md`.
 
 ## OPF on Russian — optional, not a default
 
@@ -211,7 +218,7 @@ The OPF RU cache is not scored for the current gold because its detector cache d
 | a | MEDICATION, PROFESSION | 3504.0 | no (k>1) |
 | b | AGE, DATE, LOCATION, MEDICATION, PROFESSION | 8342.86 | no (k>1) |
 
-**Downstream utility (Tau-Eval style):** the de-identified transcript still supports its clinical purpose — re-running cognitive-distortion extraction on redacted vs. original text preserves ~91% of distortion types, and **100.0%** of non-PII characters survive redaction. Privacy and utility are in tension; the default stack is tuned for recall.
+**Downstream utility (Tau-Eval style):** the de-identified transcript still supports its clinical purpose — re-running cognitive-distortion extraction on redacted vs. original text preserves ~91% of distortion types, and **99.5%** of non-PII characters survive redaction. Privacy and utility are in tension; the default stack is tuned for recall.
 
 ## Gold validation — LLM-assisted consistency check (single second-annotator)
 

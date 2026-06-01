@@ -7,6 +7,12 @@ nonparametric bootstrap) and recomputes coverage recall + TAB entity recall for
 the default ★ combo, reporting mean and a 2.5–97.5 percentile interval. Honesty,
 not theater: it shows how wide the uncertainty actually is.
 
+Entity-level CI weighting (Codex audit R2 #6): entities are grouped by entity_id,
+but the bootstrap resamples DOCS. So a doc drawn k times must contribute its
+entities k times, not collapse to one. `entity_recall_weighted` namespaces each
+sampled doc instance (draw#-prefixed entity_ids) so entity weight tracks the
+doc-level resample. Without this the entity CI was mis-estimated.
+
 Usage: python bootstrap_ci.py --dataset ru --iters 2000
 """
 import argparse
@@ -37,6 +43,44 @@ def entity_recall(gold_rows, preds):
     return prot / total if total else 0.0
 
 
+def entity_recall_weighted(sampled_rows, preds):
+    """Entity-level recall on a DOC-level bootstrap resample, with correct entity
+    weighting (Codex audit R2 #6).
+
+    The bug: `score_entity_level` groups mentions by global `entity_id`. On a
+    bootstrap that resamples DOCS with replacement, an entity is normally tied to
+    a single doc, but the grouping collapses every draw of that doc into one
+    entity — so a doc drawn 3× contributes its entities only ONCE, and the
+    entity-level CI is mis-weighted relative to the doc-level resample.
+
+    Fix: namespace each sampled doc instance so its entities are counted each time
+    the doc is drawn. We give every (draw#, doc) a fresh copy whose entity_ids are
+    suffixed with the draw index, so a doc appearing k times contributes k
+    independent entity groups. An entity's mentions stay grouped WITHIN one draw
+    (so the all-mentions-masked TAB rule still holds per occurrence), but its
+    weight now scales with how often its doc was sampled — matching the doc-level
+    resample the bootstrap actually performs."""
+    expanded = []
+    for i, g in enumerate(sampled_rows):
+        gg = dict(g)
+        spans = []
+        for s in g["spans"]:
+            s2 = dict(s)
+            eid = s2.get("entity_id")
+            if eid is not None:
+                s2["entity_id"] = f"{i}:{eid}"  # unique per draw occurrence
+            spans.append(s2)
+        gg["spans"] = spans
+        gg["doc_id"] = f"{i}:{g['doc_id']}"  # so preds lookup still resolves below
+        expanded.append(gg)
+    # preds is keyed by ORIGINAL doc_id; remap so each draw instance finds its preds
+    pred_map = {}
+    for i, g in enumerate(sampled_rows):
+        pred_map[f"{i}:{g['doc_id']}"] = preds.get(g["doc_id"], [])
+    prot, total, _, _, _ = sb.score_entity_level(expanded, pred_map, relaxed=True)
+    return prot / total if total else 0.0
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", default="ru", choices=list(sb.GOLD))
@@ -60,7 +104,7 @@ def main():
         sample = [gold[rng.randrange(n)] for _ in range(n)]
         cov.append(coverage_recall(sample, preds))
         if has_ent:
-            ent.append(entity_recall(sample, preds))
+            ent.append(entity_recall_weighted(sample, preds))
 
     def ci(xs):
         xs = sorted(xs)

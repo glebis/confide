@@ -180,19 +180,33 @@ def merge_intervals(spans):
     canonical type is that of its longest contributor (ties -> earliest), so the
     type-aware view scores the label that would survive redaction. Without this,
     overlapping detections from different layers double-count as false positives
-    and distort precision / F2 / over-redaction (per the Codex design audit)."""
+    and distort precision / F2 / over-redaction (per the Codex design audit).
+
+    Type-after-merge label bug fix (Codex audit R2 #5): the single `canon` a
+    merged interval inherits (its longest contributor's) can mask a SHORT but
+    type-CORRECT contributor sitting under a LONG type-WRONG one. So each merged
+    interval also carries `canons` — the set of EVERY contributor's canonical
+    type. Type-aware recall (score_span_coverage) credits a gold span as
+    type-correctly-covered if ANY contributor's canon matches, not only the one
+    assigned label. Mask-coverage (type-agnostic) is unchanged."""
     if not spans:
         return []
     ss = sorted(spans, key=lambda s: (s["start"], -(s["end"] - s["start"])))
-    merged = [dict(ss[0])]
+    first = dict(ss[0])
+    first["canons"] = {first.get("canon", canon(first["type"]))}
+    merged = [first]
     for s in ss[1:]:
         prev = merged[-1]
+        sc = s.get("canon", canon(s["type"]))
         if s["start"] < prev["end"]:  # overlap -> extend, keep longest contributor's type
             if (s["end"] - s["start"]) > (prev["end"] - prev["start"]):
-                prev["type"], prev["canon"] = s["type"], s.get("canon", canon(s["type"]))
+                prev["type"], prev["canon"] = s["type"], sc
             prev["end"] = max(prev["end"], s["end"])
+            prev["canons"].add(sc)
         else:
-            merged.append(dict(s))
+            cur = dict(s)
+            cur["canons"] = {sc}
+            merged.append(cur)
     return merged
 
 
@@ -241,17 +255,27 @@ def score_span_coverage(gold_rows, preds, match, type_aware, prec_match=None):
     def slot(t):
         return per.setdefault(t, {"c": 0, "fn": 0, "pred_hit": 0, "fp": 0})
 
+    def pred_canons(p):
+        # every contributor's canonical type to a (possibly merged) predicted span;
+        # falls back to the single assigned canon for un-merged / legacy spans.
+        return p.get("canons") or {p.get("canon", canon(p["type"]))}
+
     for g in gold_rows:
         gold = g["spans"]
         pr = preds.get(g["doc_id"], [])
-        # recall: each gold independently
+        # recall: each gold independently. Type-aware credits a gold span if ANY
+        # contributor to an overlapping predicted mask had the matching canon
+        # (merge-label-bug fix #5), not only the merged span's single label.
         for gg in gold:
-            hit = any((not type_aware or gg["canon"] == p["canon"]) and match(p, gg) for p in pr)
+            hit = any((not type_aware or gg["canon"] in pred_canons(p)) and match(p, gg) for p in pr)
             slot(gg["canon"])["c" if hit else "fn"] += 1
-        # precision: each predicted span independently (uses prec_match = overlap)
+        # precision: each predicted span independently (uses prec_match = overlap).
+        # A merged mask is a type-aware hit if any contributor canon matches an
+        # overlapped gold; it is slotted under its assigned (longest) canon.
         for p in pr:
             pc = p.get("canon", canon(p["type"]))
-            hit = any((not type_aware or pc == gg["canon"]) and prec_match(p, gg) for gg in gold)
+            pcs = pred_canons(p)
+            hit = any((not type_aware or gg["canon"] in pcs) and prec_match(p, gg) for gg in gold)
             slot(pc)["pred_hit" if hit else "fp"] += 1
 
     tot = {"c": 0, "fn": 0, "pred_hit": 0, "fp": 0}
@@ -322,6 +346,32 @@ def _prf2(c, fn, pred_hit, fp):
     return p, r, f1, f2
 
 
+def split_headline(gold_rows, preds, has_entity):
+    """Per-split (dev/test) headline metrics for the ★ stack (Codex audit R2 #2).
+    REPORTING.md §4 promises dev/test reported separately; the main tables
+    aggregate all docs, so we additionally emit split-level headlines. Nothing is
+    tuned on test — this is reporting only. Splits come from the gold `split`
+    field (RU: clients a/c/e=dev, b/d/f=test). Returns {split: {...}} or {} if the
+    gold carries no split field."""
+    splits = {}
+    for g in gold_rows:
+        sp = g.get("split")
+        if sp:
+            splits.setdefault(sp, []).append(g)
+    out = {}
+    for sp, rows in sorted(splits.items()):
+        cov_r = metrics_block(*score_span_coverage(rows, preds, overlaps, False))["overall"]
+        block = {"n_docs": len(rows),
+                 "n_gold_mentions": sum(len(r["spans"]) for r in rows),
+                 "mask_coverage_recall": cov_r["r"], "mask_coverage_f2": cov_r["f2"]}
+        if has_entity:
+            prot, total, _, _, harm = score_entity_level(rows, preds, relaxed=True)
+            block["entity_recall"] = round(prot / total, 3) if total else 0.0
+            block["harm_weighted_recall"] = harm
+        out[sp] = block
+    return out
+
+
 def metrics_block(per, tot):
     out = {"per_type": {}, "overall": {}}
     for t in sorted(per):
@@ -330,6 +380,12 @@ def metrics_block(per, tot):
         out["per_type"][t] = {"support": d["c"] + d["fn"], "c": d["c"], "fp": d["fp"], "fn": d["fn"],
                               "p": round(p, 3), "r": round(r, 3), "f1": round(f1, 3), "f2": round(f2, 3)}
     p, r, f1, f2 = _prf2(tot["c"], tot["fn"], tot["pred_hit"], tot["fp"])
+    # Macro aggregation EXCLUDES zero-support types (no gold mentions): support =
+    # c + fn = gold count for that canon. A type with support==0 only appears
+    # because a detector predicted it as a false positive (all fp, c=fn=0); its
+    # recall is undefined (0/0->0) and averaging it in would unfairly drag macro-R
+    # toward 0. So macro is over types the gold actually contains (i2b2/n2c2
+    # convention). Codex audit R2 #4 — verified the filter is present.
     types = [t for t in out["per_type"] if out["per_type"][t]["support"] > 0]
     macro_f1 = sum(out["per_type"][t]["f1"] for t in types) / len(types) if types else 0.0
     macro_r = sum(out["per_type"][t]["r"] for t in types) / len(types) if types else 0.0
@@ -389,6 +445,11 @@ def main():
                                 "recall": round(v[0] / v[1], 3) if v[1] else 0.0}
                             for k, v in by_type.items()},
             }
+        # per-split (dev/test) headline for the ★ stack — reporting only, no tuning
+        if "★" in name:
+            bs = split_headline(gold, preds, has_entity)
+            if bs:
+                entry["by_split"] = bs
         results["combos"][name] = entry
 
     out_json = os.path.join(HERE, f"{args.out_prefix}bench-results.json")
@@ -414,7 +475,12 @@ def main():
         pass
     # console summary
     print(f"\n=== {args.dataset}: {results['n_docs']} docs, {results['n_gold_mentions']} gold mentions ===")
-    hdr = f"{'combo':28} {'covF2(rel)':>10} {'covR':>6} {'typeF2':>7} {'macroF1':>8}"
+    # "mask-coverage" (not span/entity F2): a gold span is credited if ANY
+    # prediction overlaps it and a predicted mask is a hit if it overlaps ANY gold,
+    # so one large span can score P=R=1.0. It is the type-agnostic "did the
+    # redaction touch the PII" view — NOT a strict 1:1 span match. Entity-level
+    # (TAB) recall below is the rigorous headline. (Codex audit R2 #3.)
+    hdr = f"{'combo':28} {'maskCovF2':>10} {'maskCovR':>8} {'typeF2':>7} {'macroF1':>8}"
     if has_entity:
         hdr += f" {'entR':>6} {'directR':>8} {'quasiR':>7}"
     print(hdr)
