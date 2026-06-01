@@ -2,7 +2,7 @@
   "dataset": "ru-adv",
   "detector": "regex",
   "n_docs": 16,
-  "n_spans": 6,
+  "n_spans": 8,
   "invalid_spans": 0,
   "doc_ids": [
     "ru-adv-00",
@@ -25,5 +25,5 @@
   "docs_sha": "e7b976881525",
   "code_sha": "26016c2392ed",
   "model": null,
-  "seconds": 0.0
+  "seconds": 2.9
 }

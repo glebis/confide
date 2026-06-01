@@ -242,10 +242,28 @@ def score_span_coverage(gold_rows, preds, match, type_aware, prec_match=None):
     return per, tot
 
 
+# Harm weights for therapy de-id (see HARM-TAXONOMY.md). Harm != linkability:
+# an email is a strong linker but low *content*-harm and rare in therapy speech;
+# medication implies a diagnosis (high stigma). Qualitative levels -> coarse weights
+# for an OPTIONAL harm-weighted recall reported alongside plain recall.
+HARM_LEVEL = {  # canonical type -> level
+    "MEDICATION": "high", "PERSON": "high",
+    "LOCATION": "medium", "PROFESSION": "medium", "ORG": "medium",
+    "AGE": "medium", "DATE": "medium",
+    "EMAIL": "low", "PHONE": "low", "URL": "low", "HANDLE": "low",
+    "ID": "low", "SNILS": "low", "INN": "low", "PASSPORT": "low",
+}
+HARM_WEIGHT = {"critical": 4, "high": 3, "medium": 2, "low": 1}
+
+
+def _harm_w(canon):
+    return HARM_WEIGHT.get(HARM_LEVEL.get(canon, "medium"), 2)
+
+
 def score_entity_level(gold_rows, preds, relaxed=True):
     """TAB-style: an entity (entity_id) is protected only if ALL its mentions
-    are covered by >=1 prediction. Returns (protected, total, by_class, by_type).
-    Requires gold spans to carry entity_id + identifier_class (RU dataset)."""
+    are covered by >=1 prediction. Returns (protected, total, by_class, by_type,
+    harm_weighted_recall). Requires gold spans to carry entity_id + identifier_class."""
     match = overlaps if relaxed else exact
     ents = {}  # entity_id -> {"mentions":[g...], "class":, "type":}
     for g in gold_rows:
@@ -269,7 +287,11 @@ def score_entity_level(gold_rows, preds, relaxed=True):
         bc[0] += int(e["covered"]); bc[1] += 1
         bt = by_type.setdefault(e["type"], [0, 0])
         bt[0] += int(e["covered"]); bt[1] += 1
-    return protected, total, by_class, by_type
+    # harm-weighted recall: each entity weighted by its type's clinical severity
+    wnum = sum(_harm_w(e["type"]) * int(e["covered"]) for e in ents.values())
+    wden = sum(_harm_w(e["type"]) for e in ents.values())
+    harm_recall = round(wnum / wden, 3) if wden else 0.0
+    return protected, total, by_class, by_type, harm_recall
 
 
 def _prf2(c, fn, pred_hit, fp):
@@ -336,10 +358,11 @@ def main():
         }
         # 3-4. entity-level (TAB) — only where gold has entity_id (RU)
         if has_entity:
-            prot, total, by_class, by_type = score_entity_level(gold, preds, relaxed=True)
+            prot, total, by_class, by_type, harm_recall = score_entity_level(gold, preds, relaxed=True)
             entry["entity_level"] = {
                 "protected": prot, "total": total,
                 "entity_recall": round(prot / total, 3) if total else 0.0,
+                "harm_weighted_recall": harm_recall,
                 "by_class": {k: {"protected": v[0], "total": v[1],
                                  "recall": round(v[0] / v[1], 3) if v[1] else 0.0}
                              for k, v in by_class.items()},
@@ -363,6 +386,7 @@ def main():
             headline["default_coverage_f2"] = star["coverage_relaxed"]["f2"]
             if "entity_level" in star:
                 headline["default_entity_recall"] = star["entity_level"]["entity_recall"]
+                headline["default_harm_weighted_recall"] = star["entity_level"].get("harm_weighted_recall")
         run_registry.log_run("score_bench", args.dataset, headline,
                              extra={"combos": {n: e.get("coverage_relaxed")
                                                for n, e in results["combos"].items()

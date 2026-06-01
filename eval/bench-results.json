@@ -174,6 +174,7 @@
         "protected": 38,
         "total": 107,
         "entity_recall": 0.355,
+        "harm_weighted_recall": 0.262,
         "by_class": {
           "direct": {
             "protected": 16,
@@ -411,6 +412,7 @@
         "protected": 33,
         "total": 107,
         "entity_recall": 0.308,
+        "harm_weighted_recall": 0.362,
         "by_class": {
           "direct": {
             "protected": 20,
@@ -668,6 +670,7 @@
         "protected": 26,
         "total": 107,
         "entity_recall": 0.243,
+        "harm_weighted_recall": 0.162,
         "by_class": {
           "direct": {
             "protected": 15,
@@ -906,6 +909,7 @@
         "protected": 71,
         "total": 107,
         "entity_recall": 0.664,
+        "harm_weighted_recall": 0.624,
         "by_class": {
           "direct": {
             "protected": 36,
@@ -1164,6 +1168,7 @@
         "protected": 53,
         "total": 107,
         "entity_recall": 0.495,
+        "harm_weighted_recall": 0.472,
         "by_class": {
           "direct": {
             "protected": 35,
@@ -1422,6 +1427,7 @@
         "protected": 48,
         "total": 107,
         "entity_recall": 0.449,
+        "harm_weighted_recall": 0.349,
         "by_class": {
           "direct": {
             "protected": 16,
@@ -1681,6 +1687,7 @@
         "protected": 75,
         "total": 107,
         "entity_recall": 0.701,
+        "harm_weighted_recall": 0.659,
         "by_class": {
           "direct": {
             "protected": 36,
@@ -1941,6 +1948,7 @@
         "protected": 78,
         "total": 107,
         "entity_recall": 0.729,
+        "harm_weighted_recall": 0.69,
         "by_class": {
           "direct": {
             "protected": 39,

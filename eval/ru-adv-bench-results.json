@@ -7,77 +7,77 @@
       "members": [
         "regex"
       ],
-      "n_pred": 6,
+      "n_pred": 8,
       "coverage_strict": {
         "support": 20,
-        "c": 6,
+        "c": 8,
         "fp": 0,
-        "fn": 14,
+        "fn": 12,
         "p": 1.0,
-        "r": 0.3,
-        "f1": 0.462,
-        "f2": 0.349,
-        "macro_f1": 0.333,
-        "macro_r": 0.333
+        "r": 0.4,
+        "f1": 0.571,
+        "f2": 0.455,
+        "macro_f1": 0.667,
+        "macro_r": 0.667
       },
       "coverage_relaxed": {
         "support": 20,
-        "c": 6,
+        "c": 8,
         "fp": 0,
-        "fn": 14,
+        "fn": 12,
         "p": 1.0,
-        "r": 0.3,
-        "f1": 0.462,
-        "f2": 0.349,
-        "macro_f1": 0.333,
-        "macro_r": 0.333
+        "r": 0.4,
+        "f1": 0.571,
+        "f2": 0.455,
+        "macro_f1": 0.667,
+        "macro_r": 0.667
       },
       "coverage_containment": {
         "support": 20,
-        "c": 6,
+        "c": 8,
         "fp": 0,
-        "fn": 14,
+        "fn": 12,
         "p": 1.0,
-        "r": 0.3,
-        "f1": 0.462,
-        "f2": 0.349,
-        "macro_f1": 0.333,
-        "macro_r": 0.333
+        "r": 0.4,
+        "f1": 0.571,
+        "f2": 0.455,
+        "macro_f1": 0.667,
+        "macro_r": 0.667
       },
       "type_strict": {
         "support": 20,
-        "c": 6,
+        "c": 8,
         "fp": 0,
-        "fn": 14,
+        "fn": 12,
         "p": 1.0,
-        "r": 0.3,
-        "f1": 0.462,
-        "f2": 0.349,
-        "macro_f1": 0.333,
-        "macro_r": 0.333
+        "r": 0.4,
+        "f1": 0.571,
+        "f2": 0.455,
+        "macro_f1": 0.667,
+        "macro_r": 0.667
       },
       "type_relaxed": {
         "support": 20,
-        "c": 6,
+        "c": 8,
         "fp": 0,
-        "fn": 14,
+        "fn": 12,
         "p": 1.0,
-        "r": 0.3,
-        "f1": 0.462,
-        "f2": 0.349,
-        "macro_f1": 0.333,
-        "macro_r": 0.333
+        "r": 0.4,
+        "f1": 0.571,
+        "f2": 0.455,
+        "macro_f1": 0.667,
+        "macro_r": 0.667
       },
       "coverage_relaxed_per_type": {
         "EMAIL": {
           "support": 1,
-          "c": 0,
+          "c": 1,
           "fp": 0,
-          "fn": 1,
-          "p": 0.0,
-          "r": 0.0,
-          "f1": 0.0,
-          "f2": 0.0
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
         },
         "ID": {
           "support": 3,
@@ -111,13 +111,13 @@
         },
         "PHONE": {
           "support": 1,
-          "c": 0,
+          "c": 1,
           "fp": 0,
-          "fn": 1,
-          "p": 0.0,
-          "r": 0.0,
-          "f1": 0.0,
-          "f2": 0.0
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
         },
         "URL": {
           "support": 3,
@@ -131,14 +131,14 @@
         }
       },
       "entity_level": {
-        "protected": 6,
+        "protected": 8,
         "total": 20,
-        "entity_recall": 0.3,
+        "entity_recall": 0.4,
         "by_class": {
           "direct": {
-            "protected": 6,
+            "protected": 8,
             "total": 17,
-            "recall": 0.353
+            "recall": 0.471
           },
           "quasi": {
             "protected": 0,
@@ -168,14 +168,14 @@
             "recall": 0.0
           },
           "EMAIL": {
-            "protected": 0,
+            "protected": 1,
             "total": 1,
-            "recall": 0.0
+            "recall": 1.0
           },
           "PHONE": {
-            "protected": 0,
+            "protected": 1,
             "total": 1,
-            "recall": 0.0
+            "recall": 1.0
           }
         }
       }
@@ -579,77 +579,77 @@
         "natasha",
         "regex"
       ],
-      "n_pred": 16,
+      "n_pred": 18,
       "coverage_strict": {
         "support": 20,
-        "c": 13,
+        "c": 15,
         "fp": 3,
-        "fn": 7,
-        "p": 0.812,
-        "r": 0.65,
-        "f1": 0.722,
-        "f2": 0.677,
-        "macro_f1": 0.522,
-        "macro_r": 0.5
+        "fn": 5,
+        "p": 0.833,
+        "r": 0.75,
+        "f1": 0.789,
+        "f2": 0.765,
+        "macro_f1": 0.856,
+        "macro_r": 0.833
       },
       "coverage_relaxed": {
         "support": 20,
-        "c": 13,
+        "c": 15,
         "fp": 3,
-        "fn": 7,
-        "p": 0.812,
-        "r": 0.65,
-        "f1": 0.722,
-        "f2": 0.677,
-        "macro_f1": 0.522,
-        "macro_r": 0.5
+        "fn": 5,
+        "p": 0.833,
+        "r": 0.75,
+        "f1": 0.789,
+        "f2": 0.765,
+        "macro_f1": 0.856,
+        "macro_r": 0.833
       },
       "coverage_containment": {
         "support": 20,
-        "c": 13,
+        "c": 15,
         "fp": 3,
-        "fn": 7,
-        "p": 0.812,
-        "r": 0.65,
-        "f1": 0.722,
-        "f2": 0.677,
-        "macro_f1": 0.522,
-        "macro_r": 0.5
+        "fn": 5,
+        "p": 0.833,
+        "r": 0.75,
+        "f1": 0.789,
+        "f2": 0.765,
+        "macro_f1": 0.856,
+        "macro_r": 0.833
       },
       "type_strict": {
         "support": 20,
-        "c": 13,
+        "c": 15,
         "fp": 3,
-        "fn": 7,
-        "p": 0.812,
-        "r": 0.65,
-        "f1": 0.722,
-        "f2": 0.677,
-        "macro_f1": 0.522,
-        "macro_r": 0.5
+        "fn": 5,
+        "p": 0.833,
+        "r": 0.75,
+        "f1": 0.789,
+        "f2": 0.765,
+        "macro_f1": 0.856,
+        "macro_r": 0.833
       },
       "type_relaxed": {
         "support": 20,
-        "c": 13,
+        "c": 15,
         "fp": 3,
-        "fn": 7,
-        "p": 0.812,
-        "r": 0.65,
-        "f1": 0.722,
-        "f2": 0.677,
-        "macro_f1": 0.522,
-        "macro_r": 0.5
+        "fn": 5,
+        "p": 0.833,
+        "r": 0.75,
+        "f1": 0.789,
+        "f2": 0.765,
+        "macro_f1": 0.856,
+        "macro_r": 0.833
       },
       "coverage_relaxed_per_type": {
         "EMAIL": {
           "support": 1,
-          "c": 0,
+          "c": 1,
           "fp": 0,
-          "fn": 1,
-          "p": 0.0,
-          "r": 0.0,
-          "f1": 0.0,
-          "f2": 0.0
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
         },
         "ID": {
           "support": 3,
@@ -693,13 +693,13 @@
         },
         "PHONE": {
           "support": 1,
-          "c": 0,
+          "c": 1,
           "fp": 0,
-          "fn": 1,
-          "p": 0.0,
-          "r": 0.0,
-          "f1": 0.0,
-          "f2": 0.0
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
         },
         "URL": {
           "support": 3,
@@ -713,14 +713,14 @@
         }
       },
       "entity_level": {
-        "protected": 13,
+        "protected": 15,
         "total": 20,
-        "entity_recall": 0.65,
+        "entity_recall": 0.75,
         "by_class": {
           "direct": {
-            "protected": 12,
+            "protected": 14,
             "total": 17,
-            "recall": 0.706
+            "recall": 0.824
           },
           "quasi": {
             "protected": 1,
@@ -750,14 +750,14 @@
             "recall": 0.25
           },
           "EMAIL": {
-            "protected": 0,
+            "protected": 1,
             "total": 1,
-            "recall": 0.0
+            "recall": 1.0
           },
           "PHONE": {
-            "protected": 0,
+            "protected": 1,
             "total": 1,
-            "recall": 0.0
+            "recall": 1.0
           }
         }
       }
@@ -768,77 +768,77 @@
         "regex",
         "ollama"
       ],
-      "n_pred": 29,
+      "n_pred": 30,
       "coverage_strict": {
         "support": 20,
-        "c": 17,
+        "c": 18,
         "fp": 12,
-        "fn": 3,
-        "p": 0.586,
-        "r": 0.85,
-        "f1": 0.694,
-        "f2": 0.78,
-        "macro_f1": 0.665,
-        "macro_r": 0.771
+        "fn": 2,
+        "p": 0.6,
+        "r": 0.9,
+        "f1": 0.72,
+        "f2": 0.818,
+        "macro_f1": 0.832,
+        "macro_r": 0.938
       },
       "coverage_relaxed": {
         "support": 20,
-        "c": 18,
+        "c": 19,
         "fp": 9,
-        "fn": 2,
-        "p": 0.69,
-        "r": 0.9,
-        "f1": 0.781,
-        "f2": 0.848,
-        "macro_f1": 0.721,
-        "macro_r": 0.812
+        "fn": 1,
+        "p": 0.7,
+        "r": 0.95,
+        "f1": 0.806,
+        "f2": 0.887,
+        "macro_f1": 0.888,
+        "macro_r": 0.979
       },
       "coverage_containment": {
         "support": 20,
-        "c": 17,
-        "fp": 9,
-        "fn": 3,
-        "p": 0.69,
-        "r": 0.85,
-        "f1": 0.761,
-        "f2": 0.812,
-        "macro_f1": 0.706,
-        "macro_r": 0.771
-      },
-      "type_strict": {
-        "support": 20,
-        "c": 17,
-        "fp": 12,
-        "fn": 3,
-        "p": 0.586,
-        "r": 0.85,
-        "f1": 0.694,
-        "f2": 0.78,
-        "macro_f1": 0.665,
-        "macro_r": 0.771
-      },
-      "type_relaxed": {
-        "support": 20,
         "c": 18,
         "fp": 9,
         "fn": 2,
-        "p": 0.69,
+        "p": 0.7,
         "r": 0.9,
-        "f1": 0.781,
-        "f2": 0.848,
-        "macro_f1": 0.721,
-        "macro_r": 0.812
+        "f1": 0.787,
+        "f2": 0.851,
+        "macro_f1": 0.872,
+        "macro_r": 0.938
+      },
+      "type_strict": {
+        "support": 20,
+        "c": 18,
+        "fp": 12,
+        "fn": 2,
+        "p": 0.6,
+        "r": 0.9,
+        "f1": 0.72,
+        "f2": 0.818,
+        "macro_f1": 0.832,
+        "macro_r": 0.938
+      },
+      "type_relaxed": {
+        "support": 20,
+        "c": 19,
+        "fp": 9,
+        "fn": 1,
+        "p": 0.7,
+        "r": 0.95,
+        "f1": 0.806,
+        "f2": 0.887,
+        "macro_f1": 0.888,
+        "macro_r": 0.979
       },
       "coverage_relaxed_per_type": {
         "EMAIL": {
           "support": 1,
-          "c": 0,
+          "c": 1,
           "fp": 0,
-          "fn": 1,
-          "p": 0.0,
-          "r": 0.0,
-          "f1": 0.0,
-          "f2": 0.0
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
         },
         "ID": {
           "support": 3,
@@ -902,14 +902,14 @@
         }
       },
       "entity_level": {
-        "protected": 18,
+        "protected": 19,
         "total": 20,
-        "entity_recall": 0.9,
+        "entity_recall": 0.95,
         "by_class": {
           "direct": {
-            "protected": 15,
+            "protected": 16,
             "total": 17,
-            "recall": 0.882
+            "recall": 0.941
           },
           "quasi": {
             "protected": 3,
@@ -939,9 +939,9 @@
             "recall": 1.0
           },
           "EMAIL": {
-            "protected": 0,
+            "protected": 1,
             "total": 1,
-            "recall": 0.0
+            "recall": 1.0
           },
           "PHONE": {
             "protected": 1,

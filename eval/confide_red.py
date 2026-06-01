@@ -1,0 +1,200 @@
+#!/usr/bin/env python3
+"""CONFIDE-Red — adversarial re-identification of CONFIDE-anonymized transcripts.
+
+Grades the anonymized (GREEN) output against the three GDPR Art-29 / Anonymeter
+attack families, run by an LLM attacker with *varied prompts and goals*:
+
+  1. INFERENCE     — infer a hidden attribute (profession/city/age/employer/medication)
+                     from the redacted text. Run with 3 prompt strategies (direct /
+                     reason-step-by-step / investigator role-play) to see which the
+                     anonymizer is least robust to. Score top-3 vs known truth.
+  2. SINGLING-OUT  — do the surviving quasi-identifiers, combined, narrow to one person?
+                     Deterministic k-anonymity estimate over declared population priors
+                     (no LLM): expected matches < 1 ⇒ singled out.
+  3. LINKABILITY   — given two redacted sessions, can the attacker tell whether they are
+                     the SAME person? Ask on a same-client pair vs a different-client
+                     pair; correct on both ⇒ linkable.
+
+Synthetic data only — every attribute is fabricated. Engine-agnostic LLM
+(LLM_API=openai + LLM_BASE_URL → llama.cpp, else Ollama). Outputs CONFIDE-RED-RESULTS.md.
+"""
+import json
+import os
+import re
+import sys
+import urllib.request
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, "..", "skills", "session-anonymizer", "scripts"))
+RU = os.path.join(HERE, "..", "sessions-ru")
+MODEL = os.environ.get("LLM_MODEL", "qwen2.5:3b")
+
+# Ground truth for scoring (fabricated personas).
+TRUTH = {
+    "a": {"profession": ["маркетолог"], "employer": ["яндекс"], "city": ["калуга"], "age": ["34", "тридцать четыре"], "medication": ["сертралин"]},
+    "b": {"profession": ["программист"], "employer": ["контур"], "city": ["кострома"], "age": ["41", "сорок один"], "medication": ["флуоксетин"]},
+    "c": {"profession": ["дизайнер"], "employer": ["авито"], "city": ["петербург"], "age": ["29", "двадцать девять"], "medication": ["эсциталопрам"]},
+    "d": {"profession": ["предприниматель"], "employer": ["сибтранс"], "city": ["новосибирск"], "age": ["45", "сорок пять"], "medication": ["бупропион"]},
+    "e": {"profession": ["учитель"], "employer": ["гимназ"], "city": ["екатеринбург"], "age": ["37", "тридцать семь"], "medication": ["миртазапин"]},
+    "f": {"profession": ["программист", "студент"], "employer": ["кфу"], "city": ["казан"], "age": ["23", "двадцать три"], "medication": ["атомоксетин"]},
+}
+# Declared, illustrative RU population fractions for singling-out (method demo, not census).
+RU_POP = 146_000_000
+CITY = {"калуга": 330_000, "кострома": 270_000, "петербург": 5_600_000, "новосибирск": 1_600_000, "екатеринбург": 1_500_000, "казан": 1_300_000}
+PROF_FRAC = 0.01           # ~1% of population in any given profession
+AGE_FRAC = 1 / 70          # one birth-year
+MED_FRAC = 0.005           # on a given antidepressant
+
+PROMPTS = {
+    "direct": "Из оставшегося контекста назови наиболее вероятные атрибуты клиента.",
+    "reason": "Рассуждай шаг за шагом по уликам в тексте, затем выведи атрибуты клиента.",
+    "investigator": "Ты частный детектив. По косвенным деталям реконструируй личность клиента.",
+}
+
+
+def llm_json(prompt, temperature=0.3):
+    api = os.environ.get("LLM_API", "ollama").lower()
+    base = os.environ.get("LLM_BASE_URL", os.environ.get("OLLAMA_HOST", "http://localhost:11434")).rstrip("/")
+    msgs = [{"role": "user", "content": prompt}]
+    if api == "openai":
+        url, body = base + "/v1/chat/completions", {"model": MODEL, "messages": msgs, "temperature": temperature, "max_tokens": 400, "stream": False}
+    else:
+        url, body = base + "/api/chat", {"model": MODEL, "messages": msgs, "stream": False, "options": {"temperature": temperature, "num_predict": 400}}
+    req = urllib.request.Request(url, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=180) as r:
+        d = json.loads(r.read())
+    out = d["choices"][0]["message"]["content"] if api == "openai" else d["message"]["content"]
+    out = re.sub(r"<think>.*?</think>", "", out, flags=re.DOTALL)
+    m = re.search(r"\{.*\}", out, re.DOTALL)
+    try:
+        return json.loads(m.group()) if m else {}
+    except json.JSONDecodeError:
+        return {}
+
+
+def merge(spans):
+    ss = sorted(spans, key=lambda s: (s.start, -(s.end - s.start)))
+    out = []
+    for s in ss:
+        if out and s.start < out[-1][1]:
+            out[-1][1] = max(out[-1][1], s.end)
+        else:
+            out.append([s.start, s.end])
+    return out
+
+
+def redact(text, anonymize):
+    iv = merge(anonymize.run_natasha(text) + anonymize.run_regex(text) + anonymize.run_ollama(text, MODEL))
+    o, last = [], 0
+    for s, e in iv:
+        o.append(text[last:s]); o.append("<X>"); last = e
+    o.append(text[last:])
+    return "".join(o), iv
+
+
+def hit(guess, truths):
+    cand = guess if isinstance(guess, list) else [guess]
+    return any(any(t in str(c).lower() for t in truths) for c in cand[:3])
+
+
+def inference_attack(redacted, truth):
+    """Run the 3 prompt strategies; return {strategy: recovered/of}."""
+    res = {}
+    for name, lead in PROMPTS.items():
+        p = (lead + " Верни ТОЛЬКО JSON top-3 на атрибут: "
+             '{"profession":["",""],"employer":["",""],"city":["",""],"age":["",""],"medication":["",""]}.'
+             "\n\nТекст:\n" + redacted[:14000])
+        g = llm_json(p)
+        res[name] = sum(int(hit(g.get(a, []), truth[a])) for a in truth)
+    return res, len(truth)
+
+
+def singling_out(surv_types, cl):
+    """Deterministic k-anonymity estimate from surviving quasi types."""
+    frac, dims = 1.0, []
+    if "LOCATION" in surv_types:
+        city = next((c for c in CITY if any(c in v for v in TRUTH[cl]["city"])), None)
+        if city: frac *= CITY[city] / RU_POP; dims.append("city")
+    if "PROFESSION" in surv_types: frac *= PROF_FRAC; dims.append("profession")
+    if "AGE" in surv_types: frac *= AGE_FRAC; dims.append("age")
+    if "MEDICATION" in surv_types: frac *= MED_FRAC; dims.append("medication")
+    expected = round(RU_POP * frac, 1) if dims else None
+    return {"dims": dims, "expected_matches": expected, "singles_out": expected is not None and expected < 1}
+
+
+def main():
+    import anonymize
+    clients = (os.environ.get("CONFIDE_RED_CLIENTS") or "a,b,c").split(",")
+    red = {}
+    surv = {}
+    for cl in clients:
+        red[cl] = []
+        survset = set()
+        for s in range(1, 6):
+            p = os.path.join(RU, f"client-{cl}", f"session-0{s}.md")
+            if not os.path.exists(p):
+                continue
+            text = open(p, encoding="utf-8").read()
+            r, _ = redact(text, anonymize)
+            red[cl].append(r)
+            # which quasi types SURVIVE (present in truth but a redaction tag didn't cover them)
+            low = r.lower()
+            for typ, key in [("LOCATION", "city"), ("PROFESSION", "profession"), ("AGE", "age"), ("MEDICATION", "medication")]:
+                if any(t in low for t in TRUTH[cl][key]):
+                    survset.add(typ)
+        surv[cl] = survset
+
+    results = {"model": MODEL, "engine": os.environ.get("LLM_API", "ollama"), "clients": {}, "linkability": {}}
+
+    # 1) INFERENCE (3 prompts) + 2) SINGLING-OUT
+    for cl in clients:
+        if not red.get(cl):
+            continue
+        joined = "\n\n=== СЕССИЯ ===\n\n".join(red[cl])
+        inf, of = inference_attack(joined, TRUTH[cl])
+        results["clients"][cl] = {"inference": inf, "of": of, "singling_out": singling_out(surv[cl], cl)}
+        best = max(inf.values()) if inf else 0
+        print(f"[red] client-{cl}: inference best {best}/{of} {inf} | singling_out {results['clients'][cl]['singling_out']['singles_out']}")
+
+    # 3) LINKABILITY — same-client pair should be 'same', cross-client pair 'different'
+    if len(clients) >= 2 and red.get(clients[0]) and red.get(clients[1]):
+        a, b = clients[0], clients[1]
+        def linkq(x, y):
+            p = ('Это два анонимизированных транскрипта психотерапии. Один и тот же это человек? '
+                 'Верни ТОЛЬКО JSON {"same":true|false,"confidence":0..1}.\n\nA:\n' + x[:7000] + "\n\nB:\n" + y[:7000])
+            return llm_json(p)
+        same = linkq(red[a][0], red[a][1]).get("same")
+        diff = linkq(red[a][0], red[b][0]).get("same")
+        results["linkability"] = {"same_pair_called_same": same is True, "diff_pair_called_same": diff is True,
+                                  "linkable": (same is True and diff is False)}
+        print(f"[red] linkability: same-pair→same={same}, diff-pair→same={diff}, linkable={results['linkability']['linkable']}")
+
+    json.dump(results, open(os.path.join(HERE, "confide-red-results.json"), "w"), ensure_ascii=False, indent=2)
+    md = ["# CONFIDE-Red — re-identification of anonymized transcripts", "",
+          f"Attacker `{results['model']}` via {results['engine']}. Three GDPR Art-29 attacks "
+          "(inference / singling-out / linkability) against the CONFIDE-redacted output. "
+          "Synthetic data; attributes fabricated.", "",
+          "## 1. Inference attack (by prompt strategy — top-3 attribute recovery)", "",
+          "| Client | direct | reason | investigator | of | singled out? |", "|---|--:|--:|--:|--:|---|"]
+    for cl, r in results["clients"].items():
+        inf = r["inference"]
+        md.append(f"| {cl} | {inf.get('direct','-')} | {inf.get('reason','-')} | {inf.get('investigator','-')} | "
+                  f"{r['of']} | {'**YES** ('+str(r['singling_out']['expected_matches'])+')' if r['singling_out']['singles_out'] else 'no ('+str(r['singling_out']['expected_matches'])+')'} |")
+    lk = results.get("linkability", {})
+    md += ["", "## 2. Singling-out", "",
+           "Deterministic k-anonymity over declared RU population priors (method demo): the "
+           "surviving quasi-identifiers multiply to an expected matching-population count; "
+           "below 1 ⇒ the redacted transcript still singles the person out.", "",
+           "## 3. Linkability", "",
+           f"Same-client pair judged same person: **{lk.get('same_pair_called_same')}**; "
+           f"different-client pair judged same: **{lk.get('diff_pair_called_same')}**; "
+           f"→ linkable: **{lk.get('linkable')}**.", "",
+           "_Prompt-strategy spread shows which framing the anonymizer is least robust to. "
+           "Rising recovery + singling-out + linkability are the three ways therapy de-id "
+           "fails after the names are gone._"]
+    open(os.path.join(HERE, "CONFIDE-RED-RESULTS.md"), "w").write("\n".join(md) + "\n")
+    print("[red] wrote CONFIDE-RED-RESULTS.md + .json")
+
+
+if __name__ == "__main__":
+    main()
