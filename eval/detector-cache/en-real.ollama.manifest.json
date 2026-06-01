@@ -21,7 +21,8 @@
     "en-real-013",
     "en-real-014"
   ],
-  "code_sha": "23bdcf7e9991",
+  "docs_sha": "fe619eb7d6b9",
+  "code_sha": "26016c2392ed",
   "model": "qwen2.5:3b",
-  "seconds": 31.2
+  "seconds": 44.6
 }

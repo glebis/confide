@@ -1,0 +1,11 @@
+{
+  "dataset": "en-real",
+  "combo": "opf+regex+ollama \u2605",
+  "n_docs": 15,
+  "iters": 2000,
+  "coverage_recall": {
+    "mean": 0.894,
+    "lo95": 0.789,
+    "hi95": 0.964
+  }
+}

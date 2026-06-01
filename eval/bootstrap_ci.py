@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Bootstrap 95% confidence intervals on the headline metrics.
 
-Small N (10 RU docs) means point estimates are uncertain — each miss moves recall
+Small N means point estimates are uncertain — each miss moves recall
 several points. This resamples DOCUMENTS with replacement (the standard
 nonparametric bootstrap) and recomputes coverage recall + TAB entity recall for
 the default ★ combo, reporting mean and a 2.5–97.5 percentile interval. Honesty,
@@ -33,7 +33,7 @@ def coverage_recall(gold_rows, preds):
 
 
 def entity_recall(gold_rows, preds):
-    prot, total, _, _ = sb.score_entity_level(gold_rows, preds, relaxed=True)
+    prot, total, _, _, _ = sb.score_entity_level(gold_rows, preds, relaxed=True)
     return prot / total if total else 0.0
 
 

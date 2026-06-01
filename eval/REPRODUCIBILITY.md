@@ -44,8 +44,8 @@ Deterministic layers (regex, Natasha) are reproducible and need a single run.
 
 - Logged per detector: wall-clock `seconds`, ms/doc. Extend with **device** (CPU/MPS/GPU),
   **peak RAM**, **token count** (LLM), and **$/1k tokens** (cloud).
-- Headline cost metrics: **recall-per-second** and **recall-per-dollar** (bang-for-buck) —
-  e.g. OPF 227 s/doc vs regex 0.4 s/doc for the same RU date win.
+- Headline cost metrics: **recall-per-second** and **recall-per-dollar** (bang-for-buck).
+  Report OPF latency only from a cache regenerated for the current corpus and host.
 - Cost is **hardware-dependent**: absolute numbers are comparable only on the same machine.
   Report cost **relative to the regex layer** for machine-independent comparison.
 
@@ -74,3 +74,31 @@ are friendlier to "install the latest of everything." The container goes in the 
 Real-session runs are logged with `privacy: "real-local-statsonly"` and **aggregates only**
 (no transcript text, no PII). The registry is then an *audit trail* proving a real-data run
 happened locally without leaking — never a content store.
+
+## 8. Stale / drift check (`make check`)
+
+`check_artifacts.py` is a deterministic guard (no LLM calls) that fails the build when any
+committed artifact has drifted from what the current gold + detector caches produce, so a
+stale number can never silently ship (Codex audit R1). Run it after any regeneration and in
+CI:
+
+```
+make check          # or: python check_artifacts.py
+```
+
+It enforces three invariants:
+1. **JSON freshness** — each committed `*-bench-results.json` equals a fresh in-memory
+   rescore from the current caches (headline coverage/type metrics + entity & harm-weighted
+   recall).
+2. **Manifest validity** — every detector cache cited by a *numeric* BENCHMARK.md row
+   validates against its gold (doc-id set + transcript `docs_sha`). A combo whose cache is
+   intentionally omitted (e.g. the stale RU `opf` row) is allowed only because BENCHMARK.md
+   presents no numeric row for it.
+3. **Markdown ↔ JSON consistency** — the numbers quoted in BENCHMARK.md and IAA-RESULTS.md
+   (RU ★ coverage/entity/harm-weighted recall, EN/EN-real Presidio + Philter coverage-F2 +
+   micro-F1, IAA F1 + κ) equal the regenerated JSON, and IAA-RESULTS.md is labelled an
+   **LLM-assisted consistency check**, not human inter-annotator agreement (audit R4).
+
+Full regeneration order (the checker prints this on failure):
+`score_bench.py` (per dataset) → `bootstrap_ci.py` (per dataset) → `iaa_eval.py` →
+`make_benchmark.py` → `make_tufte_report.py` → `check_artifacts.py`.
