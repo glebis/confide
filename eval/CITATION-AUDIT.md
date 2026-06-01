@@ -59,11 +59,16 @@ ai4privacy-300k license).
 
 ## Must-fix before publishing
 
-1. **JayGuard (UNVERIFIED → possible hallucination).** No trace on HuggingFace, GitHub,
-   ACL, arXiv, or Russian-language search. The claims are oddly specific (850 rows,
-   Apache-2.0, exact entity scope) — a classic deep-research-agent confabulation pattern.
-   **Action:** supply a resolvable URL / HF ID / paper, or delete the citation. Do not let
-   it reach a paper unsourced. (DATASETS.md:28; RESEARCH-FINDINGS.md:53,129.)
+1. **JayGuard — RESOLVED: VERIFIED, NOT a hallucination (this audit's "no trace" was a search
+   miss).** A follow-up RU-focused search + direct page fetch confirms it exists: HF
+   **`just-ai/jayguard-ner-benchmark`** (Just AI), **850 rows, real anonymized Russian
+   conversational text** (work chats / support logs / speech transcripts), token-classification
+   BIO, entities PERSON / GPE / STREET_ADDRESS / PUBLIC_PLACES / FICT (no phone/email/financial).
+   License: card shows **MIT**, citation section mentions Apache-2.0 — note both, confirm before
+   release. **Action: keep the citation and ADD the resolvable HF ID** in DATASETS.md /
+   RESEARCH-FINDINGS.md. It is in fact CONFIDE's strongest *real-text RU* acquisition for the
+   real-gold task (open license permits a derived gold). _Lesson: a single agent's "I couldn't
+   find it" is not proof of non-existence — verify with the concrete ID before deleting._
 
 2. **ai4privacy/pii-masking-300k license = "CC-BY-4.0" is wrong (IMPRECISE).** The HF card
    lists license `other` (custom `license.md`; commercial use gated). Since the EN-real
