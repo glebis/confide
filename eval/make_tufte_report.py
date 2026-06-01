@@ -22,6 +22,7 @@ def load(name):
 RU = load("ru-bench-results.json")
 EN = load("en-bench-results.json")
 ENR = load("en-real-bench-results.json")
+RUADV = load("ru-adv-bench-results.json")
 REC = load("reconstruction-results.json")
 PU = load("privacy-utility-results.json")
 
@@ -65,11 +66,32 @@ def per_type_compare(res, combo_a, combo_b):
             "a_name": combo_a, "b_name": combo_b}
 
 
+def baselines_data(res):
+    """Coverage-F2 (headline) + type-aware micro-F1 for the 4 EN comparison combos:
+    the CONFIDE ★ stack vs the established off-the-shelf baselines (Presidio, Philter)
+    and the Presidio-in-the-stack ensemble. Drives the 'stack vs baselines' chart
+    (BENCHMARK.md GRAPHICS-TODO). Missing combos are skipped."""
+    if not res:
+        return {}
+    order = ["opf+regex+ollama ★", "presidio", "philter", "presidio+regex+ollama"]
+    combos, covf2, microf1 = [], [], []
+    for name in order:
+        e = res["combos"].get(name)
+        if not isinstance(e, dict) or "coverage_relaxed" not in e:
+            continue
+        combos.append(name)
+        covf2.append(round(e["coverage_relaxed"]["f2"], 3))
+        microf1.append(round(e["type_relaxed"]["f1"], 3))
+    return {"combos": combos, "covf2": covf2, "microf1": microf1}
+
+
 DATA = {
     "ru_leaderboard": leaderboard_data(RU) if RU else [],
     "en_leaderboard": leaderboard_data(EN) if EN else [],
     "enr_leaderboard": leaderboard_data(ENR) if ENR else [],
     "ru_whocatches": per_type_compare(RU, "natasha+regex", "natasha+regex+ollama ★") if RU else {},
+    "en_baselines": baselines_data(EN),
+    "enr_baselines": baselines_data(ENR),
     "reconstruction": REC or {},
 }
 
@@ -99,6 +121,11 @@ ru_default_r = star_recall(RU) if RU else 0.0            # the proposed default'
 ru_opf_r = combo_recall(RU, "opf+natasha+regex+ollama") if RU else 0.0
 n_combos = len(RU["combos"]) if RU else 0
 n_gold = (RU["n_gold_mentions"] if RU else 0)
+ru_default = RU["combos"].get(RU_STAR, {}) if RU else {}
+ru_entity = ru_default.get("entity_level", {})
+ru_direct = ru_entity.get("by_class", {}).get("direct", {}).get("recall", 0.0)
+ru_quasi = ru_entity.get("by_class", {}).get("quasi", {}).get("recall", 0.0)
+ru_opf_valid = bool(RU and "coverage_relaxed" in RU["combos"].get("opf+natasha+regex+ollama", {}))
 # combined quasi survival across both clients (not client-A only)
 if REC:
     _a, _b = REC["A_quasi_survival"]["a"], REC["A_quasi_survival"]["b"]
@@ -153,14 +180,8 @@ def leaderboard_table(res, title):
             cells += ["<td>—</td>", "<td>—</td>", "<td>—</td>"]
         cells.append(f"<td>{e['n_pred']}</td>")
         body.append(f"<tr{cls}>" + "".join(cells) + "</tr>")
-    # note missing-cache combos
-    missing = [n for n, e in res["combos"].items() if isinstance(e, dict) and e.get("status") == "missing-cache"]
-    note = ""
-    if missing:
-        note = (f"<p class='caption'>Pending: <code>{', '.join(missing)}</code> "
-                "(OPF-on-RU; transformers≥5 venv run).</p>")
     return (f"<div class='table-wrapper'><table><thead>{head}</thead>"
-            f"<tbody>{''.join(body)}</tbody></table></div>{note}")
+            f"<tbody>{''.join(body)}</tbody></table></div>")
 
 
 HTML = f"""<!DOCTYPE html>
@@ -212,10 +233,10 @@ footer {{ border-top:1px solid var(--rule); margin-top:3rem; padding-top:1rem; f
 
 <h1>CONFIDE-Bench — Which Layer Earns Its Compute?</h1>
 <p class="sub">A bilingual de-identification benchmark for psychotherapy transcripts.</p>
-<p class="tags">sources: ru/en/en-real-bench-results.json · reconstruction-results.json &nbsp;|&nbsp; metrics: TAB · i2b2 · Presidio-F2 · datasheets-for-datasets</p>
+<p class="tags">sources: ru/ru-adv/en/en-real-bench-results.json · reconstruction-results.json &nbsp;|&nbsp; metrics: TAB · i2b2 · Presidio-F2 · datasheets-for-datasets</p>
 
 <div class="status-strip">
-  <div class="status-cell b"><div class="status-label">datasets</div><div class="status-value">3</div><div class="status-note">RU-synth · EN-synth · EN-real</div></div>
+  <div class="status-cell b"><div class="status-label">datasets</div><div class="status-value">4</div><div class="status-note">RU · RU-adv · EN · EN-real</div></div>
   <div class="status-cell b"><div class="status-label">combos × dataset</div><div class="status-value">{n_combos}</div><div class="status-note">union-composed ablation</div></div>
   <div class="status-cell g"><div class="status-label">RU default recall</div><div class="status-value">{ru_default_r:.0%}</div><div class="status-note">{RU_STAR}</div></div>
   <div class="status-cell r"><div class="status-label">quasi-ID survival</div><div class="status-value">{surv_comb:.0%}</div><div class="status-note">both clients · re-id surface</div></div>
@@ -224,10 +245,10 @@ footer {{ border-top:1px solid var(--rule); margin-top:3rem; padding-top:1rem; f
 <p class="lede">De-identification is not one tool but a stack of detectors, and the honest question is which layer pays for the CPU it burns. This benchmark composes detector layers by span-union over psychotherapy transcripts in Russian and English, scores each combination the way published de-id work does — recall-first, entity-level, direct vs quasi — and asks a sharper question than &ldquo;how good is the tool&rdquo;: <em>what can only an LLM catch, and what still leaks after we redact?</em></p>
 
 <div class="flyout"><div class="t">headline</div>
-<p>Three PII types — <strong>{llm_required_line()}</strong> — sit at <strong>0% mention-recall</strong> under the deterministic layers (Natasha&nbsp;NER + regex). Adding the local qwen layer moves their mention-recall off zero (though medication and profession stay at 0 <em>entity</em>-recall — every mention must be masked). Meanwhile <strong>{surv_comb:.0%}</strong> of quasi-identifiers still survive the default stack. Redaction of direct identifiers is necessary but not sufficient.</p></div>
+<p>Three PII types — <strong>{llm_required_line()}</strong> — are near-zero under the deterministic layers (Natasha&nbsp;NER + regex). Adding the local qwen layer raises their mention-recall, but medication and profession still have very low <em>entity</em>-recall because every mention must be masked. Meanwhile <strong>{surv_comb:.0%}</strong> of quasi-identifiers still survive the default stack. Redaction of direct identifiers is necessary but not sufficient.</p></div>
 
 <h2>1. Which layer catches what</h2>
-<p class="state-line">Only the LLM layer moves <strong>age</strong>, <strong>medication</strong>, and <strong>profession</strong> off zero <em>mention-recall</em> — pattern and NER layers cannot touch them.</p>
+<p class="state-line">The LLM layer is what moves <strong>age</strong>, <strong>medication</strong>, and <strong>profession</strong> above the deterministic baseline.</p>
 <div class="aside-container">
   <div><div class="chart-box"><canvas id="whoCatches"></canvas></div>
   <p class="caption">RU per-category <em>mention</em> recall (relaxed overlap), {n_gold} gold mentions: deterministic (Natasha+regex) vs. +qwen.</p></div>
@@ -243,9 +264,9 @@ footer {{ border-top:1px solid var(--rule); margin-top:3rem; padding-top:1rem; f
 <p class="state-line">Bars show <strong>coverage recall</strong>; ★ is the <em>proposed default</em>, which trades a little recall for large speed/precision gains — not always the single highest bar.</p>
 <div class="aside-container">
   <div><div class="chart-box"><canvas id="boards"></canvas></div>
-  <p class="caption">Coverage recall by combination across three datasets (blank = combo not run for that dataset). ★ = proposed default; see table for F2/precision.</p></div>
+  <p class="caption">Coverage recall by combination across the plotted datasets (blank = combo not run for that dataset). ★ = proposed default; see table for F2/precision.</p></div>
   <div class="aside"><div class="t">why they differ</div>
-  <p><strong>RU:</strong> adding OPF reaches the highest recall ({ru_opf_r:.0%}), but the proposed default <code>{RU_STAR}</code> ({ru_default_r:.0%}) is within ~3 points at ~500&times; the speed — and wins on macro-F1.</p>
+  <p><strong>RU:</strong> the proposed default <code>{RU_STAR}</code> reaches {ru_default_r:.0%} coverage recall. {'Adding OPF reaches ' + format(ru_opf_r, '.0%') + ', but OPF is an optional comparison layer rather than the local-first default.' if ru_opf_valid else 'The OPF-on-RU row is omitted until its detector cache is regenerated for the current 30-document corpus.'}</p>
   <p><strong>EN-synth:</strong> OPF is the name/address backbone (English&rsquo;s Natasha). Default <code>{EN_STAR}</code>; <code>opf+regex</code> edges it on F2.</p>
   <p><strong>EN-real:</strong> on generic ai4privacy text the LLM is strongest; <code>opf+ollama</code> and the default <em>tie</em> on recall.</p></div>
 </div>
@@ -254,12 +275,12 @@ footer {{ border-top:1px solid var(--rule); margin-top:3rem; padding-top:1rem; f
 <div class="ornament">:::</div>
 
 <h2>3. Direct vs quasi-identifiers (TAB)</h2>
-<p class="state-line">Direct identifiers are nearly solved (<strong>0.93</strong> entity recall); quasi-identifiers are where the risk concentrates.</p>
+<p class="state-line">Direct identifiers reach <strong>{ru_direct:.2f}</strong> entity recall; quasi-identifiers remain lower at <strong>{ru_quasi:.2f}</strong>.</p>
 <div class="aside-container">
   <div><div class="chart-box"><canvas id="directQuasi"></canvas></div>
   <p class="caption">RU entity-level recall (an entity is protected only if all mentions are masked) by identifier class.</p></div>
   <div class="aside"><div class="t">the asymmetry</div>
-  <p><strong>Direct</strong> (name, phone, email, policy): masked at ~0.93 once regex joins Natasha.</p>
+  <p><strong>Direct</strong> (name, phone, email, policy): masked at {ru_direct:.2f} entity recall in the default stack.</p>
   <p><strong>Quasi</strong> (age, profession, city, employer, medication, date): the LLM helps but the ceiling stays low — these are the attributes that, combined, re-identify a person.</p></div>
 </div>
 
@@ -299,6 +320,22 @@ footer {{ border-top:1px solid var(--rule); margin-top:3rem; padding-top:1rem; f
   <p><strong>Caveat:</strong> this attacker is a lower bound — quasi-identifiers still survive in text (medication entity-recall is 0), so a frontier attacker would score higher. Residual risk stays MEDIUM for client B.</p></div>
 </div>
 
+<div class="ornament">:::</div>
+
+<h2>6. CONFIDE stack vs established baselines (Presidio, Philter)</h2>
+<p class="state-line">Off-the-shelf de-identifiers can match the stack on <strong>coverage</strong> but fall far behind on <strong>type-aware micro-F1</strong> — and Presidio <em>collapses</em> on the real ai4privacy slice.</p>
+<div class="aside-container">
+  <div><div class="chart-box"><canvas id="baseEN"></canvas></div>
+  <p class="caption">EN-synth: coverage F2 (recall-weighted, headline) vs type-aware micro-F1 for the CONFIDE ★ stack and the established baselines.</p>
+  <div class="chart-box" style="margin-top:1.2rem"><canvas id="baseENR"></canvas></div>
+  <p class="caption">EN-real (ai4privacy): same two metrics. Presidio's coverage drops sharply on real-world markup/ID formats.</p></div>
+  <div class="aside"><div class="t">reading it</div>
+  <p><strong>Coverage F2</strong> (orange) asks only &ldquo;did we mask the span at all&rdquo;. <strong>Type micro-F1</strong> (green) demands the right label too — what a redaction policy actually needs.</p>
+  <p>On <strong>EN-synth</strong>, Presidio edges the stack on coverage F2 (a broad <code>DATE_TIME</code> recognizer) but its type-F1 is far lower; <strong>Philter</strong> is high-coverage yet emits almost everything as untyped <code>OTHER</code>, so its type-F1 is unusable.</p>
+  <p>On <strong>EN-real</strong>, Presidio <em>collapses</em> on coverage — generic NER + structured recognizers miss the bespoke ID/markup formats the stack catches.</p>
+  <p><strong>Takeaway:</strong> a generic system is not a therapy-tuned one; the only coverage a baseline adds is relative/colloquial dates.</p></div>
+</div>
+
 <div class="flyout"><div class="t">methodology</div>
 <p>Each detector runs once per dataset; combinations are span-unions of cached spans, interval-merged to the deployed redaction mask before scoring. This report headlines <strong>coverage recall</strong> (relaxed overlap) — the privacy-critical number — and recall-weighted <strong>F2</strong> + precision sit in the leaderboard table. Type-aware micro/macro-F1 (i2b2) and entity-level recall (TAB; all mentions masked) are also reported. Numbers are mention-level unless marked entity-level. Gold for RU is located from the two answer-key PII inventories and hand-verified (a planted-signal recovery eval, not independently annotated gold); English reuses curated + real ai4privacy slices. Synthetic data — no real patients. Small N: treat per-type numbers as directional.</p></div>
 
@@ -324,7 +361,7 @@ Chart.defaults.responsiveAnimationDuration=0;
    plugins:{{legend:{{labels:{{boxWidth:8,boxHeight:8}}}}}}}}}});
 }})();
 
-// 2. leaderboards (horizontal bars, three datasets overlaid by combo recall) -> small multiples as one grouped chart
+// 2. leaderboards (horizontal bars, plotted datasets overlaid by combo recall) -> small multiples as one grouped chart
 (function(){{
  const sets=[['RU',DATA.ru_leaderboard,C2],['EN',DATA.en_leaderboard,C1],['EN-real',DATA.enr_leaderboard,C3]];
  // union of combo names preserving RU order then extras
@@ -347,6 +384,21 @@ Chart.defaults.responsiveAnimationDuration=0;
   options:{{responsive:true,maintainAspectRatio:false,
    scales:{{y:{{beginAtZero:true,max:1,title:{{display:true,text:'entity recall'}},grid:{{color:'#eee'}}}},x:{{grid:{{display:false}},ticks:{{maxRotation:60,minRotation:45,font:{{size:10}}}}}}}},
    plugins:{{legend:{{labels:{{boxWidth:8,boxHeight:8}}}}}}}}}});
+}})();
+
+// 6. stack vs established baselines (coverage F2 vs type micro-F1) — EN + EN-real
+(function(){{
+ function draw(id, d){{
+   if(!d||!d.combos||!d.combos.length) return;
+   new Chart(document.getElementById(id),{{type:'bar',data:{{labels:d.combos,datasets:[
+     {{label:'coverage F2 (headline)',data:d.covf2,backgroundColor:C1}},
+     {{label:'type micro-F1',data:d.microf1,backgroundColor:C2}}]}},
+    options:{{responsive:true,maintainAspectRatio:false,
+     scales:{{y:{{beginAtZero:true,max:1,title:{{display:true,text:'score'}},grid:{{color:'#eee'}}}},x:{{grid:{{display:false}},ticks:{{maxRotation:30,minRotation:0,font:{{size:10}}}}}}}},
+     plugins:{{legend:{{labels:{{boxWidth:8,boxHeight:8}}}}}}}}}});
+ }}
+ draw('baseEN', DATA.en_baselines);
+ draw('baseENR', DATA.enr_baselines);
 }})();
 </script>
 </body></html>

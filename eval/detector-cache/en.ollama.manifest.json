@@ -38,7 +38,8 @@
     "en-030",
     "en-031"
   ],
-  "code_sha": "23bdcf7e9991",
+  "docs_sha": "bf6b55b6300c",
+  "code_sha": "26016c2392ed",
   "model": "qwen2.5:3b",
-  "seconds": 16.5
+  "seconds": 19.0
 }

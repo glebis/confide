@@ -134,6 +134,7 @@
         "protected": 8,
         "total": 20,
         "entity_recall": 0.4,
+        "harm_weighted_recall": 0.2,
         "by_class": {
           "direct": {
             "protected": 8,
@@ -321,6 +322,7 @@
         "protected": 7,
         "total": 20,
         "entity_recall": 0.35,
+        "harm_weighted_recall": 0.5,
         "by_class": {
           "direct": {
             "protected": 6,
@@ -528,6 +530,7 @@
         "protected": 13,
         "total": 20,
         "entity_recall": 0.65,
+        "harm_weighted_recall": 0.725,
         "by_class": {
           "direct": {
             "protected": 10,
@@ -716,6 +719,7 @@
         "protected": 15,
         "total": 20,
         "entity_recall": 0.75,
+        "harm_weighted_recall": 0.7,
         "by_class": {
           "direct": {
             "protected": 14,
@@ -905,6 +909,7 @@
         "protected": 19,
         "total": 20,
         "entity_recall": 0.95,
+        "harm_weighted_recall": 0.925,
         "by_class": {
           "direct": {
             "protected": 16,

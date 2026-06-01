@@ -47,25 +47,25 @@ footer { border-top:1px solid var(--rule); margin-top:3rem; padding-top:1rem; fo
 
 <h1>CONFIDE-Bench — Which Layer Earns Its Compute?</h1>
 <p class="sub">A bilingual de-identification benchmark for psychotherapy transcripts.</p>
-<p class="tags">sources: ru/en/en-real-bench-results.json · reconstruction-results.json &nbsp;|&nbsp; metrics: TAB · i2b2 · Presidio-F2 · datasheets-for-datasets</p>
+<p class="tags">sources: ru/ru-adv/en/en-real-bench-results.json · reconstruction-results.json &nbsp;|&nbsp; metrics: TAB · i2b2 · Presidio-F2 · datasheets-for-datasets</p>
 
 <div class="status-strip">
-  <div class="status-cell b"><div class="status-label">datasets</div><div class="status-value">3</div><div class="status-note">RU-synth · EN-synth · EN-real</div></div>
+  <div class="status-cell b"><div class="status-label">datasets</div><div class="status-value">4</div><div class="status-note">RU · RU-adv · EN · EN-real</div></div>
   <div class="status-cell b"><div class="status-label">combos × dataset</div><div class="status-value">8</div><div class="status-note">union-composed ablation</div></div>
-  <div class="status-cell g"><div class="status-label">RU default recall</div><div class="status-value">85%</div><div class="status-note">natasha+regex+ollama ★</div></div>
+  <div class="status-cell g"><div class="status-label">RU default recall</div><div class="status-value">84%</div><div class="status-note">natasha+regex+ollama ★</div></div>
   <div class="status-cell r"><div class="status-label">quasi-ID survival</div><div class="status-value">31%</div><div class="status-note">both clients · re-id surface</div></div>
 </div>
 
 <p class="lede">De-identification is not one tool but a stack of detectors, and the honest question is which layer pays for the CPU it burns. This benchmark composes detector layers by span-union over psychotherapy transcripts in Russian and English, scores each combination the way published de-id work does — recall-first, entity-level, direct vs quasi — and asks a sharper question than &ldquo;how good is the tool&rdquo;: <em>what can only an LLM catch, and what still leaks after we redact?</em></p>
 
 <div class="flyout"><div class="t">headline</div>
-<p>Three PII types — <strong>age 0%, medication 3%, profession 3%</strong> — sit at <strong>0% mention-recall</strong> under the deterministic layers (Natasha&nbsp;NER + regex). Adding the local qwen layer moves their mention-recall off zero (though medication and profession stay at 0 <em>entity</em>-recall — every mention must be masked). Meanwhile <strong>31%</strong> of quasi-identifiers still survive the default stack. Redaction of direct identifiers is necessary but not sufficient.</p></div>
+<p>Three PII types — <strong>age 0%, medication 4%, profession 2%</strong> — are near-zero under the deterministic layers (Natasha&nbsp;NER + regex). Adding the local qwen layer raises their mention-recall, but medication and profession still have very low <em>entity</em>-recall because every mention must be masked. Meanwhile <strong>31%</strong> of quasi-identifiers still survive the default stack. Redaction of direct identifiers is necessary but not sufficient.</p></div>
 
 <h2>1. Which layer catches what</h2>
-<p class="state-line">Only the LLM layer moves <strong>age</strong>, <strong>medication</strong>, and <strong>profession</strong> off zero <em>mention-recall</em> — pattern and NER layers cannot touch them.</p>
+<p class="state-line">The LLM layer is what moves <strong>age</strong>, <strong>medication</strong>, and <strong>profession</strong> above the deterministic baseline.</p>
 <div class="aside-container">
   <div><div class="chart-box"><canvas id="whoCatches"></canvas></div>
-  <p class="caption">RU per-category <em>mention</em> recall (relaxed overlap), 713 gold mentions: deterministic (Natasha+regex) vs. +qwen.</p></div>
+  <p class="caption">RU per-category <em>mention</em> recall (relaxed overlap), 1059 gold mentions: deterministic (Natasha+regex) vs. +qwen.</p></div>
   <div class="aside"><div class="t">reading it</div>
   <p><strong>Structured direct IDs</strong> (email, phone, policy ID) and <strong>names/orgs/locations</strong> reach 0.9–1.0 from regex + Natasha. <strong>Dates</strong> are now caught too — a numeric-date regex rule was added after the benchmark exposed the gap.</p>
   <p><strong>Quasi-identifiers needing world-knowledge</strong> — a drug name, an occupation, a spelled-out age — are invisible to pattern and NER layers; the LLM is the only layer that lifts their mention-recall.</p>
@@ -78,23 +78,23 @@ footer { border-top:1px solid var(--rule); margin-top:3rem; padding-top:1rem; fo
 <p class="state-line">Bars show <strong>coverage recall</strong>; ★ is the <em>proposed default</em>, which trades a little recall for large speed/precision gains — not always the single highest bar.</p>
 <div class="aside-container">
   <div><div class="chart-box"><canvas id="boards"></canvas></div>
-  <p class="caption">Coverage recall by combination across three datasets (blank = combo not run for that dataset). ★ = proposed default; see table for F2/precision.</p></div>
+  <p class="caption">Coverage recall by combination across the plotted datasets (blank = combo not run for that dataset). ★ = proposed default; see table for F2/precision.</p></div>
   <div class="aside"><div class="t">why they differ</div>
-  <p><strong>RU:</strong> adding OPF reaches the highest recall (86%), but the proposed default <code>natasha+regex+ollama ★</code> (85%) is within ~3 points at ~500&times; the speed — and wins on macro-F1.</p>
+  <p><strong>RU:</strong> the proposed default <code>natasha+regex+ollama ★</code> reaches 84% coverage recall. The OPF-on-RU row is omitted until its detector cache is regenerated for the current 30-document corpus.</p>
   <p><strong>EN-synth:</strong> OPF is the name/address backbone (English&rsquo;s Natasha). Default <code>opf+regex+ollama ★</code>; <code>opf+regex</code> edges it on F2.</p>
   <p><strong>EN-real:</strong> on generic ai4privacy text the LLM is strongest; <code>opf+ollama</code> and the default <em>tie</em> on recall.</p></div>
 </div>
-<div class='table-wrapper'><table><thead><tr><th style='text-align:left'>combo</th><th>cov&nbsp;R</th><th>cov&nbsp;F2</th><th>ent&nbsp;R</th><th>direct</th><th>quasi</th><th>preds</th></tr></thead><tbody><tr><td style='text-align:left'>regex</td><td>0.038</td><td>0.047</td><td>0.252</td><td>0.102</td><td>0.379</td><td>37</td></tr><tr><td style='text-align:left'>natasha</td><td>0.750</td><td>0.737</td><td>0.308</td><td>0.408</td><td>0.224</td><td>705</td></tr><tr><td style='text-align:left'>ollama</td><td>0.418</td><td>0.456</td><td>0.243</td><td>0.306</td><td>0.190</td><td>360</td></tr><tr><td style='text-align:left'>natasha+regex</td><td>0.788</td><td>0.766</td><td>0.561</td><td>0.510</td><td>0.603</td><td>742</td></tr><tr><td style='text-align:left'>natasha+ollama</td><td>0.815</td><td>0.773</td><td>0.495</td><td>0.714</td><td>0.310</td><td>825</td></tr><tr><td style='text-align:left'>regex+ollama</td><td>0.449</td><td>0.486</td><td>0.449</td><td>0.327</td><td>0.552</td><td>390</td></tr><tr class='highlight-row'><td style='text-align:left'>natasha+regex+ollama ★</td><td>0.846</td><td>0.796</td><td>0.701</td><td>0.735</td><td>0.672</td><td>855</td></tr><tr><td style='text-align:left'>opf+natasha+regex+ollama</td><td>0.864</td><td>0.806</td><td>0.729</td><td>0.796</td><td>0.672</td><td>886</td></tr></tbody></table></div>
+<div class='table-wrapper'><table><thead><tr><th style='text-align:left'>combo</th><th>cov&nbsp;R</th><th>cov&nbsp;F2</th><th>ent&nbsp;R</th><th>direct</th><th>quasi</th><th>preds</th></tr></thead><tbody><tr><td style='text-align:left'>regex</td><td>0.039</td><td>0.048</td><td>0.352</td><td>0.327</td><td>0.373</td><td>50</td></tr><tr><td style='text-align:left'>natasha</td><td>0.788</td><td>0.762</td><td>0.306</td><td>0.388</td><td>0.237</td><td>1146</td></tr><tr><td style='text-align:left'>ollama</td><td>0.093</td><td>0.105</td><td>0.157</td><td>0.265</td><td>0.068</td><td>360</td></tr><tr><td style='text-align:left'>natasha+regex</td><td>0.826</td><td>0.792</td><td>0.657</td><td>0.714</td><td>0.610</td><td>1196</td></tr><tr><td style='text-align:left'>natasha+ollama</td><td>0.814</td><td>0.744</td><td>0.444</td><td>0.653</td><td>0.271</td><td>1447</td></tr><tr><td style='text-align:left'>regex+ollama</td><td>0.116</td><td>0.131</td><td>0.380</td><td>0.327</td><td>0.424</td><td>392</td></tr><tr class='highlight-row'><td style='text-align:left'>natasha+regex+ollama ★</td><td>0.838</td><td>0.761</td><td>0.667</td><td>0.714</td><td>0.627</td><td>1479</td></tr></tbody></table></div>
 
 <div class="ornament">:::</div>
 
 <h2>3. Direct vs quasi-identifiers (TAB)</h2>
-<p class="state-line">Direct identifiers are nearly solved (<strong>0.93</strong> entity recall); quasi-identifiers are where the risk concentrates.</p>
+<p class="state-line">Direct identifiers reach <strong>0.71</strong> entity recall; quasi-identifiers remain lower at <strong>0.63</strong>.</p>
 <div class="aside-container">
   <div><div class="chart-box"><canvas id="directQuasi"></canvas></div>
   <p class="caption">RU entity-level recall (an entity is protected only if all mentions are masked) by identifier class.</p></div>
   <div class="aside"><div class="t">the asymmetry</div>
-  <p><strong>Direct</strong> (name, phone, email, policy): masked at ~0.93 once regex joins Natasha.</p>
+  <p><strong>Direct</strong> (name, phone, email, policy): masked at 0.71 entity recall in the default stack.</p>
   <p><strong>Quasi</strong> (age, profession, city, employer, medication, date): the LLM helps but the ceiling stays low — these are the attributes that, combined, re-identify a person.</p></div>
 </div>
 
@@ -134,13 +134,29 @@ footer { border-top:1px solid var(--rule); margin-top:3rem; padding-top:1rem; fo
   <p><strong>Caveat:</strong> this attacker is a lower bound — quasi-identifiers still survive in text (medication entity-recall is 0), so a frontier attacker would score higher. Residual risk stays MEDIUM for client B.</p></div>
 </div>
 
+<div class="ornament">:::</div>
+
+<h2>6. CONFIDE stack vs established baselines (Presidio, Philter)</h2>
+<p class="state-line">Off-the-shelf de-identifiers can match the stack on <strong>coverage</strong> but fall far behind on <strong>type-aware micro-F1</strong> — and Presidio <em>collapses</em> on the real ai4privacy slice.</p>
+<div class="aside-container">
+  <div><div class="chart-box"><canvas id="baseEN"></canvas></div>
+  <p class="caption">EN-synth: coverage F2 (recall-weighted, headline) vs type-aware micro-F1 for the CONFIDE ★ stack and the established baselines.</p>
+  <div class="chart-box" style="margin-top:1.2rem"><canvas id="baseENR"></canvas></div>
+  <p class="caption">EN-real (ai4privacy): same two metrics. Presidio's coverage drops sharply on real-world markup/ID formats.</p></div>
+  <div class="aside"><div class="t">reading it</div>
+  <p><strong>Coverage F2</strong> (orange) asks only &ldquo;did we mask the span at all&rdquo;. <strong>Type micro-F1</strong> (green) demands the right label too — what a redaction policy actually needs.</p>
+  <p>On <strong>EN-synth</strong>, Presidio edges the stack on coverage F2 (a broad <code>DATE_TIME</code> recognizer) but its type-F1 is far lower; <strong>Philter</strong> is high-coverage yet emits almost everything as untyped <code>OTHER</code>, so its type-F1 is unusable.</p>
+  <p>On <strong>EN-real</strong>, Presidio <em>collapses</em> on coverage — generic NER + structured recognizers miss the bespoke ID/markup formats the stack catches.</p>
+  <p><strong>Takeaway:</strong> a generic system is not a therapy-tuned one; the only coverage a baseline adds is relative/colloquial dates.</p></div>
+</div>
+
 <div class="flyout"><div class="t">methodology</div>
 <p>Each detector runs once per dataset; combinations are span-unions of cached spans, interval-merged to the deployed redaction mask before scoring. This report headlines <strong>coverage recall</strong> (relaxed overlap) — the privacy-critical number — and recall-weighted <strong>F2</strong> + precision sit in the leaderboard table. Type-aware micro/macro-F1 (i2b2) and entity-level recall (TAB; all mentions masked) are also reported. Numbers are mention-level unless marked entity-level. Gold for RU is located from the two answer-key PII inventories and hand-verified (a planted-signal recovery eval, not independently annotated gold); English reuses curated + real ai4privacy slices. Synthetic data — no real patients. Small N: treat per-type numbers as directional.</p></div>
 
 <footer>Generated from eval/*-bench-results.json. CONFIDE-Bench benchmark, Psychodemia 2026. Metrics: TAB (Pilán 2022), i2b2/n2c2 2014, Presidio-research, Datasheets for Datasets. Synthetic/fictional data.</footer>
 
 <script>
-const DATA = {"ru_leaderboard": [{"combo": "regex", "recall": 0.038, "f2": 0.047, "preds": 37, "star": false, "direct": 0.102, "quasi": 0.379, "entR": 0.252}, {"combo": "natasha", "recall": 0.75, "f2": 0.737, "preds": 705, "star": false, "direct": 0.408, "quasi": 0.224, "entR": 0.308}, {"combo": "ollama", "recall": 0.418, "f2": 0.456, "preds": 360, "star": false, "direct": 0.306, "quasi": 0.19, "entR": 0.243}, {"combo": "natasha+regex", "recall": 0.788, "f2": 0.766, "preds": 742, "star": false, "direct": 0.51, "quasi": 0.603, "entR": 0.561}, {"combo": "natasha+ollama", "recall": 0.815, "f2": 0.773, "preds": 825, "star": false, "direct": 0.714, "quasi": 0.31, "entR": 0.495}, {"combo": "regex+ollama", "recall": 0.449, "f2": 0.486, "preds": 390, "star": false, "direct": 0.327, "quasi": 0.552, "entR": 0.449}, {"combo": "natasha+regex+ollama ★", "recall": 0.846, "f2": 0.796, "preds": 855, "star": true, "direct": 0.735, "quasi": 0.672, "entR": 0.701}, {"combo": "opf+natasha+regex+ollama", "recall": 0.864, "f2": 0.806, "preds": 886, "star": false, "direct": 0.796, "quasi": 0.672, "entR": 0.729}], "en_leaderboard": [{"combo": "regex", "recall": 0.065, "f2": 0.08, "preds": 3, "star": false}, {"combo": "opf", "recall": 0.783, "f2": 0.818, "preds": 38, "star": false}, {"combo": "ollama", "recall": 0.5, "f2": 0.525, "preds": 49, "star": false}, {"combo": "opf+regex", "recall": 0.783, "f2": 0.818, "preds": 38, "star": false}, {"combo": "opf+ollama", "recall": 0.848, "f2": 0.815, "preds": 58, "star": false}, {"combo": "regex+ollama", "recall": 0.565, "f2": 0.584, "preds": 52, "star": false}, {"combo": "opf+regex+ollama ★", "recall": 0.848, "f2": 0.815, "preds": 58, "star": true}, {"combo": "natasha+regex+ollama", "recall": 0.587, "f2": 0.601, "preds": 54, "star": false}], "enr_leaderboard": [{"combo": "regex", "recall": 0.013, "f2": 0.015, "preds": 3, "star": false}, {"combo": "opf", "recall": 0.562, "f2": 0.603, "preds": 52, "star": false}, {"combo": "ollama", "recall": 0.7, "f2": 0.695, "preds": 80, "star": false}, {"combo": "opf+regex", "recall": 0.575, "f2": 0.611, "preds": 55, "star": false}, {"combo": "opf+ollama", "recall": 0.9, "f2": 0.851, "preds": 100, "star": false}, {"combo": "regex+ollama", "recall": 0.7, "f2": 0.695, "preds": 80, "star": false}, {"combo": "opf+regex+ollama ★", "recall": 0.9, "f2": 0.851, "preds": 100, "star": true}, {"combo": "natasha+regex+ollama", "recall": 0.7, "f2": 0.671, "preds": 94, "star": false}], "ru_whocatches": {"types": ["AGE", "DATE", "EMAIL", "ID", "LOCATION", "MEDICATION", "ORG", "PERSON", "PHONE", "PROFESSION"], "a": [0.0, 0.957, 0.0, 0.833, 0.944, 0.031, 0.85, 0.911, 0.0, 0.031], "b": [0.35, 0.957, 1.0, 0.833, 0.944, 0.156, 0.9, 0.927, 0.833, 0.25], "a_name": "natasha+regex", "b_name": "natasha+regex+ollama ★"}, "reconstruction": {"default_combo": "natasha+regex+ollama", "A_quasi_survival": {"a": {"quasi_entities": 11, "survived": 3, "survival_rate": 0.273, "survivors_by_type": ["MEDICATION", "PROFESSION"]}, "b": {"quasi_entities": 15, "survived": 5, "survival_rate": 0.333, "survivors_by_type": ["AGE", "DATE", "LOCATION", "MEDICATION", "PROFESSION"]}}, "B_inference_attack": {"a": {"guess": {"profession": "Маркетолог", "employer": "<ORG>", "city": "<LOCATION>", "age": "", "medication": "Сертралин (100 мг)", "other_clues": "одиночество, матери <LOCATION>"}, "recovered": ["profession", "medication"], "n_recovered": 2, "n_tested": 5}, "b": {"guess": {"profession": "<PROFESSION>", "employer": "<ORG>", "city": "<LOCATION>", "age": "<AGE>", "medication": "", "other_clues": "прокрастинация (перфекционистского типа — «если не идеально, то никак»), низкая самооценка, признаки выгорания. Доминирующие искажения: выраженное долженствование (пронизывает речь); навешивание ярлыков («неудачник», «бездарь», «лентяй»); эмоциональное обоснование («чувствую, что разочаровываю, значит так и есть»); обесценивание позитивного (похвала «не считается», успех — «повезло»); предсказание будущего («не сработает»)."}, "recovered": [], "n_recovered": 0, "n_tested": 5}}, "C_over_redaction": {"redacted_spans": 193, "false_positives": 39, "over_redaction_rate": 0.202}}};
+const DATA = {"ru_leaderboard": [{"combo": "regex", "recall": 0.039, "f2": 0.048, "preds": 50, "star": false, "direct": 0.327, "quasi": 0.373, "entR": 0.352}, {"combo": "natasha", "recall": 0.788, "f2": 0.762, "preds": 1146, "star": false, "direct": 0.388, "quasi": 0.237, "entR": 0.306}, {"combo": "ollama", "recall": 0.093, "f2": 0.105, "preds": 360, "star": false, "direct": 0.265, "quasi": 0.068, "entR": 0.157}, {"combo": "natasha+regex", "recall": 0.826, "f2": 0.792, "preds": 1196, "star": false, "direct": 0.714, "quasi": 0.61, "entR": 0.657}, {"combo": "natasha+ollama", "recall": 0.814, "f2": 0.744, "preds": 1447, "star": false, "direct": 0.653, "quasi": 0.271, "entR": 0.444}, {"combo": "regex+ollama", "recall": 0.116, "f2": 0.131, "preds": 392, "star": false, "direct": 0.327, "quasi": 0.424, "entR": 0.38}, {"combo": "natasha+regex+ollama ★", "recall": 0.838, "f2": 0.761, "preds": 1479, "star": true, "direct": 0.714, "quasi": 0.627, "entR": 0.667}], "en_leaderboard": [{"combo": "regex", "recall": 0.217, "f2": 0.255, "preds": 12, "star": false}, {"combo": "opf", "recall": 0.783, "f2": 0.818, "preds": 38, "star": false}, {"combo": "ollama", "recall": 0.5, "f2": 0.525, "preds": 49, "star": false}, {"combo": "opf+regex", "recall": 0.826, "f2": 0.849, "preds": 42, "star": false}, {"combo": "opf+ollama", "recall": 0.848, "f2": 0.815, "preds": 58, "star": false}, {"combo": "regex+ollama", "recall": 0.674, "f2": 0.674, "preds": 58, "star": false}, {"combo": "opf+regex+ollama ★", "recall": 0.891, "f2": 0.843, "preds": 62, "star": true}, {"combo": "natasha+regex+ollama", "recall": 0.696, "f2": 0.69, "preds": 60, "star": false}, {"combo": "presidio", "recall": 0.913, "f2": 0.907, "preds": 51, "star": false}, {"combo": "philter", "recall": 0.783, "f2": 0.799, "preds": 47, "star": false}, {"combo": "presidio+regex+ollama", "recall": 0.935, "f2": 0.88, "preds": 66, "star": false}], "enr_leaderboard": [{"combo": "regex", "recall": 0.1, "f2": 0.121, "preds": 10, "star": false}, {"combo": "opf", "recall": 0.562, "f2": 0.603, "preds": 52, "star": false}, {"combo": "ollama", "recall": 0.7, "f2": 0.695, "preds": 80, "star": false}, {"combo": "opf+regex", "recall": 0.613, "f2": 0.646, "preds": 58, "star": false}, {"combo": "opf+ollama", "recall": 0.9, "f2": 0.851, "preds": 100, "star": false}, {"combo": "regex+ollama", "recall": 0.713, "f2": 0.706, "preds": 81, "star": false}, {"combo": "opf+regex+ollama ★", "recall": 0.9, "f2": 0.851, "preds": 100, "star": true}, {"combo": "natasha+regex+ollama", "recall": 0.713, "f2": 0.681, "preds": 95, "star": false}, {"combo": "presidio", "recall": 0.412, "f2": 0.439, "preds": 54, "star": false}, {"combo": "philter", "recall": 0.787, "f2": 0.782, "preds": 87, "star": false}, {"combo": "presidio+regex+ollama", "recall": 0.8, "f2": 0.753, "preds": 100, "star": false}], "ru_whocatches": {"types": ["AGE", "DATE", "EMAIL", "ID", "LOCATION", "MEDICATION", "ORG", "PERSON", "PHONE", "PROFESSION"], "a": [0.0, 0.957, 1.0, 0.833, 0.955, 0.042, 0.864, 0.928, 0.833, 0.021], "b": [0.25, 0.957, 1.0, 0.833, 0.955, 0.083, 0.864, 0.931, 0.833, 0.064], "a_name": "natasha+regex", "b_name": "natasha+regex+ollama ★"}, "en_baselines": {"combos": ["opf+regex+ollama ★", "presidio", "philter", "presidio+regex+ollama"], "covf2": [0.843, 0.907, 0.799, 0.88], "microf1": [0.743, 0.557, 0.108, 0.589]}, "enr_baselines": {"combos": ["opf+regex+ollama ★", "presidio", "philter", "presidio+regex+ollama"], "covf2": [0.851, 0.439, 0.782, 0.753], "microf1": [0.776, 0.328, 0.084, 0.576]}, "reconstruction": {"default_combo": "natasha+regex+ollama", "A_quasi_survival": {"a": {"quasi_entities": 11, "survived": 3, "survival_rate": 0.273, "survivors_by_type": ["MEDICATION", "PROFESSION"]}, "b": {"quasi_entities": 15, "survived": 5, "survival_rate": 0.333, "survivors_by_type": ["AGE", "DATE", "LOCATION", "MEDICATION", "PROFESSION"]}}, "B_inference_attack": {"a": {"guess": {"profession": "Маркетолог", "employer": "<ORG>", "city": "<LOCATION>", "age": "", "medication": "Сертралин (100 мг)", "other_clues": "одиночество, матери <LOCATION>"}, "recovered": ["profession", "medication"], "n_recovered": 2, "n_tested": 5}, "b": {"guess": {"profession": "<PROFESSION>", "employer": "<ORG>", "city": "<LOCATION>", "age": "<AGE>", "medication": "", "other_clues": "прокрастинация (перфекционистского типа — «если не идеально, то никак»), низкая самооценка, признаки выгорания. Доминирующие искажения: выраженное долженствование (пронизывает речь); навешивание ярлыков («неудачник», «бездарь», «лентяй»); эмоциональное обоснование («чувствую, что разочаровываю, значит так и есть»); обесценивание позитивного (похвала «не считается», успех — «повезло»); предсказание будущего («не сработает»)."}, "recovered": [], "n_recovered": 0, "n_tested": 5}}, "C_over_redaction": {"redacted_spans": 193, "false_positives": 39, "over_redaction_rate": 0.202}}};
 const C1='#c45a28', C2='#2a7a5a', C3='#5a5aaa', INK='#1a1a1a', MUTE='#888';
 Chart.defaults.font.family='EB Garamond, serif'; Chart.defaults.font.size=13; Chart.defaults.color=INK;
 Chart.defaults.animation=false;            // Tufte: no gratuitous motion; also stops re-animation cycling
@@ -159,7 +175,7 @@ Chart.defaults.responsiveAnimationDuration=0;
    plugins:{legend:{labels:{boxWidth:8,boxHeight:8}}}}});
 })();
 
-// 2. leaderboards (horizontal bars, three datasets overlaid by combo recall) -> small multiples as one grouped chart
+// 2. leaderboards (horizontal bars, plotted datasets overlaid by combo recall) -> small multiples as one grouped chart
 (function(){
  const sets=[['RU',DATA.ru_leaderboard,C2],['EN',DATA.en_leaderboard,C1],['EN-real',DATA.enr_leaderboard,C3]];
  // union of combo names preserving RU order then extras
@@ -182,6 +198,21 @@ Chart.defaults.responsiveAnimationDuration=0;
   options:{responsive:true,maintainAspectRatio:false,
    scales:{y:{beginAtZero:true,max:1,title:{display:true,text:'entity recall'},grid:{color:'#eee'}},x:{grid:{display:false},ticks:{maxRotation:60,minRotation:45,font:{size:10}}}},
    plugins:{legend:{labels:{boxWidth:8,boxHeight:8}}}}});
+})();
+
+// 6. stack vs established baselines (coverage F2 vs type micro-F1) — EN + EN-real
+(function(){
+ function draw(id, d){
+   if(!d||!d.combos||!d.combos.length) return;
+   new Chart(document.getElementById(id),{type:'bar',data:{labels:d.combos,datasets:[
+     {label:'coverage F2 (headline)',data:d.covf2,backgroundColor:C1},
+     {label:'type micro-F1',data:d.microf1,backgroundColor:C2}]},
+    options:{responsive:true,maintainAspectRatio:false,
+     scales:{y:{beginAtZero:true,max:1,title:{display:true,text:'score'},grid:{color:'#eee'}},x:{grid:{display:false},ticks:{maxRotation:30,minRotation:0,font:{size:10}}}},
+     plugins:{legend:{labels:{boxWidth:8,boxHeight:8}}}}});
+ }
+ draw('baseEN', DATA.en_baselines);
+ draw('baseENR', DATA.enr_baselines);
 })();
 </script>
 </body></html>

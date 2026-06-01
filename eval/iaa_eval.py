@@ -122,17 +122,23 @@ def main():
     json.dump(results, open(os.path.join(HERE, "iaa-results.json"), "w"),
               ensure_ascii=False, indent=2)
 
-    md = ["# Inter-annotator agreement (IAA) — seed set", "",
+    md = ["# LLM-assisted consistency check (single second-annotator) — seed set", "",
+          "**This is NOT human inter-annotator agreement.** It is an *LLM-assisted "
+          "consistency check* with a single, automated second annotator (per Codex audit "
+          "R4). A human multi-annotator study with adjudication is still required before "
+          "any publishable agreement claim; the numbers below only flag where the "
+          "pattern-derived gold and an independent LLM pass disagree.", "",
           f"Seed: {', '.join(SEED)} (the two densest sessions). **A1** = pattern-derived "
           "gold; **A2** = independent from-scratch annotation by GPT-5 (Codex), given only "
-          "the transcript. This checks the gold against an independent annotator — the "
-          "research/Codex P0 fix for the circular, pattern-derived gold.", "",
-          "## Agreement", "",
+          "the transcript. This checks the gold against one independent automated annotator "
+          "— the research/Codex P0 probe for the circular, pattern-derived gold.", "",
+          "## Consistency (A2 vs A1)", "",
           f"- **Entity-level F1 (A2 vs A1): {f1:.3f}**  (precision {precision:.3f} = A2 items "
           f"matching gold; recall {recall:.3f} = gold *entities* A2 also marked). Entity-level "
           "(gold mentions grouped by entity_id) to avoid per-occurrence inflation.",
           f"- **Character-level Cohen's κ: {mean_kappa:.3f}**  "
-          f"({'substantial' if mean_kappa>=0.6 else 'moderate' if mean_kappa>=0.4 else 'fair'} agreement)",
+          f"({'substantial' if mean_kappa>=0.6 else 'moderate' if mean_kappa>=0.4 else 'fair'} "
+          "consistency vs the single LLM second-annotator — not a human-agreement κ)",
           "",
           "| Doc | A1 entities | A2 items | A2 hit | A1 hit | κ |",
           "|---|--:|--:|--:|--:|--:|"]
