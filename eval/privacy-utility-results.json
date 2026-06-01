@@ -1,0 +1,273 @@
+{
+  "attack_budget": {
+    "model": "qwen2.5:3b",
+    "temperature": 0.4,
+    "calls_per_client": 1,
+    "topk": 3,
+    "background_knowledge": "redacted transcript only"
+  },
+  "privacy": {
+    "a": {
+      "n_attr": 5,
+      "top1": 0,
+      "top3": 0,
+      "attrs": {
+        "profession": {
+          "top1": false,
+          "top3": false,
+          "guess": [
+            "CBT therapist",
+            "psychologist"
+          ]
+        },
+        "employer": {
+          "top1": false,
+          "top3": false,
+          "guess": [
+            "<ORG> clinic",
+            "<LOCATION> clinic"
+          ]
+        },
+        "city": {
+          "top1": false,
+          "top3": false,
+          "guess": [
+            "<LOCATION>",
+            "<CITY>"
+          ]
+        },
+        "age": {
+          "top1": false,
+          "top3": false,
+          "guess": [
+            "30s",
+            "40s"
+          ]
+        },
+        "medication": {
+          "top1": false,
+          "top3": false,
+          "guess": [
+            "Sertaline"
+          ]
+        }
+      },
+      "risk_class": "MEDIUM"
+    },
+    "b": {
+      "n_attr": 5,
+      "top1": 1,
+      "top3": 1,
+      "attrs": {
+        "profession": {
+          "top1": false,
+          "top3": false,
+          "guess": [
+            "CBT",
+            "Cognitive Behavioral Therapy"
+          ]
+        },
+        "employer": {
+          "top1": false,
+          "top3": false,
+          "guess": [
+            "<ORG>",
+            "<LOCATION>"
+          ]
+        },
+        "city": {
+          "top1": false,
+          "top3": false,
+          "guess": [
+            "<LOCATION>"
+          ]
+        },
+        "age": {
+          "top1": true,
+          "top3": true,
+          "guess": [
+            "41"
+          ]
+        },
+        "medication": {
+          "top1": false,
+          "top3": false,
+          "guess": [
+            "Floxetine",
+            "20mg"
+          ]
+        }
+      },
+      "risk_class": "MEDIUM"
+    }
+  },
+  "utility": {
+    "a": {
+      "sessions": [
+        {
+          "orig_types": [
+            "дихотомическое",
+            "катастрофизация",
+            "чтение мыслей"
+          ],
+          "red_types": [
+            "дихотомическое",
+            "катастрофизация",
+            "чтение мыслей"
+          ],
+          "preserved": 1.0
+        },
+        {
+          "orig_types": [
+            "катастрофизация",
+            "навешивание ярлыков",
+            "чтение мыслей"
+          ],
+          "red_types": [
+            "катастрофизация",
+            "навешивание ярлыков",
+            "чтение мыслей"
+          ],
+          "preserved": 1.0
+        },
+        {
+          "orig_types": [
+            "катастрофизация"
+          ],
+          "red_types": [
+            "катастрофизация"
+          ],
+          "preserved": 1.0
+        },
+        {
+          "orig_types": [
+            "катастрофизация",
+            "чтение мыслей"
+          ],
+          "red_types": [
+            "дихотомическое",
+            "катастрофизация",
+            "чтение мыслей"
+          ],
+          "preserved": 1.0
+        },
+        {
+          "orig_types": [
+            "катастрофизация",
+            "навешивание ярлыков",
+            "чтение мыслей"
+          ],
+          "red_types": [
+            "катастрофизация",
+            "навешивание ярлыков",
+            "чтение мыслей"
+          ],
+          "preserved": 1.0
+        }
+      ],
+      "mean_signal_preserved": 1.0
+    },
+    "b": {
+      "sessions": [
+        {
+          "orig_types": [
+            "катастрофизация",
+            "навешивание ярлыков",
+            "чтение мыслей"
+          ],
+          "red_types": [
+            "катастрофизация",
+            "навешивание ярлыков",
+            "чтение мыслей"
+          ],
+          "preserved": 1.0
+        },
+        {
+          "orig_types": [
+            "катастрофизация",
+            "навешивание ярлыков",
+            "обесценивание",
+            "сверхобобщение",
+            "чтение мыслей"
+          ],
+          "red_types": [
+            "дихотомическое",
+            "катастрофизация",
+            "навешивание ярлыков",
+            "чтение мыслей"
+          ],
+          "preserved": 0.6
+        },
+        {
+          "orig_types": [
+            "дихотомическое",
+            "катастрофизация",
+            "сверхобобщение",
+            "чтение мыслей"
+          ],
+          "red_types": [
+            "катастрофизация",
+            "навешивание ярлыков",
+            "чтение мыслей"
+          ],
+          "preserved": 0.5
+        },
+        {
+          "orig_types": [
+            "дихотомическое",
+            "катастрофизация",
+            "чтение мыслей"
+          ],
+          "red_types": [
+            "дихотомическое",
+            "катастрофизация",
+            "чтение мыслей"
+          ],
+          "preserved": 1.0
+        },
+        {
+          "orig_types": [
+            "дихотомическое",
+            "навешивание ярлыков"
+          ],
+          "red_types": [
+            "дихотомическое",
+            "навешивание ярлыков"
+          ],
+          "preserved": 1.0
+        }
+      ],
+      "mean_signal_preserved": 0.82
+    },
+    "char_nonpii_preservation": 1.0
+  },
+  "quasi_combination": {
+    "a": {
+      "surviving_quasi": [
+        "MEDICATION",
+        "PROFESSION"
+      ],
+      "dims_used": [
+        "MEDICATION",
+        "PROFESSION"
+      ],
+      "expected_matches": 3504.0,
+      "singles_out": false
+    },
+    "b": {
+      "surviving_quasi": [
+        "AGE",
+        "DATE",
+        "LOCATION",
+        "MEDICATION",
+        "PROFESSION"
+      ],
+      "dims_used": [
+        "AGE",
+        "MEDICATION"
+      ],
+      "expected_matches": 8342.86,
+      "singles_out": false
+    }
+  }
+}

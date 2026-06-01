@@ -1,0 +1,15 @@
+{"doc_id": "en-real-000", "spans": []}
+{"doc_id": "en-real-001", "spans": []}
+{"doc_id": "en-real-002", "spans": []}
+{"doc_id": "en-real-003", "spans": []}
+{"doc_id": "en-real-004", "spans": []}
+{"doc_id": "en-real-005", "spans": [{"start": 111, "end": 121, "type": "DATE", "source": "regex"}, {"start": 248, "end": 258, "type": "DATE", "source": "regex"}]}
+{"doc_id": "en-real-006", "spans": []}
+{"doc_id": "en-real-007", "spans": []}
+{"doc_id": "en-real-008", "spans": []}
+{"doc_id": "en-real-009", "spans": [{"start": 146, "end": 165, "type": "DATE", "source": "regex"}]}
+{"doc_id": "en-real-010", "spans": []}
+{"doc_id": "en-real-011", "spans": []}
+{"doc_id": "en-real-012", "spans": []}
+{"doc_id": "en-real-013", "spans": []}
+{"doc_id": "en-real-014", "spans": []}

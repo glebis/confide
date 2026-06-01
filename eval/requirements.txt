@@ -1,0 +1,31 @@
+# Dependencies for the PsychoPII benchmark (eval/).
+#
+# The benchmark has two dependency tiers:
+#
+# 1. CORE (runs in your normal python3 — same env as the session-anonymizer skill):
+#    the gold builder, detector runner (natasha/regex/ollama), scorer, benchmark
+#    generator, and reconstruction experiment. These need only the anonymizer's
+#    own deps (natasha, scrubadub, phonenumbers) plus a running Ollama.
+#
+# 2. OPF detector (transformers route) — has a HARD requirement of transformers>=5
+#    AND torch>=2.4, which conflicts with the system torch (2.2.x). Run it in an
+#    ISOLATED venv so it cannot disturb the rest of the environment:
+#
+#        python3 -m venv --system-site-packages eval/.opf-venv
+#        eval/.opf-venv/bin/pip install "transformers>=5" "torch>=2.4,<2.6" "torchvision==0.20.1"
+#        eval/.opf-venv/bin/python eval/run_detectors.py --dataset ru --detectors opf
+#
+#    torchvision must match torch (0.20.1 ↔ torch 2.5.x): transformers 5.x eagerly
+#    imports torchvision, and a mismatched build fails with
+#    "operator torchvision::nms does not exist".
+#
+# transformers>=5 is required because the `openai_privacy_filter` model type is NOT
+# registered in 4.x (4.56 raises "does not recognize this architecture").
+
+# --- OPF detector (install into the isolated venv above) ---
+transformers>=5.0
+torch>=2.4,<2.6
+torchvision==0.20.1
+
+# --- optional: rebuild the real ai4privacy slice (build_dataset.py) ---
+datasets>=2.18

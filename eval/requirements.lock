@@ -1,0 +1,21 @@
+# Pinned environment for reproducible PsychoPII runs (see REPRODUCIBILITY.md §6).
+# Used by eval/Dockerfile. Bump deliberately + log the change in runs/runs.jsonl.
+
+# Layer 1 — Russian NER
+natasha==1.6.0
+pymorphy2-dicts-ru==2.4.417127.4579844
+setuptools==75.8.0
+
+# Layer 2 — deterministic regex
+scrubadub==2.0.1
+phonenumbers==9.0.31
+
+# Layer 3 — OPF via transformers route (OPTIONAL; needs transformers>=5 + torch>=2.4).
+# In Docker on Apple Silicon there is no MPS passthrough, so OPF runs on CPU (slow) —
+# keep it opt-in via DETECTORS. qwen runs in the sibling `ollama` service, not here.
+transformers==5.9.0
+torch==2.5.1
+torchvision==0.20.1
+
+# Optional — rebuild the real ai4privacy slice
+datasets==3.2.0

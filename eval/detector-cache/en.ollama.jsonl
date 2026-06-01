@@ -1,0 +1,32 @@
+{"doc_id": "en-000", "spans": [{"start": 45, "end": 62, "type": "PERSON", "source": "ollama"}]}
+{"doc_id": "en-001", "spans": []}
+{"doc_id": "en-002", "spans": []}
+{"doc_id": "en-003", "spans": [{"start": 44, "end": 53, "type": "LOCATION", "source": "ollama"}, {"start": 29, "end": 42, "type": "ADDRESS", "source": "ollama"}]}
+{"doc_id": "en-004", "spans": [{"start": 68, "end": 81, "type": "PHONE", "source": "ollama"}]}
+{"doc_id": "en-005", "spans": [{"start": 3, "end": 8, "type": "DATE", "source": "ollama"}, {"start": 14, "end": 18, "type": "DATE", "source": "ollama"}, {"start": 22, "end": 28, "type": "PERSON", "source": "ollama"}]}
+{"doc_id": "en-006", "spans": []}
+{"doc_id": "en-007", "spans": [{"start": 0, "end": 11, "type": "PERSON", "source": "ollama"}, {"start": 23, "end": 33, "type": "MEDICATION", "source": "ollama"}, {"start": 78, "end": 91, "type": "LOCATION", "source": "ollama"}]}
+{"doc_id": "en-008", "spans": []}
+{"doc_id": "en-009", "spans": []}
+{"doc_id": "en-010", "spans": [{"start": 16, "end": 30, "type": "PERSON", "source": "ollama"}]}
+{"doc_id": "en-011", "spans": []}
+{"doc_id": "en-012", "spans": [{"start": 18, "end": 34, "type": "PHONE", "source": "ollama"}, {"start": 38, "end": 41, "type": "DATE", "source": "ollama"}]}
+{"doc_id": "en-013", "spans": []}
+{"doc_id": "en-014", "spans": [{"start": 18, "end": 32, "type": "LOCATION", "source": "ollama"}, {"start": 34, "end": 39, "type": "LOCATION", "source": "ollama"}, {"start": 40, "end": 47, "type": "ADDRESS", "source": "ollama"}]}
+{"doc_id": "en-015", "spans": []}
+{"doc_id": "en-016", "spans": []}
+{"doc_id": "en-017", "spans": [{"start": 7, "end": 24, "type": "PERSON", "source": "ollama"}, {"start": 45, "end": 59, "type": "DATE", "source": "ollama"}, {"start": 3, "end": 5, "type": "PROFESSION", "source": "ollama"}]}
+{"doc_id": "en-018", "spans": []}
+{"doc_id": "en-019", "spans": []}
+{"doc_id": "en-020", "spans": [{"start": 3, "end": 6, "type": "PERSON", "source": "ollama"}, {"start": 8, "end": 15, "type": "PERSON", "source": "ollama"}, {"start": 29, "end": 35, "type": "DATE", "source": "ollama"}, {"start": 73, "end": 85, "type": "PHONE", "source": "ollama"}]}
+{"doc_id": "en-021", "spans": [{"start": 19, "end": 32, "type": "LOCATION", "source": "ollama"}, {"start": 34, "end": 38, "type": "LOCATION", "source": "ollama"}, {"start": 55, "end": 66, "type": "PERSON", "source": "ollama"}]}
+{"doc_id": "en-022", "spans": [{"start": 15, "end": 19, "type": "DATE", "source": "ollama"}, {"start": 20, "end": 22, "type": "DATE", "source": "ollama"}, {"start": 23, "end": 27, "type": "DATE", "source": "ollama"}, {"start": 45, "end": 48, "type": "ID", "source": "ollama"}, {"start": 49, "end": 54, "type": "ID", "source": "ollama"}, {"start": 55, "end": 60, "type": "ID", "source": "ollama"}, {"start": 61, "end": 63, "type": "ID", "source": "ollama"}, {"start": 64, "end": 69, "type": "ID", "source": "ollama"}, {"start": 70, "end": 72, "type": "ID", "source": "ollama"}, {"start": 73, "end": 75, "type": "ID", "source": "ollama"}, {"start": 76, "end": 79, "type": "ID", "source": "ollama"}, {"start": 80, "end": 87, "type": "ID", "source": "ollama"}]}
+{"doc_id": "en-023", "spans": [{"start": 26, "end": 37, "type": "PERSON", "source": "ollama"}, {"start": 38, "end": 62, "type": "ORG", "source": "ollama"}]}
+{"doc_id": "en-024", "spans": [{"start": 34, "end": 38, "type": "MEDICATION", "source": "ollama"}, {"start": 76, "end": 82, "type": "ID", "source": "ollama"}]}
+{"doc_id": "en-025", "spans": []}
+{"doc_id": "en-026", "spans": [{"start": 7, "end": 11, "type": "PERSON", "source": "ollama"}]}
+{"doc_id": "en-027", "spans": [{"start": 56, "end": 67, "type": "PERSON", "source": "ollama"}, {"start": 82, "end": 91, "type": "PHONE", "source": "ollama"}]}
+{"doc_id": "en-028", "spans": [{"start": 34, "end": 42, "type": "LOCATION", "source": "ollama"}, {"start": 13, "end": 32, "type": "LOCATION", "source": "ollama"}, {"start": 34, "end": 40, "type": "LOCATION", "source": "ollama"}]}
+{"doc_id": "en-029", "spans": []}
+{"doc_id": "en-030", "spans": [{"start": 51, "end": 58, "type": "PERSON", "source": "ollama"}]}
+{"doc_id": "en-031", "spans": [{"start": 47, "end": 51, "type": "PERSON", "source": "ollama"}]}
