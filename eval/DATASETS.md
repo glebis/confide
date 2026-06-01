@@ -14,7 +14,7 @@ research-only. None replaces the therapy-dialogue focus — they're for breadth/
 
 | Key | Source | Lang | License | Why it's useful |
 |---|---|---|---|---|
-| `ai4privacy-300k` | HF `ai4privacy/pii-masking-300k` | en/fr/de/it/nl/es | CC-BY-4.0 (OpenPII core) | broad synthetic PII; CONFIDE-Bench's EN-real slice comes from here |
+| `ai4privacy-300k` | HF `ai4privacy/pii-masking-300k` | en/fr/de/it/nl/es | custom/other (see HF `license.md`; commercial use gated) | broad synthetic PII; CONFIDE-Bench's EN-real slice comes from here |
 | `ai4privacy-200k` | HF `ai4privacy/pii-masking-200k` | en/fr/de/it | varies | smaller synthetic PII |
 | `nemotron-pii` | HF `nvidia/Nemotron-PII` | en | CC-BY-4.0 | synthetic, **50+ entity types** — taxonomy reference |
 | `reddit-self-disclosure` | HF `douy/reddit-self-disclosure` | en | research-only | **19 disclosed-experience categories** — closest to therapy self-disclosure |
