@@ -2,7 +2,7 @@
   "dataset": "en",
   "detector": "regex",
   "n_docs": 32,
-  "n_spans": 13,
+  "n_spans": 20,
   "invalid_spans": 0,
   "doc_ids": [
     "en-000",
@@ -39,7 +39,7 @@
     "en-031"
   ],
   "docs_sha": "bf6b55b6300c",
-  "code_sha": "26016c2392ed",
+  "code_sha": "308fdd3cfeb8",
   "model": null,
-  "seconds": 2.7
+  "seconds": 1.8
 }

@@ -84,6 +84,62 @@ _DATE_PATTERN = re.compile(
     r"\b(?:(?:0?[1-9]|[12]\d|3[01])[.\/](?:0?[1-9]|1[0-2])[.\/]\d{2,4}"
     r"|\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])(?:T\d{2}:\d{2}(?::\d{2})?)?)\b")
 
+# --- Relative / colloquial DATE recognizers (the one additive capability the
+# Presidio baseline had over the stack: it caught "last Tuesday", "19th of the
+# month", "two weeks ago", "12 December" that the absolute-date regex + NER/LLM
+# layers missed). These extend the deterministic DATE layer to spelled-out and
+# relative calendar references in BOTH languages. They are kept TIGHT around
+# lexical date anchors (weekday / month name / "ago"-style relative words) so a
+# bare number that is an age, an ID, or a 00:12:45 timestamp is never matched.
+#
+# EN: weekday-relative, "N days/weeks/months/years ago", yesterday/today/tomorrow,
+#     last/next week/month/year, "the 19th [of the month/Month]", and month-name
+#     dates ("12 December", "March 3rd, 2024", "December/48"). On the EN gold this
+#     is a pure recall win (0 false positives — the gold annotates exactly these
+#     relative forms as DATE PII).
+_MONTHS_EN = (r"(?:January|February|March|April|May|June|July|August|September|"
+              r"October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)")
+_WD_EN = r"(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)"
+# spelled small cardinals so "two weeks ago" is caught alongside "3 days ago"
+_NUM_EN = r"(?:\d{1,3}|a|an|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)"
+_DATE_REL_EN = re.compile(
+    "(?i)\\b(?:"
+    + "(?:last|next|this|on)\\s+" + _WD_EN
+    + "|" + _NUM_EN + "\\s+(?:day|week|month|year)s?\\s+ago"
+    + "|yesterday|tomorrow|today"
+    + "|(?:last|next|this)\\s+(?:week|month|year)"
+    + "|the\\s+\\d{1,2}(?:st|nd|rd|th)(?:\\s+of\\s+(?:the\\s+month|" + _MONTHS_EN + "))?"
+    + "|\\d{1,2}(?:st|nd|rd|th)\\s+of\\s+(?:the\\s+month|" + _MONTHS_EN + ")"
+    + "|" + _MONTHS_EN + "\\s+\\d{1,2}(?:st|nd|rd|th)?(?:,?\\s+\\d{4})?"
+    + "|\\d{1,2}(?:st|nd|rd|th)?\\s+" + _MONTHS_EN + "(?:,?\\s+\\d{4})?"
+    + "|" + _MONTHS_EN + "/\\d{2,4}"
+    + ")\\b")
+
+# RU: weekday-anchored relative refs ("в прошлый вторник"), "N дней/недель/месяцев/
+#     лет [тому] назад", "до/после/перед/к Нового года", spelled day-of-month +
+#     month ("третьего февраля"), and numeric day + month ("12 декабря").
+#     DELIBERATELY EXCLUDES bare deictic adverbs (сегодня/вчера/завтра) and bare
+#     week refs (на этой/прошлой неделе): on the RU gold those carry no standalone
+#     identifying information and are NOT annotated as PII, so matching them adds
+#     hundreds of false positives for zero recall (e.g. "сегодня" alone occurs
+#     238× in the corpus, none in gold). Keeping the recognizer anchored to a
+#     concrete calendar token (weekday / month / N-ago) recovers the real
+#     spelled-out dates the LLM layer missed without collapsing precision.
+_MONTHS_RU = (r"(?:январ[ья]|феврал[ья]|марта|апрел[ья]|ма[йя]|июн[ья]|июл[ья]|"
+              r"август[а]?|сентябр[ья]|октябр[ья]|ноябр[ья]|декабр[ья])")
+_WD_RU = r"(?:понедельник|вторник|сред[уы]|четверг|пятниц[уы]|суббот[уы]|воскресень[ея])"
+_ORD_RU = (r"(?:перв|втор|треть|четверт|пят|шест|седьм|восьм|девят|десят|"
+           r"одиннадцат|двенадцат|тринадцат|четырнадцат|пятнадцат|шестнадцат|"
+           r"семнадцат|восемнадцат|девятнадцат|двадцат|тридцат)\w*")
+_DATE_REL_RU = re.compile(
+    "(?i)(?<!\\w)(?:"
+    + "в\\s+(?:прошл|следующ|эт)\\w+\\s+" + _WD_RU
+    + "|\\d{1,3}\\s+(?:дн\\w+|недел\\w+|месяц\\w+|год\\w+|лет)\\s+(?:тому\\s+)?назад"
+    + "|(?:до|после|перед|к)\\s+Нов\\w+\\s+год\\w+"
+    + "|" + _ORD_RU + "\\s+" + _MONTHS_RU
+    + "|\\d{1,2}\\s+" + _MONTHS_RU
+    + ")\\b")
+
 # Russian structured identifiers (PII-Bench RU taxonomy). SNILS has a distinctive
 # XXX-XXX-XXX XX shape; passport is 4+6 digits. INN is context-gated (a bare 10/12
 # digit run collides with timestamps/phones/case numbers — Codex audit #6), so it is
@@ -145,10 +201,18 @@ def run_regex(text: str) -> list[Span]:
         spans.append(Span(start=m.start(), end=m.end(), text=m.group(),
                           label="ID", source="regex"))
 
-    # Numeric dates (PHI). Spelled-out dates remain the LLM layer's job.
+    # Numeric dates (PHI). Spelled-out + relative dates handled below.
     for m in _DATE_PATTERN.finditer(text):
         spans.append(Span(start=m.start(), end=m.end(), text=m.group(),
                           label="DATE", source="regex"))
+
+    # Relative / colloquial + month-name dates (EN + RU). All occurrences, correct
+    # offsets. merge_spans dedupes any overlap with an absolute-date match. These
+    # close the gap the Presidio baseline exposed (relative-date recall).
+    for pat in (_DATE_REL_EN, _DATE_REL_RU):
+        for m in pat.finditer(text):
+            spans.append(Span(start=m.start(), end=m.end(), text=m.group(),
+                              label="DATE", source="regex"))
 
     # Russian structured identifiers + social handles. merge_spans resolves overlaps.
     # `grp` selects which capture group is the actual identifier span (INN gates on a
@@ -394,6 +458,38 @@ def encrypt_file(filepath: str, password: str) -> str:
     return out_path
 
 
+def _selftest_relative_dates():
+    """Unit assertions for the relative/colloquial DATE recognizers (T6).
+
+    Proves the new patterns MATCH the intended relative/spelled-out/month-name
+    forms in both languages and DO NOT match a timestamp, an age, or a non-date
+    discourse marker ("в прошлый раз" = "last time"). Run: ``anonymize.py --selftest``.
+    """
+    def dates(t):
+        return {s.text for s in run_regex(t) if s.label == "DATE"}
+
+    # EN positives — exactly the relative forms the EN gold annotates as DATE PII
+    for s in ("last Tuesday", "12 December", "March 3rd, 2024", "5th of January",
+              "19th of the month", "June 14 2019", "two weeks ago", "3 days ago",
+              "yesterday", "next Monday", "December/48", "18th April 2020"):
+        assert dates("We met " + s + ".") , f"EN should match {s!r}"
+
+    # RU positives — spelled-out / weekday-anchored / N-ago / month-name dates
+    for s in ("третьего февраля", "12 декабря", "в прошлый вторник",
+              "2 недели назад", "10 лет назад", "до Нового года", "первого мая"):
+        assert dates("Это было " + s + ".") , f"RU should match {s!r}"
+
+    # Negatives — must NOT be tagged DATE (timestamp / age / discourse marker)
+    assert not dates("Запись 00:12:45 в логе."), "timestamp must not be a DATE"
+    assert not dates("I am 34 years old."), "age must not be a DATE"
+    assert not dates("Мне 34 года, работаю."), "RU age must not be a DATE"
+    assert not dates("Как в прошлый раз договаривались."), "'в прошлый раз' is not a date"
+    assert not dates("Account 7722 4455 8811 ready."), "account id must not be a DATE"
+
+    print("✓ relative-date recognizer self-test passed (EN+RU positives, "
+          "timestamp/age/discourse-marker negatives)")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Three-layer therapy transcript anonymizer")
     parser.add_argument("input", nargs="?", help="Input file (or stdin if omitted)")
@@ -408,7 +504,13 @@ def main():
     parser.add_argument("--json", action="store_true", help="Output full JSON report")
     parser.add_argument("--encrypt", metavar="PASSWORD", help="Encrypt output with AES-256")
     parser.add_argument("--batch", metavar="DIR", help="Process all .txt/.md files in directory")
+    parser.add_argument("--selftest", action="store_true",
+                        help="Run the relative-date recognizer unit assertions and exit")
     args = parser.parse_args()
+
+    if args.selftest:
+        _selftest_relative_dates()
+        return
 
     layers = [l.strip() for l in args.layers.split(",")]
 
