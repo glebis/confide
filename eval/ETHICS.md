@@ -11,11 +11,16 @@ beneficence, justice). Pairs with `DATASHEET.md` (provenance) and `BENCHMARK.md`
 
 ## 1. Data and human subjects
 
-- **No real patients, no real PII.** Every Russian and English-synthetic transcript is
-  **fictional**, authored as masterclass demo material. The "clients" (Марина, Игорь)
-  and all embedded identifiers (names, phones, emails, policy/SNILS/INN numbers,
-  medications, employers) are invented. The EN-real slice is generic, public
-  `ai4privacy/pii-masking-300k` text — not therapy and not real personal records.
+- **No real patients; no real *therapy/clinical* data.** Every Russian and
+  English-*synthetic* **therapy transcript** is **fictional**, authored as masterclass demo
+  material. The "clients" (Марина, Игорь) and all embedded identifiers (names, phones,
+  emails, policy/SNILS/INN numbers, medications, employers) are invented. The one piece of
+  non-synthetic data is the **EN-real** slice: a small sample of the public
+  `ai4privacy/pii-masking-300k` benchmark — **generic, non-therapy, non-clinical** PII text
+  used only as an **external anchor** for the EN detectors. It carries **no real
+  therapy/clinical records**, but to be exact it is *not* synthetic the way the therapy
+  corpus is — it is real generic PII from a third-party public dataset, used unmodified
+  under that dataset's license. No real personal *session* data is collected or released.
 - **No human-subjects research.** Because no real person's data is collected, processed,
   or released, this work does not constitute human-subjects research and required no IRB
   review. Were real session data ever introduced (see §5), that determination changes.
@@ -97,9 +102,11 @@ optional:
 
 *Suggested paper "Ethics Statement" (≤150 words):*
 
-> All transcripts in CONFIDE-Bench are fully synthetic and fictional; no real patient data,
-> personal information, or human subjects are involved, so the work required no IRB
-> review. The benchmark includes re-identification/inference probes, which are run
+> All **therapy transcripts** in CONFIDE-Bench are fully synthetic and fictional; no real
+> patient data, clinical records, or human subjects are involved, so the work required no
+> IRB review. (The only non-synthetic data is a small slice of the public
+> `ai4privacy/pii-masking-300k` benchmark — generic, non-therapy PII used solely as an
+> external EN detector anchor, containing no clinical information.) The benchmark includes re-identification/inference probes, which are run
 > **only** against invented personas and recover only fabricated attributes; we publish
 > no novel attack and use these measurements defensively, to show that removing direct
 > identifiers leaves quasi-identifiers exploitable. Benchmark performance is **not** a

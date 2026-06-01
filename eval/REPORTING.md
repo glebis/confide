@@ -58,8 +58,11 @@ so a reader can judge the numbers rather than take them on faith. (Pairs with
   the floor failed — so we report the range, and note even the ceiling is a lower bound
   (single-shot, no auxiliary knowledge, no cross-corpus linkage).
 - **Small-N caveats are kept visible, not smoothed.** The corpus is synthetic and modest
-  (30 docs / 1,059 spans); we report bootstrap CIs and avoid significance claims the N can't
-  support. We omit point-estimate comparisons that the CI would swallow.
+  (30 docs / 1,058 spans); we report bootstrap CIs and avoid significance claims the N can't
+  support. We omit point-estimate comparisons that the CI would swallow. The fixed metrics,
+  ★ defaults, dev/test protocol, and a small honest power analysis (entity-recall CI
+  half-width ≈ ±0.05 → minimum detectable difference ≈ 0.10 on RU) are preregistered in
+  `PREREGISTRATION.md`.
 - **"Sensitive disclosure" content is named as a gap, not scored.** The most damaging
   therapy leaks (trauma, orientation) aren't a PII type and aren't in the gold; we flag the
   gap (`HARM-TAXONOMY.md`) rather than report a number we can't yet defend.

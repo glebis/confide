@@ -5,7 +5,7 @@
   "iters": 2000,
   "coverage_recall": {
     "mean": 0.837,
-    "lo95": 0.809,
+    "lo95": 0.808,
     "hi95": 0.864
   },
   "entity_recall": {
