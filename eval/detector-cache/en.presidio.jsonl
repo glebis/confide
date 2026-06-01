@@ -1,0 +1,32 @@
+{"doc_id": "en-000", "spans": [{"start": 45, "end": 62, "type": "PERSON", "source": "presidio"}]}
+{"doc_id": "en-001", "spans": [{"start": 35, "end": 40, "type": "PERSON", "source": "presidio"}, {"start": 46, "end": 58, "type": "DATE", "source": "presidio"}]}
+{"doc_id": "en-002", "spans": [{"start": 32, "end": 57, "type": "EMAIL", "source": "presidio"}, {"start": 32, "end": 42, "type": "URL", "source": "presidio"}, {"start": 48, "end": 57, "type": "URL", "source": "presidio"}]}
+{"doc_id": "en-003", "spans": [{"start": 44, "end": 53, "type": "ORG", "source": "presidio"}]}
+{"doc_id": "en-004", "spans": [{"start": 68, "end": 72, "type": "DATE", "source": "presidio"}, {"start": 77, "end": 81, "type": "DATE", "source": "presidio"}]}
+{"doc_id": "en-005", "spans": [{"start": 3, "end": 18, "type": "DATE", "source": "presidio"}]}
+{"doc_id": "en-006", "spans": []}
+{"doc_id": "en-007", "spans": [{"start": 4, "end": 11, "type": "PERSON", "source": "presidio"}]}
+{"doc_id": "en-008", "spans": [{"start": 67, "end": 80, "type": "DATE", "source": "presidio"}, {"start": 34, "end": 66, "type": "URL", "source": "presidio"}]}
+{"doc_id": "en-009", "spans": [{"start": 11, "end": 15, "type": "PERSON", "source": "presidio"}, {"start": 56, "end": 60, "type": "DATE", "source": "presidio"}]}
+{"doc_id": "en-010", "spans": [{"start": 20, "end": 30, "type": "PERSON", "source": "presidio"}]}
+{"doc_id": "en-011", "spans": [{"start": 32, "end": 43, "type": "DATE", "source": "presidio"}]}
+{"doc_id": "en-012", "spans": [{"start": 22, "end": 34, "type": "DATE", "source": "presidio"}, {"start": 38, "end": 41, "type": "DATE", "source": "presidio"}]}
+{"doc_id": "en-013", "spans": [{"start": 10, "end": 32, "type": "EMAIL", "source": "presidio"}, {"start": 18, "end": 32, "type": "URL", "source": "presidio"}]}
+{"doc_id": "en-014", "spans": [{"start": 15, "end": 32, "type": "ORG", "source": "presidio"}, {"start": 34, "end": 47, "type": "PERSON", "source": "presidio"}]}
+{"doc_id": "en-015", "spans": []}
+{"doc_id": "en-016", "spans": [{"start": 0, "end": 5, "type": "PERSON", "source": "presidio"}, {"start": 22, "end": 27, "type": "PERSON", "source": "presidio"}]}
+{"doc_id": "en-017", "spans": [{"start": 3, "end": 5, "type": "ORG", "source": "presidio"}, {"start": 11, "end": 24, "type": "PERSON", "source": "presidio"}, {"start": 41, "end": 59, "type": "DATE", "source": "presidio"}]}
+{"doc_id": "en-018", "spans": [{"start": 31, "end": 69, "type": "URL", "source": "presidio"}]}
+{"doc_id": "en-019", "spans": [{"start": 41, "end": 45, "type": "DATE", "source": "presidio"}]}
+{"doc_id": "en-020", "spans": [{"start": 8, "end": 15, "type": "PERSON", "source": "presidio"}, {"start": 29, "end": 35, "type": "DATE", "source": "presidio"}, {"start": 73, "end": 85, "type": "DATE", "source": "presidio"}]}
+{"doc_id": "en-021", "spans": [{"start": 19, "end": 32, "type": "ORG", "source": "presidio"}, {"start": 34, "end": 38, "type": "PERSON", "source": "presidio"}]}
+{"doc_id": "en-022", "spans": [{"start": 15, "end": 27, "type": "DATE", "source": "presidio"}, {"start": 45, "end": 60, "type": "DATE", "source": "presidio"}]}
+{"doc_id": "en-023", "spans": [{"start": 26, "end": 62, "type": "EMAIL", "source": "presidio"}, {"start": 26, "end": 31, "type": "URL", "source": "presidio"}, {"start": 38, "end": 62, "type": "URL", "source": "presidio"}]}
+{"doc_id": "en-024", "spans": [{"start": 29, "end": 32, "type": "ORG", "source": "presidio"}, {"start": 34, "end": 38, "type": "DATE", "source": "presidio"}]}
+{"doc_id": "en-025", "spans": [{"start": 17, "end": 35, "type": "PERSON", "source": "presidio"}, {"start": 36, "end": 49, "type": "DATE", "source": "presidio"}]}
+{"doc_id": "en-026", "spans": [{"start": 30, "end": 47, "type": "EMAIL", "source": "presidio"}, {"start": 7, "end": 11, "type": "LOCATION", "source": "presidio"}, {"start": 38, "end": 47, "type": "URL", "source": "presidio"}]}
+{"doc_id": "en-027", "spans": [{"start": 0, "end": 23, "type": "DATE", "source": "presidio"}, {"start": 61, "end": 67, "type": "PERSON", "source": "presidio"}, {"start": 82, "end": 91, "type": "DATE", "source": "presidio"}]}
+{"doc_id": "en-028", "spans": [{"start": 34, "end": 42, "type": "PERSON", "source": "presidio"}]}
+{"doc_id": "en-029", "spans": [{"start": 39, "end": 75, "type": "URL", "source": "presidio"}, {"start": 11, "end": 15, "type": "PERSON", "source": "presidio"}]}
+{"doc_id": "en-030", "spans": [{"start": 3, "end": 13, "type": "LOCATION", "source": "presidio"}, {"start": 51, "end": 58, "type": "LOCATION", "source": "presidio"}, {"start": 3, "end": 13, "type": "DATE", "source": "presidio"}]}
+{"doc_id": "en-031", "spans": [{"start": 47, "end": 51, "type": "PERSON", "source": "presidio"}, {"start": 55, "end": 68, "type": "DATE", "source": "presidio"}]}

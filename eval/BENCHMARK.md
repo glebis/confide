@@ -185,8 +185,43 @@ The pattern-derived gold (A1) was checked against an **independent** from-scratc
 
 Beyond relaxed (≥1-char) overlap, a **containment** metric requires ≥80% of an identifier to be masked. For the RU default, containment recall equals relaxed (0.93) — i.e. catches are not 1-char-overlap artifacts; when the stack flags a PII it masks essentially all of it. Strict exact-span recall is 0.83 (boundary differences only).
 
+## Established baselines — Microsoft Presidio & Philter (Codex audit R3)
+
+To anchor CONFIDE's metrics against a known, off-the-shelf system, two established de-identifiers run on the same gold via the same per-doc cache + manifest pipeline (`run_detectors.py`) and the same scorer (`score_bench.py`) as every other detector:
+
+- **Microsoft Presidio** (`presidio-analyzer` 2.2.362) with spaCy `en_core_web_sm` (the *small* model — chosen under a ~1.8 GiB free-disk constraint; `en_core_web_lg` would lift PERSON/LOCATION recall somewhat) plus Presidio's pattern/checksum recognizers. Low-confidence hits (<0.45) are dropped. Run on **en** and **en-real** only. **Presidio RU is intentionally not scored:** its RU support is spaCy-NER-dependent and weak, and reporting a weak RU number would misrepresent it — a documented scope limit, not a measured score.
+- **Philter** (`philter-lite` 0.6.0, UCSF clinical de-id, `philter_delta.toml` HIPAA Safe-Harbor rule set, 313 filters; needs NLTK `averaged_perceptron_tagger_eng`). English clinical-notes scrubber; run on **en** and **en-real**.
+
+All four rows below come from **one consistent scoring run** (same `opf+regex+ollama ★` stack caches), so they are directly comparable:
+
+| Dataset | Combo | Cov F2 (rel) | Cov R | Type Micro-F1 | Preds |
+|---|---|--:|--:|--:|--:|
+| EN-synth | opf+regex+ollama ★ (CONFIDE) | 0.843 | 0.891 | **0.743** | 62 |
+| EN-synth | _presidio_ (baseline) | **0.907** | 0.913 | 0.557 | 51 |
+| EN-synth | _philter_ (baseline) | 0.799 | 0.783 | 0.108 | 47 |
+| EN-synth | _presidio+regex+ollama_ | 0.880 | 0.935 | 0.589 | 66 |
+| EN-real | opf+regex+ollama ★ (CONFIDE) | **0.851** | 0.900 | **0.776** | 100 |
+| EN-real | _presidio_ (baseline) | 0.439 | 0.412 | 0.328 | 54 |
+| EN-real | _philter_ (baseline) | 0.782 | 0.787 | 0.084 | 87 |
+| EN-real | _presidio+regex+ollama_ | 0.753 | 0.800 | 0.576 | 100 |
+
+**Headline finding.** Neither off-the-shelf system beats the therapy-tuned CONFIDE stack on type-aware F1. On the *easy* curated EN-synth set Presidio's coverage F2 (0.907) marginally exceeds the stack (0.843) thanks to a broad `DATE_TIME` recognizer, but its type-aware micro-F1 is much lower (0.557 vs 0.743) — it mislabels phones/IDs and emits no MEDICATION/PROFESSION/AGE typing. On the harder *real* ai4privacy slice Presidio **collapses** to 0.412 coverage recall (0.439 F2 vs 0.851): generic NER + structured recognizers do not cover the bespoke ID/markup formats (its ID recall is 0.30 vs the stack's 1.00). Philter is high-recall (0.78–0.79) but emits nearly everything as untyped `OTHER`, so its type-aware F1 is unusable (≈0.08–0.11). **This is the expected, valid baseline result: a generic system is not a therapy-tuned one.**
+
+### Unique capabilities (what the baselines catch that the stack does not)
+
+Computed by diffing gold spans the `opf+regex+ollama` stack misses but a baseline catches (relaxed overlap):
+
+- **Presidio `DATE_TIME` catches colloquial/relative dates the stack misses** on EN-synth: *"last Tuesday"*, *"12 December"*, *"last Thursday"*, *"19th of the month"*, plus a bare account fragment *"8842"* (5 gold spans) — a genuine complementary signal that overlaps the v2-gold note that the stack under-catches relative dates. On EN-real, Presidio caught **0** spans the stack missed.
+- **Philter** caught 1 unique span on EN-synth (*"12 December"*) and 1 on EN-real (a 2-letter country code *"GB"* the stack's NER skipped); its breadth is offset by no usable typing.
+- Presidio's **structured recognizers** (US_SSN, IBAN, credit card, bank/passport/driver-licence, crypto, IP) are a capability the regex layer lacks *in principle*, but on this gold they did **not** out-recall the stack (stack ID recall 1.00 on EN-real vs Presidio 0.30) — a potential robustness asset on other corpora, not a measured win here.
+
+**Takeaway:** the only coverage a baseline adds over the stack is **relative/colloquial dates** (Presidio `DATE_TIME`) — an argument for adding a relative-date recognizer to the stack (or ensembling Presidio's date layer), not for adopting Presidio wholesale.
+
+<!-- GRAPHICS-TODO: add a grouped bar chart "CONFIDE stack vs established baselines" with TWO grouped metrics per combo — Coverage F2 (recall-weighted, headline) and Type-aware micro-F1 — for the four combos {opf+regex+ollama ★, presidio, philter, presidio+regex+ollama}, one panel for EN-synth and one for EN-real. Data already lives in en-bench-results.json / en-real-bench-results.json at combos[name].coverage_relaxed.f2 and combos[name].type_relaxed.f1. The story the chart must tell: baselines can match/edge on coverage but fall far behind on type-aware F1, and Presidio collapses on the real slice. (make_benchmark.py already emits this section + the per-dataset leaderboards that include the presidio/philter rows; this chart is the only remaining visual.) Not added inline to avoid half-breaking the report pipeline. -->
+
 ## Known limitations
 
+- **Presidio/Philter are generic baselines** (not therapy-tuned, EN-only, Presidio on the *small* spaCy model); their lower scores are expected and reported as an anchor, not a failure. Presidio RU is intentionally unscored (weak spaCy-RU NER).
 - **Small N** — each miss moves recall several points; treat per-type numbers as directional.
 - **Synthetic RU data** — fictional; not real patient text.
 - **Spelled-out digits** (e.g. phone read out word-by-word) are out of scope for the regex layer by design and fall to the LLM layer / manual review.
