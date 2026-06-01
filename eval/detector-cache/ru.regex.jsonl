@@ -1,23 +1,23 @@
-{"doc_id": "ru-a-s01", "spans": [{"start": 732, "end": 757, "type": "EMAIL", "source": "scrubadub"}, {"start": 706, "end": 722, "type": "PHONE", "source": "phonenumbers"}, {"start": 816, "end": 830, "type": "ID", "source": "regex"}, {"start": 42, "end": 52, "type": "DATE", "source": "regex"}]}
+{"doc_id": "ru-a-s01", "spans": [{"start": 732, "end": 757, "type": "EMAIL", "source": "scrubadub"}, {"start": 706, "end": 722, "type": "PHONE", "source": "phonenumbers"}, {"start": 816, "end": 830, "type": "ID", "source": "regex"}, {"start": 42, "end": 52, "type": "DATE", "source": "regex"}, {"start": 22363, "end": 22380, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-a-s02", "spans": [{"start": 42, "end": 52, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-a-s03", "spans": [{"start": 42, "end": 52, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-a-s04", "spans": [{"start": 42, "end": 52, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-a-s05", "spans": [{"start": 42, "end": 52, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-b-s01", "spans": [{"start": 40, "end": 50, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-b-s02", "spans": [{"start": 40, "end": 50, "type": "DATE", "source": "regex"}]}
-{"doc_id": "ru-b-s03", "spans": [{"start": 333, "end": 354, "type": "EMAIL", "source": "scrubadub"}, {"start": 40, "end": 50, "type": "DATE", "source": "regex"}]}
+{"doc_id": "ru-b-s03", "spans": [{"start": 333, "end": 354, "type": "EMAIL", "source": "scrubadub"}, {"start": 40, "end": 50, "type": "DATE", "source": "regex"}, {"start": 189, "end": 205, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-b-s04", "spans": [{"start": 40, "end": 50, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-b-s05", "spans": [{"start": 40, "end": 50, "type": "DATE", "source": "regex"}]}
-{"doc_id": "ru-c-s01", "spans": [{"start": 1598, "end": 1616, "type": "EMAIL", "source": "scrubadub"}, {"start": 1640, "end": 1658, "type": "EMAIL", "source": "scrubadub"}, {"start": 1531, "end": 1547, "type": "PHONE", "source": "phonenumbers"}, {"start": 41, "end": 51, "type": "DATE", "source": "regex"}, {"start": 968, "end": 978, "type": "DATE", "source": "regex"}, {"start": 1989, "end": 2003, "type": "ID", "source": "regex"}]}
+{"doc_id": "ru-c-s01", "spans": [{"start": 1598, "end": 1616, "type": "EMAIL", "source": "scrubadub"}, {"start": 1640, "end": 1658, "type": "EMAIL", "source": "scrubadub"}, {"start": 1531, "end": 1547, "type": "PHONE", "source": "phonenumbers"}, {"start": 41, "end": 51, "type": "DATE", "source": "regex"}, {"start": 968, "end": 978, "type": "DATE", "source": "regex"}, {"start": 932, "end": 944, "type": "DATE", "source": "regex"}, {"start": 1989, "end": 2003, "type": "ID", "source": "regex"}]}
 {"doc_id": "ru-c-s02", "spans": [{"start": 41, "end": 51, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-c-s03", "spans": [{"start": 41, "end": 51, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-c-s04", "spans": [{"start": 41, "end": 51, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-c-s05", "spans": [{"start": 41, "end": 51, "type": "DATE", "source": "regex"}]}
-{"doc_id": "ru-d-s01", "spans": [{"start": 2192, "end": 2213, "type": "EMAIL", "source": "scrubadub"}, {"start": 2168, "end": 2184, "type": "PHONE", "source": "phonenumbers"}, {"start": 41, "end": 51, "type": "DATE", "source": "regex"}, {"start": 2630, "end": 2640, "type": "DATE", "source": "regex"}, {"start": 2221, "end": 2235, "type": "ID", "source": "regex"}]}
+{"doc_id": "ru-d-s01", "spans": [{"start": 2192, "end": 2213, "type": "EMAIL", "source": "scrubadub"}, {"start": 2168, "end": 2184, "type": "PHONE", "source": "phonenumbers"}, {"start": 41, "end": 51, "type": "DATE", "source": "regex"}, {"start": 2630, "end": 2640, "type": "DATE", "source": "regex"}, {"start": 2599, "end": 2612, "type": "DATE", "source": "regex"}, {"start": 2221, "end": 2235, "type": "ID", "source": "regex"}]}
 {"doc_id": "ru-d-s02", "spans": [{"start": 41, "end": 51, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-d-s03", "spans": [{"start": 41, "end": 51, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-d-s04", "spans": [{"start": 41, "end": 51, "type": "DATE", "source": "regex"}]}
-{"doc_id": "ru-d-s05", "spans": [{"start": 41, "end": 51, "type": "DATE", "source": "regex"}]}
+{"doc_id": "ru-d-s05", "spans": [{"start": 41, "end": 51, "type": "DATE", "source": "regex"}, {"start": 5868, "end": 5882, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-e-s01", "spans": [{"start": 1135, "end": 1157, "type": "EMAIL", "source": "scrubadub"}, {"start": 1191, "end": 1213, "type": "EMAIL", "source": "scrubadub"}, {"start": 968, "end": 984, "type": "PHONE", "source": "phonenumbers"}, {"start": 40, "end": 50, "type": "DATE", "source": "regex"}, {"start": 1492, "end": 1506, "type": "ID", "source": "regex"}]}
 {"doc_id": "ru-e-s02", "spans": [{"start": 40, "end": 50, "type": "DATE", "source": "regex"}]}
 {"doc_id": "ru-e-s03", "spans": [{"start": 40, "end": 50, "type": "DATE", "source": "regex"}]}
