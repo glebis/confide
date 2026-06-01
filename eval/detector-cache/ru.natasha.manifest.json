@@ -2,7 +2,7 @@
   "dataset": "ru",
   "detector": "natasha",
   "n_docs": 30,
-  "n_spans": 705,
+  "n_spans": 1146,
   "invalid_spans": 0,
   "doc_ids": [
     "ru-a-s01",
@@ -36,8 +36,8 @@
     "ru-f-s04",
     "ru-f-s05"
   ],
-  "docs_sha": "db6b896f36e6",
+  "docs_sha": "a2ff538cc685",
   "code_sha": "26016c2392ed",
   "model": null,
-  "seconds": 20.8
+  "seconds": 30.5
 }
