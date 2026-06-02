@@ -215,9 +215,47 @@
     }
   },
   "linkability": {
-    "same_pair_called_same": false,
-    "diff_pair_called_same": false,
-    "linkable": false
+    "model": "qwen/qwen3-32b",
+    "engine": "openai",
+    "n_docs": 30,
+    "sampling": {
+      "total_diff": 375,
+      "sampled_diff": 40,
+      "dropped_diff": 335,
+      "diff_stride": 5
+    },
+    "n_pairs": 100,
+    "n_same": 60,
+    "n_diff": 40,
+    "metrics": {
+      "n": 100,
+      "tp": 60,
+      "fn": 0,
+      "fp": 0,
+      "tn": 40,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "roc_auc": 1.0,
+      "base_rate_same": 0.6,
+      "majority_accuracy": 0.6
+    },
+    "bootstrap_ci": {
+      "iters": 2000,
+      "accuracy": {
+        "mean": 1.0,
+        "lo95": 1.0,
+        "hi95": 1.0
+      },
+      "roc_auc": {
+        "mean": 1.0,
+        "lo95": 1.0,
+        "hi95": 1.0
+      }
+    },
+    "leaked_client_id_docs": 28,
+    "leak_note": "28/30 redacted sessions still expose a cleartext YAML `client_id` (a first name) — a per-client CONSTANT key. The near-perfect score therefore reflects a SURVIVING DIRECT IDENTIFIER the default stack failed to mask, not stylometric inference. This is itself the load-bearing finding: the deployed redaction does not strip structured metadata."
   },
   "singling_out_note": "ILLUSTRATIVE singling-out (method demo, not a re-identification probability). Naive product of per-quasi fractions assumes the quasi-identifiers are statistically independent. They are not (profession/city/age/medication correlate), so this OVERSTATES uniqueness — the real matching population is larger and the person is LESS singled out than the point estimate implies."
 }

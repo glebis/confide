@@ -30,8 +30,29 @@ Entity-aware survivor detection (gold quasi entity left unmasked by the default 
 | e | 5256.0 | MEDICATION, PROFESSION | no | yes |
 | f | 83.4 | AGE, MEDICATION, PROFESSION | no | yes |
 
-## 3. Linkability
+## 3. Linkability (full pair-matrix benchmark)
 
-Same-client pair judged same person: **False**; different-client pair judged same: **False**; → linkable: **False**.
+Anonymeter framing: given two REDACTED sessions, can the attacker tell whether they belong to the SAME client? Over 30 redacted docs we score **100 pairs** (60 SAME, 40 DIFFERENT). DIFFERENT pairs are deterministically strided (stride 5; 335 of 375 dropped — no RNG, no silent truncation). Attacker `qwen/qwen3-32b` via openai, SAME = positive class.
+
+| metric | value | 95% CI (bootstrap, 2000×) |
+|---|--:|---|
+| accuracy | 1.000 | 1.000–1.000 |
+| ROC-AUC | 1.000 | 1.000–1.000 |
+| precision (SAME) | 1.000 | — |
+| recall (SAME) | 1.000 | — |
+| F1 (SAME) | 1.000 | — |
+| base rate P(SAME) | 0.600 | — |
+| majority-class accuracy | 0.600 | — |
+
+Confusion matrix (rows = truth, cols = attacker verdict):
+
+| | called SAME | called DIFFERENT |
+|---|--:|--:|
+| **truth SAME** | 60 (TP) | 0 (FN) |
+| **truth DIFFERENT** | 0 (FP) | 40 (TN) |
+
+> **Mechanism (read the AUC honestly):** 28/30 redacted sessions still expose a cleartext YAML `client_id` (a first name) — a per-client CONSTANT key. The near-perfect score therefore reflects a SURVIVING DIRECT IDENTIFIER the default stack failed to mask, not stylometric inference. This is itself the load-bearing finding: the deployed redaction does not strip structured metadata.
+
+**Verdict:** **Redaction does NOT fully defeat linkability** — the attacker beats chance.
 
 _Prompt-strategy spread shows which framing the anonymizer is least robust to. Rising recovery + singling-out + linkability are the three ways therapy de-id fails after the names are gone._
