@@ -4,7 +4,7 @@
 # via `python -m confide_eval.<subpkg>.<module>`. PYTHONPATH=src lets it run
 # without an editable install.
 PY ?= PYTHONPATH=src python3
-DATASETS := ru ru-adv en en-real
+DATASETS := ru ru-adv en en-real ru-real
 
 .PHONY: check test rescore ci report all
 

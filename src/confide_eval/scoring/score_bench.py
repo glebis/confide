@@ -64,6 +64,16 @@ COMBOS = {
     ],
 }
 COMBOS["en-real"] = COMBOS["en"]
+# RU-real (JayGuard): real-TEXT RU, same local RU stack as the synthetic RU set.
+COMBOS["ru-real"] = [
+    ("regex",                  ["regex"]),
+    ("natasha",                ["natasha"]),
+    ("ollama",                 ["ollama"]),
+    ("natasha+regex",          ["natasha", "regex"]),
+    ("natasha+ollama",         ["natasha", "ollama"]),
+    ("regex+ollama",           ["regex", "ollama"]),
+    ("natasha+regex+ollama ★", ["natasha", "regex", "ollama"]),
+]
 COMBOS["ru-adv"] = [
     ("regex",                  ["regex"]),
     ("natasha",                ["natasha"]),

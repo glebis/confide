@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 DATA = ROOT / "data"
 SESSIONS_RU = DATA / "sessions-ru"
+SESSIONS_RU_REAL = DATA / "sessions-ru-real"
 SESSIONS_EN = DATA / "sessions-en"
 
 RESULTS = ROOT / "results"
@@ -38,6 +39,10 @@ GOLD = {
     "ru-adv":  SESSIONS_RU / "pii-adversarial-ru.jsonl",
     "en":      SESSIONS_EN / "pii-eval.jsonl",
     "en-real": SESSIONS_EN / "pii-eval-ai4privacy.jsonl",
+    # RU-real: real-TEXT Russian de-id slice derived from the JayGuard NER
+    # benchmark (Apache-2.0; redistributed WITH attribution — text IS committed).
+    # Real conversational RU, NOT therapy; machine-derived gold, not adjudicated.
+    "ru-real": SESSIONS_RU_REAL / "jayguard-ru.jsonl",
 }
 
 # Stripped (committed, text-less) and local (fetched, text-bearing) EN-real gold.

@@ -25,6 +25,10 @@ DATASETS = [
     ("ru-adv", "RU-adversarial", "Russian robustness probe (16 snippets: patronymics, "
      "transliteration, diminutives, VK/Telegram handles, SNILS/INN/passport, abbreviated "
      "addresses, code-switching)"),
+    ("ru-real", "RU-real (JayGuard)", "real anonymized conversational Russian "
+     "(just-ai/jayguard-ner-benchmark, Apache-2.0) — real TEXT, NOT therapy; "
+     "machine-derived gold (not human-adjudicated); PERSON/LOCATION only "
+     "(JayGuard excludes phone/email/financial/medication/date)"),
 ]
 
 
@@ -346,6 +350,68 @@ def main():
           "`{en,en-real}-bench-results.json`). It shows baselines edging on coverage but "
           "falling far behind on type-aware F1, and Presidio collapsing on the real slice.")
         A("")
+
+    # --- RU-real (JayGuard) honest framing + synthetic→real transfer gap --------
+    rr = load("ru-real")
+    ru = load("ru")
+    if rr and ru:
+        def _star(res):
+            return res["combos"].get("natasha+regex+ollama ★", {})
+        rs, ss = _star(rr), _star(ru)
+        if "entity_level" in rs and "entity_level" in ss:
+            A("## RU-real framing & synthetic→real transfer gap (JayGuard)")
+            A("")
+            A("The RU-real slice above is **real conversational Russian text** from the "
+              "JayGuard NER benchmark (`just-ai/jayguard-ner-benchmark`, **Apache-2.0**, "
+              "redistributed here with attribution to **Just AI**). Three honesty caveats "
+              "bound every number in that section:")
+            A("")
+            A("- **Real TEXT, not real therapy.** JayGuard is everyday conversational RU "
+              "(medical/travel/daily-life), so it is a real-text RU *proxy* for the "
+              "detectors — not evidence about clinical session transcripts. The synthetic "
+              "RU corpus cannot supply real text; this slice fills exactly that gap.")
+            A("- **Machine-derived gold, NOT human-adjudicated.** Spans are converted "
+              "mechanically from JayGuard's BIO labels (offsets verified "
+              "`text[start:end]==value` for 100% of spans). Re-annotation against "
+              "`ANNOTATION-CODEBOOK.md` is the documented follow-up.")
+            A("- **PERSON/LOCATION only.** JayGuard does not label "
+              "phone/email/financial/medication/date, so recall is on PERSON and LOCATION "
+              "only; detector hits on other types have no gold to match and depress "
+              "precision/F2 but not recall.")
+            A("")
+            sb_cr = ss["coverage_relaxed"]["r"]; rb_cr = rs["coverage_relaxed"]["r"]
+            se, re_ = ss["entity_level"], rs["entity_level"]
+            sp = se["by_type"].get("PERSON", {}).get("recall", 0.0)
+            rp = re_["by_type"].get("PERSON", {}).get("recall", 0.0)
+            sl = se["by_type"].get("LOCATION", {}).get("recall", 0.0)
+            rl = re_["by_type"].get("LOCATION", {}).get("recall", 0.0)
+
+            def _d(a, b):
+                return f"{b - a:+.3f}"
+            A("Same ★ local stack (natasha+regex+ollama), synthetic RU therapy corpus vs "
+              "this real-text RU slice:")
+            A("")
+            A("| Metric (★ stack) | RU-synth | RU-real (JayGuard) | Δ |")
+            A("|---|--:|--:|--:|")
+            A(f"| Mask-coverage recall | {sb_cr:.3f} | {rb_cr:.3f} | **{_d(sb_cr, rb_cr)}** |")
+            A(f"| Entity recall (TAB) | {se['entity_recall']:.3f} | {re_['entity_recall']:.3f} | {_d(se['entity_recall'], re_['entity_recall'])} |")
+            A(f"| Harm-weighted recall | {se['harm_weighted_recall']:.3f} | {re_['harm_weighted_recall']:.3f} | {_d(se['harm_weighted_recall'], re_['harm_weighted_recall'])} |")
+            A(f"| PERSON entity recall | {sp:.3f} | {rp:.3f} | {_d(sp, rp)} |")
+            A(f"| LOCATION entity recall | {sl:.3f} | {rl:.3f} | {_d(sl, rl)} |")
+            A("")
+            A("Headline mask-coverage recall drops only ~8 points on real text — a modest, "
+              "believable transfer gap, not a collapse. The per-type split is the real "
+              "story: **PERSON recall is higher on JayGuard** (isolated names vs the "
+              "synthetic corpus's adversarial diminutives/patronymics), while **LOCATION "
+              "recall is lower** because JayGuard locations are dominated by bare street "
+              "addresses (e.g. \"Тверской 15\") that Natasha's NER misses and only the LLM "
+              "partially recovers — the inverse of the synthetic set's clean city names. "
+              "Entity- and harm-weighted recall read slightly *higher* on real text only "
+              "because this slice is PERSON/LOCATION-only and excludes the synthetic "
+              "corpus's hard quasi types (AGE/DATE/PROFESSION), so the absolute levels are "
+              "**not directly comparable** — only the per-type direction is. n=60, wide CI; "
+              "directional.")
+            A("")
 
     # Reconstruction / re-identification + limitations
     rec = os.path.join(HERE, "reconstruction-results.json")
