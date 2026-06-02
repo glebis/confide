@@ -408,6 +408,78 @@ def run_ollama(text: str, model: str = "qwen2.5:3b") -> list[Span]:
         return []
 
 
+# --- RU entity propagation (dependency-free) -------------------------------
+# The benchmark's residual-risk finding: a name is detected somewhere but a
+# different *variant* leaks — an inflected case form (Артёмом, Денису), a
+# vocative (Роман,), a capitalized common-word collision (Веру), or a Latin
+# transliteration (Timur). Once ANY mention of a PERSON is detected, propagate
+# the mask to all its variants. No model/dict dependency — runs anywhere.
+
+_TRANSLIT = {
+    "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e",
+    "ж": "zh", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m",
+    "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u",
+    "ф": "f", "х": "kh", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "shch",
+    "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu", "я": "ya",
+}
+_WORD = re.compile(r"[А-Яа-яЁё]+|[A-Za-z]+")
+
+
+def translit_ru(s: str) -> str:
+    return "".join(_TRANSLIT.get(ch, ch) for ch in s.lower())
+
+
+def _same_name(a: str, b: str) -> bool:
+    """True if `a` and `b` are the same Russian name differing only by a short
+    case inflection (shared stem). Short tokens (<4) require an exact match."""
+    a, b = a.lower(), b.lower()
+    if a == b:
+        return True
+    n = min(len(a), len(b))
+    if n < 4:
+        return False
+    cp = 0
+    while cp < n and a[cp] == b[cp]:
+        cp += 1
+    # stems agree to within a 2-char divergence point and both tails are short
+    return cp >= n - 2 and (len(a) - cp) <= 3 and (len(b) - cp) <= 3
+
+
+def propagate_names(text: str, person_surfaces, capitalized_only: bool = True,
+                    translit: bool = True) -> list[Span]:
+    """Mask every morphological / transliterated variant of an already-detected
+    PERSON name. `person_surfaces` is the set of detected name strings."""
+    cyr_stems, latin_forms = [], set()
+    for nm in person_surfaces:
+        for tok in _WORD.findall(nm or ""):
+            if len(tok) < 2:
+                continue
+            if re.match(r"[А-Яа-яЁё]", tok):
+                cyr_stems.append(tok)
+                if translit:
+                    latin_forms.add(translit_ru(tok))
+            else:
+                latin_forms.add(tok.lower())
+    spans = []
+    for m in _WORD.finditer(text):
+        w = m.group()
+        if len(w) < 2:
+            continue
+        is_cyr = bool(re.match(r"[А-Яа-яЁё]", w))
+        hit = False
+        if is_cyr:
+            if any(_same_name(w, n) for n in cyr_stems):
+                hit = True
+                if capitalized_only and not w[0].isupper():
+                    hit = False
+        elif translit and w.lower() in latin_forms:
+            hit = True  # transliterated name (e.g. Timur) — always mask
+        if hit:
+            spans.append(Span(start=m.start(), end=m.end(), text=w,
+                              label="PERSON", source="propagate", confidence=0.8))
+    return spans
+
+
 def merge_spans(all_spans: list[Span]) -> list[Span]:
     """Merge overlapping spans, preferring higher-confidence or more specific labels."""
     if not all_spans:
@@ -515,6 +587,14 @@ def anonymize(text: str, layers: list[str] = None, model: str = "qwen2.5:3b",
         all_spans.extend(regex_spans)
         if not regex_spans:
             warnings.append("Regex layer found no emails/phones/IDs (none present, or scrubadub/phonenumbers not installed)")
+
+    # RU entity propagation: mask inflected/vocative/transliterated variants of
+    # any PERSON already detected by a prior layer (closes the benchmark's
+    # residual name-variant leaks). Skipped if explicitly disabled.
+    if "no-propagate" not in layers:
+        person_surfaces = {s.text for s in all_spans if s.label == "PERSON"}
+        if person_surfaces:
+            all_spans.extend(propagate_names(text, person_surfaces))
 
     merged = merge_spans(all_spans)
     redacted_text = redact(text, merged, pseudonyms)
