@@ -143,19 +143,23 @@
 </head>
 <body class="lang-en">
 <header>
-  <h1>CONFIDE<span class="dot">·</span>annotator</h1>
-  <span class="save-pill" id="savepill" title="Work is saved to this browser automatically">saved ✓</span>
-  <label class="field">annotator <input id="annot" placeholder="initials"></label>
-  <label class="hbtn file-label">📄 Load transcript<input type="file" id="loadtxt" accept=".md,.txt"></label>
-  <label class="hbtn file-label">⤴ Resume / dry-import<input type="file" id="loadjson" accept=".json"></label>
+  <h1>CONFIDE<span class="dot">·</span><span data-i18n="app.subtitle">annotator</span></h1>
+  <span class="save-pill" id="savepill" data-i18n="pill.saved" data-i18n-title="pill.title" title="Work is saved to this browser automatically">saved ✓</span>
+  <label class="field"><span data-i18n="hdr.annotator">annotator</span> <input id="annot" data-i18n-ph="hdr.initials" placeholder="initials"></label>
+  <label class="hbtn file-label">📄 <span data-i18n="hdr.loadtxt">Load transcript</span><input type="file" id="loadtxt" accept=".md,.txt"></label>
+  <label class="hbtn file-label">⤴ <span data-i18n="hdr.loadjson">Resume / dry-import</span><input type="file" id="loadjson" accept=".json"></label>
   <span class="grow"></span>
-  <button class="hbtn" onclick="openHelp()">❓ Help</button>
-  <button class="hbtn ghost" onclick="clearSaved()" title="Delete this browser's saved copy">🗑 Reset</button>
-  <button class="hbtn primary" onclick="exportJSON()">⬇ Export labels</button>
+  <div class="lang-toggle" id="hdrlang">
+    <button id="hlang-en" class="on" onclick="applyLang('en')">EN</button>
+    <button id="hlang-ru" onclick="applyLang('ru')">RU</button>
+  </div>
+  <button class="hbtn" onclick="openHelp()">❓ <span data-i18n="hdr.help">Help</span></button>
+  <button class="hbtn ghost" onclick="clearSaved()" data-i18n-title="hdr.reset.title" title="Delete this browser's saved copy">🗑 <span data-i18n="hdr.reset">Reset</span></button>
+  <button class="hbtn primary" onclick="exportJSON()">⬇ <span data-i18n="hdr.export">Export labels</span></button>
 </header>
 
 <main>
-  <div id="docwrap"><div id="doc" class="empty">Load a transcript (.md / .txt) to begin — then select text and click a type, or press its number key.</div></div>
+  <div id="docwrap"><div id="doc" class="empty" data-i18n="doc.empty">Load a transcript (.md / .txt) to begin — then select text and click a type, or press its number key.</div></div>
 
   <aside>
     <div class="sec">
@@ -163,19 +167,19 @@
     </div>
 
     <div class="sec">
-      <h2>Mark a span</h2>
+      <h2 data-i18n="side.mark">Mark a span</h2>
       <div class="types" id="typebtns"></div>
-      <p class="hint">Select text → click a type (or press <kbd>1</kbd>–<kbd>0</kbd>). Click a highlight to edit it; <kbd>Esc</kbd> clears selection.</p>
+      <p class="hint" id="markhint"></p>
     </div>
 
     <div class="sec">
-      <h2>Selected span</h2>
+      <h2 data-i18n="side.selected">Selected span</h2>
       <div id="editor" class="hidden"></div>
-      <p class="hint" id="noeditor">No span selected. Click a highlight or a row below.</p>
+      <p class="hint" id="noeditor" data-i18n="side.nosel">No span selected. Click a highlight or a row below.</p>
     </div>
 
     <div class="sec">
-      <h2>Spans</h2>
+      <h2 data-i18n="side.spans">Spans</h2>
       <div class="spanlist" id="spanlist"></div>
       <p class="count" id="count"></p>
     </div>
@@ -188,8 +192,8 @@
   <div class="help-head">
     <h2 class="en">How to annotate</h2><h2 class="ru">Как размечать</h2>
     <div class="lang-toggle">
-      <button id="lang-en" class="on" onclick="setLang('en')">EN</button>
-      <button id="lang-ru" onclick="setLang('ru')">RU</button>
+      <button id="lang-en" class="on" onclick="applyLang('en')">EN</button>
+      <button id="lang-ru" onclick="applyLang('ru')">RU</button>
     </div>
     <button class="help-x" onclick="closeHelp()">×</button>
   </div>
@@ -199,6 +203,127 @@
 <div class="toast" id="toast"></div>
 
 <script>
+/* ============================================================ i18n ========= */
+const LS_LANG="confide:lang";
+const I18N={
+  en:{
+    "app.subtitle":"annotator",
+    "pill.saved":"saved ✓", "pill.saving":"saving…", "pill.failed":"save failed",
+    "pill.title":"Work is saved to this browser automatically",
+    "hdr.annotator":"annotator", "hdr.initials":"initials",
+    "hdr.loadtxt":"Load transcript", "hdr.loadjson":"Resume / dry-import",
+    "hdr.help":"Help", "hdr.reset":"Reset", "hdr.reset.title":"Delete this browser's saved copy",
+    "hdr.export":"Export labels",
+    "doc.empty":"Load a transcript (.md / .txt) to begin — then select text and click a type, or press its number key.",
+    "docid.none":"no document loaded",
+    "docid.doc":"doc:", "docid.restored":"restored from this browser",
+    "docid.nspans":(n)=>n+" spans restored", "docid.imported":(n)=>"imported "+n+" spans",
+    "side.mark":"Mark a span", "side.selected":"Selected span", "side.spans":"Spans",
+    "side.nosel":"No span selected. Click a highlight or a row below.",
+    "hint.mark.pre":"Select text → click a type (or press ", "hint.mark.post":"). Click a highlight to edit it; ",
+    "hint.mark.esc":" clears selection.",
+    "list.empty":"No spans yet.",
+    "count":(n)=>n+" span"+(n===1?"":"s"), "count.autosaved":" · autosaved in this browser",
+    "ed.chars":(a,b)=>"chars "+a+"–"+b,
+    "ed.type":"Type", "ed.class":"Identifier class", "ed.harm":"Harm", "ed.role":"Person role",
+    "ed.eid":"Entity id", "ed.eid.hint":"(same real person = same id)", "ed.eid.ph":"e.g. p1, alina, max",
+    "ed.note":"Note", "ed.note.hint":"(use QUESTION: for anything unclear)", "ed.note.ph":"QUESTION: … / sensitive-disclosure",
+    "ed.delete":"🗑 Delete span",
+    "ed.q.title":"Questions for this span",
+    "ed.q1":"Which of the 10 types fits best (most specific)?",
+    "ed.q2":"Direct (identifies alone) or quasi (only combined)?",
+    "ed.q3":"Whose identity is it — set the person role.",
+    "ed.q4":"Same entity_id as earlier mentions of this person/thing?",
+    "ed.q5":"Harm level right? On the boundary → escalate + note.",
+    // select option labels
+    "cls.direct":"direct", "cls.quasi":"quasi",
+    "harm.critical":"critical", "harm.high":"high", "harm.medium":"medium", "harm.low":"low",
+    "role.client":"client", "role.partner":"partner", "role.relative":"relative", "role.friend":"friend",
+    "role.clinician":"clinician", "role.third_party":"third party", "role.institution":"institution",
+    "ty.PERSON":"PERSON", "ty.LOCATION":"LOCATION", "ty.ORG":"ORG", "ty.PHONE":"PHONE", "ty.EMAIL":"EMAIL",
+    "ty.ID":"ID", "ty.DATE":"DATE", "ty.MEDICATION":"MEDICATION", "ty.AGE":"AGE", "ty.PROFESSION":"PROFESSION",
+    // toasts / confirms
+    "t.nothingLoaded":"Nothing loaded.",
+    "c.clearSaved":(id)=>"Delete this browser's saved copy of \""+id+"\"?\nYour exported JSON files are not affected.",
+    "t.cleared":"Saved copy cleared.",
+    "c.loadNew":(id,cur)=>"Load \""+id+"\"? Current spans for \""+cur+"\" are saved in this browser; loading a new transcript switches away from it.",
+    "t.restoredSpans":(n)=>"Restored "+n+" saved spans for this transcript.",
+    "t.badJson":(m)=>"Bad JSON: "+m,
+    "t.mismatch":(m,n)=>m+" of "+n+" spans don't match the text offsets — check the codebook version.",
+    "t.dryOk":(n)=>"Dry-import OK: "+n+" spans, all offsets aligned ✓",
+    "t.selectFirst":"Select some text in the transcript first.",
+    "t.loadFirst":"Load a transcript first.",
+    "t.exported":(n)=>"Exported "+n+" spans.",
+    "x.delete":"delete",
+  },
+  ru:{
+    "app.subtitle":"разметчик",
+    "pill.saved":"сохранено ✓", "pill.saving":"сохранение…", "pill.failed":"ошибка сохранения",
+    "pill.title":"Работа автоматически сохраняется в этом браузере",
+    "hdr.annotator":"разметчик", "hdr.initials":"инициалы",
+    "hdr.loadtxt":"Загрузить транскрипт", "hdr.loadjson":"Продолжить / проверить импорт",
+    "hdr.help":"Помощь", "hdr.reset":"Сбросить", "hdr.reset.title":"Удалить сохранённую копию из этого браузера",
+    "hdr.export":"Экспорт разметки",
+    "doc.empty":"Загрузите транскрипт (.md / .txt), чтобы начать — затем выделите текст и нажмите тип или его цифру.",
+    "docid.none":"документ не загружен",
+    "docid.doc":"документ:", "docid.restored":"восстановлено из этого браузера",
+    "docid.nspans":(n)=>"восстановлено фрагментов: "+n, "docid.imported":(n)=>"импортировано фрагментов: "+n,
+    "side.mark":"Разметить фрагмент", "side.selected":"Выбранный фрагмент", "side.spans":"Фрагменты",
+    "side.nosel":"Фрагмент не выбран. Нажмите на подсветку или строку ниже.",
+    "hint.mark.pre":"Выделите текст → нажмите тип (или клавишу ", "hint.mark.post":"). Нажмите на подсветку, чтобы редактировать; ",
+    "hint.mark.esc":" снимает выделение.",
+    "list.empty":"Пока нет фрагментов.",
+    "count":(n)=>{const m=n%100,d=n%10; let w; if(m>=11&&m<=14)w="фрагментов"; else if(d===1)w="фрагмент"; else if(d>=2&&d<=4)w="фрагмента"; else w="фрагментов"; return n+" "+w;},
+    "count.autosaved":" · автосохранение в этом браузере",
+    "ed.chars":(a,b)=>"символы "+a+"–"+b,
+    "ed.type":"Тип", "ed.class":"Класс идентификатора", "ed.harm":"Вред", "ed.role":"Роль",
+    "ed.eid":"Entity id", "ed.eid.hint":"(один человек = один id)", "ed.eid.ph":"напр. p1, alina, max",
+    "ed.note":"Заметка", "ed.note.hint":"(пишите QUESTION: для всего неясного)", "ed.note.ph":"QUESTION: … / sensitive-disclosure",
+    "ed.delete":"🗑 Удалить фрагмент",
+    "ed.q.title":"Вопросы по этому фрагменту",
+    "ed.q1":"Какой из 10 типов точнее всего (самый конкретный)?",
+    "ed.q2":"Direct (опознаёт сам по себе) или quasi (только в сочетании)?",
+    "ed.q3":"Чья это идентичность — задайте роль (person role).",
+    "ed.q4":"Тот же entity_id, что у прежних упоминаний этого человека/объекта?",
+    "ed.q5":"Верный уровень вреда? На границе → повышайте и пишите note.",
+    "cls.direct":"direct (прямой)", "cls.quasi":"quasi (косвенный)",
+    "harm.critical":"критический", "harm.high":"высокий", "harm.medium":"средний", "harm.low":"низкий",
+    "role.client":"клиент", "role.partner":"партнёр", "role.relative":"родственник", "role.friend":"друг",
+    "role.clinician":"специалист", "role.third_party":"третье лицо", "role.institution":"организация",
+    "ty.PERSON":"PERSON · персона", "ty.LOCATION":"LOCATION · место", "ty.ORG":"ORG · организация",
+    "ty.PHONE":"PHONE · телефон", "ty.EMAIL":"EMAIL · почта", "ty.ID":"ID · идентификатор",
+    "ty.DATE":"DATE · дата", "ty.MEDICATION":"MEDICATION · препарат", "ty.AGE":"AGE · возраст",
+    "ty.PROFESSION":"PROFESSION · профессия",
+    "t.nothingLoaded":"Ничего не загружено.",
+    "c.clearSaved":(id)=>"Удалить сохранённую в этом браузере копию «"+id+"»?\nВаши экспортированные JSON-файлы не затрагиваются.",
+    "t.cleared":"Сохранённая копия удалена.",
+    "c.loadNew":(id,cur)=>"Загрузить «"+id+"»? Текущие фрагменты для «"+cur+"» сохранены в браузере; загрузка нового транскрипта переключит на него.",
+    "t.restoredSpans":(n)=>"Восстановлено сохранённых фрагментов для этого транскрипта: "+n+".",
+    "t.badJson":(m)=>"Некорректный JSON: "+m,
+    "t.mismatch":(m,n)=>m+" из "+n+" фрагментов не совпадают со смещениями текста — проверьте версию кодбука.",
+    "t.dryOk":(n)=>"Проверка импорта пройдена: "+n+" фрагментов, все смещения совпадают ✓",
+    "t.selectFirst":"Сначала выделите текст в транскрипте.",
+    "t.loadFirst":"Сначала загрузите транскрипт.",
+    "t.exported":(n)=>"Экспортировано фрагментов: "+n+".",
+    "x.delete":"удалить",
+  }
+};
+let LANG="en";
+function t(key,...args){ const d=I18N[LANG]||I18N.en; let v=(key in d)?d[key]:I18N.en[key];
+  if(v===undefined) return key; return (typeof v==="function")?v(...args):v; }
+function applyLang(l){
+  if(l!=="ru") l="en"; LANG=l;
+  try{ localStorage.setItem(LS_LANG,l); }catch(e){}
+  document.body.className="lang-"+l;
+  document.documentElement.setAttribute("lang",l);
+  ["lang-en","hlang-en"].forEach(id=>{const b=document.getElementById(id); if(b) b.classList.toggle("on",l==="en");});
+  ["lang-ru","hlang-ru"].forEach(id=>{const b=document.getElementById(id); if(b) b.classList.toggle("on",l==="ru");});
+  document.querySelectorAll("[data-i18n]").forEach(el=>{ el.textContent=t(el.getAttribute("data-i18n")); });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el=>{ el.setAttribute("placeholder",t(el.getAttribute("data-i18n-ph"))); });
+  document.querySelectorAll("[data-i18n-title]").forEach(el=>{ el.setAttribute("title",t(el.getAttribute("data-i18n-title"))); });
+  render();
+}
+
 /* ============================================================ codebook ===== */
 const TYPES = ["PERSON","LOCATION","ORG","PHONE","EMAIL","ID","DATE","MEDICATION","AGE","PROFESSION"];
 // type -> [identifier_class, harm] defaults (codebook v1 §3, §7)
@@ -209,11 +334,22 @@ const CLASSES=["direct","quasi"], HARMS=["critical","high","medium","low"],
   ROLES=["client","partner","relative","friend","clinician","third_party","institution"];
 
 let TEXT="", DOCID="", spans=[], sel=null; // span: {start,end,text,type,identifier_class,entity_id,person_role,harm,note}
+// docid display state: {kind:"none"|"plain"|"restored"|"nspans"|"imported", n}
+let docState={kind:"none"};
+function renderDocid(){
+  const di=document.getElementById("docid"); if(!di) return;
+  if(docState.kind==="none"){ di.textContent=t("docid.none"); return; }
+  let extra="";
+  if(docState.kind==="restored") extra=t("docid.restored");
+  else if(docState.kind==="nspans") extra=t("docid.nspans",docState.n);
+  else if(docState.kind==="imported") extra=t("docid.imported",docState.n);
+  di.innerHTML=t("docid.doc")+" <b>"+esc(DOCID)+"</b>"+(extra?" · <span style='color:var(--ok)'>"+extra+"</span>":"");
+}
 
 /* ============================================================ persistence == */
 const LS_PREFIX="confide:doc:", LS_LAST="confide:lastdoc", LS_ANNOT="confide:annot";
 let saveTimer=null;
-function markDirty(){ const p=document.getElementById("savepill"); p.textContent="saving…"; p.classList.add("dirty");
+function markDirty(){ const p=document.getElementById("savepill"); p.textContent=t("pill.saving"); p.classList.add("dirty");
   clearTimeout(saveTimer); saveTimer=setTimeout(saveNow,400); }
 function saveNow(){
   if(!DOCID){return;}
@@ -222,17 +358,17 @@ function saveNow(){
     localStorage.setItem(LS_PREFIX+DOCID, JSON.stringify(state));
     localStorage.setItem(LS_LAST, DOCID);
     localStorage.setItem(LS_ANNOT, annotVal());
-    const p=document.getElementById("savepill"); p.textContent="saved ✓"; p.classList.remove("dirty");
-  }catch(e){ const p=document.getElementById("savepill"); p.textContent="save failed"; p.classList.add("dirty"); }
+    const p=document.getElementById("savepill"); p.textContent=t("pill.saved"); p.classList.remove("dirty");
+  }catch(e){ const p=document.getElementById("savepill"); p.textContent=t("pill.failed"); p.classList.add("dirty"); }
 }
 function clearSaved(){
-  if(!DOCID){ toast("Nothing loaded."); return; }
-  if(!confirm("Delete this browser's saved copy of \""+DOCID+"\"?\nYour exported JSON files are not affected.")) return;
+  if(!DOCID){ toast(t("t.nothingLoaded")); return; }
+  if(!confirm(t("c.clearSaved",DOCID))) return;
   localStorage.removeItem(LS_PREFIX+DOCID);
   if(localStorage.getItem(LS_LAST)===DOCID) localStorage.removeItem(LS_LAST);
   TEXT="";DOCID="";spans=[];sel=null;
-  document.getElementById("docid").textContent="no document loaded";
-  render(); toast("Saved copy cleared.");
+  docState={kind:"none"};
+  render(); toast(t("t.cleared"));
 }
 function restoreLast(){
   const annot=localStorage.getItem(LS_ANNOT); if(annot) document.getElementById("annot").value=annot;
@@ -240,7 +376,7 @@ function restoreLast(){
   const raw=localStorage.getItem(LS_PREFIX+last); if(!raw) return;
   try{ const d=JSON.parse(raw); TEXT=d.text||""; DOCID=d.doc_id||last; spans=d.spans||[];
     if(d.annotator) document.getElementById("annot").value=d.annotator;
-    document.getElementById("docid").innerHTML="doc: <b>"+esc(DOCID)+"</b> · <span style='color:var(--ok)'>restored from this browser</span>";
+    docState={kind:"restored"};
     render();
   }catch(e){ /* ignore corrupt */ }
 }
@@ -252,16 +388,15 @@ document.getElementById("annot").oninput=markDirty;
 
 document.getElementById("loadtxt").onchange=e=>{const f=e.target.files[0];if(!f)return;
   const newid=f.name.replace(/\.(md|txt)$/i,"");
-  if(spans.length && DOCID && DOCID!==newid && !confirm("Load \""+newid+"\"? Current spans for \""+DOCID+"\" are saved in this browser; loading a new transcript switches away from it.")){e.target.value="";return;}
+  if(spans.length && DOCID && DOCID!==newid && !confirm(t("c.loadNew",newid,DOCID))){e.target.value="";return;}
   const r=new FileReader();
   r.onload=()=>{ DOCID=newid;
     const existing=localStorage.getItem(LS_PREFIX+DOCID);
     if(existing){ try{const d=JSON.parse(existing); TEXT=d.text||r.result; spans=d.spans||[];
-        document.getElementById("docid").innerHTML="doc: <b>"+esc(DOCID)+"</b> · <span style='color:var(--ok)'>"+spans.length+" spans restored</span>";
-        sel=null; render(); toast("Restored "+spans.length+" saved spans for this transcript."); return;
+        docState={kind:"nspans",n:spans.length};
+        sel=null; render(); toast(t("t.restoredSpans",spans.length)); return;
       }catch(_){}}
-    TEXT=r.result; spans=[]; sel=null; render(); saveNow();
-    document.getElementById("docid").innerHTML="doc: <b>"+esc(DOCID)+"</b>";
+    TEXT=r.result; spans=[]; sel=null; docState={kind:"plain"}; render(); saveNow();
   };
   r.readAsText(f); e.target.value="";};
 
@@ -278,11 +413,11 @@ document.getElementById("loadjson").onchange=e=>{const f=e.target.files[0];if(!f
     if(d.doc_id) DOCID=d.doc_id;
     spans=imported.map(normSpan); sel=null;
     if(d.annotator) document.getElementById("annot").value=d.annotator;
+    docState={kind:"imported",n:spans.length};
     render(); saveNow();
-    document.getElementById("docid").innerHTML="doc: <b>"+esc(DOCID)+"</b> · <span style='color:var(--ok)'>imported "+spans.length+" spans</span>";
-    if(mismatch) toast(mismatch+" of "+imported.length+" spans don't match the text offsets — check the codebook version.", true);
-    else toast("Dry-import OK: "+spans.length+" spans, all offsets aligned ✓");
-  }catch(err){ toast("Bad JSON: "+err.message, true); } };
+    if(mismatch) toast(t("t.mismatch",mismatch,imported.length), true);
+    else toast(t("t.dryOk",spans.length));
+  }catch(err){ toast(t("t.badJson",err.message), true); } };
   r.readAsText(f); e.target.value="";};
 
 function normSpan(s){ const d=DEF[s.type]||["quasi","medium"];
@@ -292,9 +427,12 @@ function normSpan(s){ const d=DEF[s.type]||["quasi","medium"];
 
 /* ============================================================ type buttons = */
 const tb=document.getElementById("typebtns");
-TYPES.forEach((t,i)=>{const b=document.createElement("button");
-  b.innerHTML=`<span class="sw ${t}"></span>${t}<span class="k">${(i+1)%10}</span>`;
-  b.onclick=()=>addSpan(t); tb.appendChild(b);});
+TYPES.forEach((ty,i)=>{const b=document.createElement("button");
+  b.dataset.type=ty;
+  b.innerHTML=`<span class="sw ${ty}"></span><span class="tlabel">${ty}</span><span class="k">${(i+1)%10}</span>`;
+  b.onclick=()=>addSpan(ty); tb.appendChild(b);});
+function renderTypeBtns(){ tb.querySelectorAll("button").forEach(b=>{ const ty=b.dataset.type;
+  b.title=t("ty."+ty); b.querySelector(".tlabel").textContent=t("ty."+ty); }); }
 
 /* ============================================================ offsets ====== */
 function charOffset(node,off){const r=document.createRange();
@@ -314,7 +452,7 @@ function addSpan(type){
   }
   // no selection: if a span is selected, retype it
   if(sel!=null){ upd(sel,"type",type); return; }
-  toast("Select some text in the transcript first.", true);
+  toast(t("t.selectFirst"), true);
 }
 function delSpan(i,ev){ if(ev) ev.stopPropagation(); spans.splice(i,1);
   if(sel===i) sel=null; else if(sel!=null && sel>i) sel--; render(); markDirty(); }
@@ -341,10 +479,15 @@ function mdSlice(raw){
 }
 
 /* ============================================================ render ======= */
+function renderMarkHint(){
+  const h=document.getElementById("markhint"); if(!h) return;
+  h.innerHTML=esc(t("hint.mark.pre"))+"<kbd>1</kbd>–<kbd>0</kbd>"+esc(t("hint.mark.post"))+"<kbd>Esc</kbd>"+esc(t("hint.mark.esc"));
+}
 function render(){
+  renderTypeBtns(); renderMarkHint(); renderDocid();
   const doc=document.getElementById("doc");
   if(!TEXT){ doc.className="empty";
-    doc.textContent="Load a transcript (.md / .txt) to begin — then select text and click a type, or press its number key.";
+    doc.textContent=t("doc.empty");
     renderSidebar(); return; }
   doc.className="";
   const sorted=[...spans].map((s,i)=>({...s,i})).sort((a,b)=>a.start-b.start||b.end-a.end);
@@ -364,7 +507,7 @@ function renderSidebar(){
   renderEditor();
   // span list
   const list=document.getElementById("spanlist");
-  if(!spans.length){ list.innerHTML='<div class="empty-list">No spans yet.</div>'; }
+  if(!spans.length){ list.innerHTML='<div class="empty-list">'+esc(t("list.empty"))+'</div>'; }
   else{
     list.innerHTML="";
     spans.forEach((s,i)=>{const row=document.createElement("div");
@@ -373,11 +516,10 @@ function renderSidebar(){
       row.innerHTML=`<span class="pill ${s.type}">${s.type.slice(0,4)}</span>`+
         `<span class="txt">${esc(s.text)}</span>`+
         (s.entity_id?`<span class="eid">#${esc(s.entity_id)}</span>`:"")+
-        `<span class="x" title="delete" onclick="delSpan(${i},event)">✕</span>`;
+        `<span class="x" title="${esc(t("x.delete"))}" onclick="delSpan(${i},event)">✕</span>`;
       list.appendChild(row);});
   }
-  document.getElementById("count").textContent=spans.length+" span"+(spans.length===1?"":"s")+
-    (DOCID?` · autosaved in this browser`:"");
+  document.getElementById("count").textContent=t("count",spans.length)+(DOCID?t("count.autosaved"):"");
 }
 
 function renderEditor(){
@@ -387,41 +529,42 @@ function renderEditor(){
   const s=spans[sel];
   const ids=[...new Set(spans.map(x=>x.entity_id).filter(Boolean))];
   ed.innerHTML=`
-    <div class="ed-excerpt"><span class="badge ${s.type}" style="color:#333">${s.type} · chars ${s.start}–${s.end}</span>${esc(s.text)}</div>
+    <div class="ed-excerpt"><span class="badge ${s.type}" style="color:#333">${s.type} · ${esc(t("ed.chars",s.start,s.end))}</span>${esc(s.text)}</div>
     <div class="ed-grid">
-      <div><label>Type</label>${seltag(TYPES,s.type,sel,"type")}</div>
-      <div><label>Identifier class</label>${seltag(CLASSES,s.identifier_class,sel,"identifier_class")}</div>
-      <div><label>Harm</label>${seltag(HARMS,s.harm,sel,"harm")}</div>
-      <div><label>Person role</label>${seltag(ROLES,s.person_role,sel,"person_role")}</div>
-      <div class="full"><label>Entity id <span style="font-weight:400;color:var(--faint)">(same real person = same id)</span></label>
-        <input list="eidlist" value="${esc(s.entity_id)}" oninput="upd(${sel},'entity_id',this.value)" placeholder="e.g. p1, alina, max">
+      <div><label>${esc(t("ed.type"))}</label>${seltag(TYPES,s.type,sel,"type","ty.")}</div>
+      <div><label>${esc(t("ed.class"))}</label>${seltag(CLASSES,s.identifier_class,sel,"identifier_class","cls.")}</div>
+      <div><label>${esc(t("ed.harm"))}</label>${seltag(HARMS,s.harm,sel,"harm","harm.")}</div>
+      <div><label>${esc(t("ed.role"))}</label>${seltag(ROLES,s.person_role,sel,"person_role","role.")}</div>
+      <div class="full"><label>${esc(t("ed.eid"))} <span style="font-weight:400;color:var(--faint)">${esc(t("ed.eid.hint"))}</span></label>
+        <input list="eidlist" value="${esc(s.entity_id)}" oninput="upd(${sel},'entity_id',this.value)" placeholder="${esc(t("ed.eid.ph"))}">
         <datalist id="eidlist">${ids.map(id=>`<option value="${esc(id)}">`).join("")}</datalist></div>
-      <div class="full"><label>Note <span style="font-weight:400;color:var(--faint)">(use QUESTION: for anything unclear)</span></label>
-        <input value="${esc(s.note)}" oninput="upd(${sel},'note',this.value)" placeholder="QUESTION: … / sensitive-disclosure"></div>
+      <div class="full"><label>${esc(t("ed.note"))} <span style="font-weight:400;color:var(--faint)">${esc(t("ed.note.hint"))}</span></label>
+        <input value="${esc(s.note)}" oninput="upd(${sel},'note',this.value)" placeholder="${esc(t("ed.note.ph"))}"></div>
     </div>
     <div class="ed-actions">
-      <button class="del" onclick="delSpan(${sel})">🗑 Delete span</button>
+      <button class="del" onclick="delSpan(${sel})">${esc(t("ed.delete"))}</button>
       <span style="flex:1"></span>
       <span class="hint" style="margin:0">${sel+1} / ${spans.length}</span>
     </div>
-    <div class="ed-q"><b>${L("Questions for this span","Вопросы по этому фрагменту")}:</b>
+    <div class="ed-q"><b>${esc(t("ed.q.title"))}:</b>
       <ol>
-        <li>${L("Which of the 10 types fits best (most specific)?","Какой из 10 типов точнее всего (самый конкретный)?")}</li>
-        <li>${L("Direct (identifies alone) or quasi (only combined)?","Direct (опознаёт сам по себе) или quasi (только в сочетании)?")}</li>
-        <li>${L("Whose identity is it — set the person role.","Чья это идентичность — задайте роль (person role).")}</li>
-        <li>${L("Same entity_id as earlier mentions of this person/thing?","Тот же entity_id, что у прежних упоминаний этого человека/объекта?")}</li>
-        <li>${L("Harm level right? On the boundary → escalate + note.","Верный уровень вреда? На границе → повышайте и пишите note.")}</li>
+        <li>${esc(t("ed.q1"))}</li>
+        <li>${esc(t("ed.q2"))}</li>
+        <li>${esc(t("ed.q3"))}</li>
+        <li>${esc(t("ed.q4"))}</li>
+        <li>${esc(t("ed.q5"))}</li>
       </ol></div>`;
 }
 
-function seltag(opts,val,i,key){return `<select onchange="upd(${i},'${key}',this.value)">`+
-  opts.map(o=>`<option ${o===val?"selected":""}>${o}</option>`).join("")+`</select>`;}
+// VALUES stay canonical English tokens; only displayed option text is localized via prefix+value.
+function seltag(opts,val,i,key,prefix){return `<select onchange="upd(${i},'${key}',this.value)">`+
+  opts.map(o=>`<option value="${esc(o)}" ${o===val?"selected":""}>${esc(prefix?t(prefix+o):o)}</option>`).join("")+`</select>`;}
 
 function esc(t){return (t==null?"":String(t)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 
 /* ============================================================ export ======= */
 function exportJSON(){
-  if(!TEXT){ toast("Load a transcript first.", true); return; }
+  if(!TEXT){ toast(t("t.loadFirst"), true); return; }
   saveNow();
   const out={doc_id:DOCID,annotator:annotVal(),codebook:"v1",text:TEXT,
     spans:spans.map(s=>({start:s.start,end:s.end,text:s.text,type:s.type,identifier_class:s.identifier_class,
@@ -429,7 +572,7 @@ function exportJSON(){
   const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
   a.download=`labels.${DOCID}.${annotVal()}.json`; a.click();
-  toast("Exported "+spans.length+" spans.");
+  toast(t("t.exported",spans.length));
 }
 
 /* ============================================================ keyboard ===== */
@@ -443,17 +586,12 @@ document.addEventListener("keydown",e=>{
 
 /* ============================================================ toast/help === */
 let toastTimer=null;
-function toast(msg,isErr){ const t=document.getElementById("toast"); t.textContent=msg;
-  t.className="toast show"+(isErr?" err":""); clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.className="toast",isErr?4200:2400); }
+function toast(msg,isErr){ const el=document.getElementById("toast"); el.textContent=msg;
+  el.className="toast show"+(isErr?" err":""); clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.className="toast",isErr?4200:2400); }
 
 function openHelp(){ document.getElementById("help").classList.add("open"); document.getElementById("scrim").classList.add("open"); }
 function closeHelp(){ document.getElementById("help").classList.remove("open"); document.getElementById("scrim").classList.remove("open"); }
-function setLang(l){ document.body.className="lang-"+l;
-  document.getElementById("lang-en").classList.toggle("on",l==="en");
-  document.getElementById("lang-ru").classList.toggle("on",l==="ru"); }
-// bilingual inline helper (uses body lang at render time)
-function L(en,ru){ const ru_on=document.body.classList.contains("lang-ru"); return ru_on?ru:en; }
 
 /* ============================================================ help content = */
 document.getElementById("helpbody").innerHTML = `
@@ -568,8 +706,14 @@ document.getElementById("helpbody").innerHTML = `
 </div>`;
 
 /* ============================================================ init ========= */
+(function initLang(){
+  let l=null;
+  try{ l=localStorage.getItem(LS_LANG); }catch(e){}
+  if(l!=="en" && l!=="ru"){ l=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; }
+  LANG=l;
+})();
 restoreLast();
-render();
+applyLang(LANG);
 </script>
 </body>
 </html>
