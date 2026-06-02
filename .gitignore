@@ -3,3 +3,9 @@ __pycache__/
 .DS_Store
 .env*
 eval/.opf-venv/
+
+# local code-search tooling (not part of CONFIDE)
+.enzyme/
+.enzyme-embeddings/
+eval/
+__pycache__/

@@ -10,7 +10,7 @@ make it trustworthy. Please read this before opening an issue or PR.
 - It **is** an open, reproducible measurement harness + synthetic dataset for comparing
   de-identification tools, with a privacy/utility/re-identification lens.
 - It is **not** peer-reviewed, clinically validated, or a compliance product. See
-  `DISCLAIMER.md` and `eval/ETHICS.md`.
+  `DISCLAIMER.md` and `docs/ETHICS.md`.
 
 ## Ground rules (privacy first)
 
@@ -21,7 +21,7 @@ make it trustworthy. Please read this before opening an issue or PR.
 3. **Anonymize before you share.** If you must show output, use the local pipeline and
    review it by hand first; remember the benchmark's own finding that ~quarter–third of
    quasi-identifiers survive automatic redaction.
-4. Real-data evaluation must follow `eval/ETHICS.md` §5 (consent incl. third parties,
+4. Real-data evaluation must follow `docs/ETHICS.md` §5 (consent incl. third parties,
    local-only processing, no re-identification).
 
 ## How to contribute
@@ -29,11 +29,11 @@ make it trustworthy. Please read this before opening an issue or PR.
 ### Issues
 - **Bug reports:** include the command, the *synthetic* input (or a minimal repro),
   expected vs actual, and your environment (OS, Python, model versions). Use the
-  detector **manifests** (`eval/detector-cache/*.manifest.json`) to report code/data shas.
+  detector **manifests** (`caches/detector-cache/*.manifest.json`) to report code/data shas.
 - **Data-quality / gold corrections:** point to the span and the reason. Gold is a
   *planted-signal* standard validated by IAA — disagreements are welcome and tracked as
-  adjudication candidates (see `eval/IAA-RESULTS.md`).
-- **New language / dataset proposals:** see `eval/RESEARCH-MULTILINGUAL.md` for the
+  adjudication candidates (see `results/IAA-RESULTS.md`).
+- **New language / dataset proposals:** see `docs/RESEARCH-MULTILINGUAL.md` for the
   extension recipe; propose taxonomy mapping + a shareable, consented data source.
 - Label issues: `bug`, `gold`, `metric`, `privacy`, `language:<xx>`, `docs`,
   `good-first-issue`.
@@ -43,7 +43,7 @@ make it trustworthy. Please read this before opening an issue or PR.
   without discussion).
 - **Tests required for scoring/detector changes.** Re-run the affected
   `score_bench.py` / detector and include the before/after numbers. For privacy-sensitive
-  scripts, include or update a **leak-safety self-test** (see `eval/real_session_eval.py`).
+  scripts, include or update a **leak-safety self-test** (see `src/confide_eval/scoring/real_session_eval.py`).
 - **Reproducibility:** if you change a detector, re-run `run_detectors.py` so manifests
   update; if you change gold, re-run the scorer + `make_benchmark.py`.
 - Do not mix vendor/model-card claims into measured results.
