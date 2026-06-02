@@ -424,6 +424,32 @@ _TRANSLIT = {
 }
 _WORD = re.compile(r"[А-Яа-яЁё]+|[A-Za-z]+")
 
+# Russian first names that are also common nouns — for these, a lowercase exact
+# occurrence is almost always the common word, so it must stay capitalization-gated.
+_COMMON_COLLISIONS = {
+    "вера", "роман", "инсайт", "мир", "надежда", "любовь", "роза",
+    "лилия", "майя", "ангел", "марс", "владимир",
+}
+
+# Patronymic suffixes (incl. case forms). Capitalized RU words ending here are
+# almost exclusively patronymics — a direct identifier the name layers miss when
+# the root first name isn't separately mentioned (e.g. "Тимур Маратович").
+_PATRONYMIC = re.compile(
+    r"\b[А-ЯЁ][а-яё]+(?:ович|овича|овичу|овичем|овиче"
+    r"|евич|евича|евичу|евичем|евиче"
+    r"|овна|овны|овне|овну|овной"
+    r"|евна|евны|евне|евну|евной"
+    r"|ична|ичны|ичне|ичну|ичной"
+    r"|инична|иничны|иничне|иничну|иничной)\b")
+
+
+def find_patronymics(text: str) -> list[Span]:
+    """Detect Russian patronymics (Маратович, Сергеевна) as PERSON spans —
+    independent of the detected first names, since the root is often absent."""
+    return [Span(start=m.start(), end=m.end(), text=m.group(),
+                 label="PERSON", source="patronymic", confidence=0.9)
+            for m in _PATRONYMIC.finditer(text)]
+
 
 def translit_ru(s: str) -> str:
     return "".join(_TRANSLIT.get(ch, ch) for ch in s.lower())
@@ -449,13 +475,14 @@ def propagate_names(text: str, person_surfaces, capitalized_only: bool = True,
                     translit: bool = True) -> list[Span]:
     """Mask every morphological / transliterated variant of an already-detected
     PERSON name. `person_surfaces` is the set of detected name strings."""
-    cyr_stems, latin_forms = [], set()
+    cyr_stems, cyr_exact, latin_forms = [], set(), set()
     for nm in person_surfaces:
         for tok in _WORD.findall(nm or ""):
             if len(tok) < 2:
                 continue
             if re.match(r"[А-Яа-яЁё]", tok):
                 cyr_stems.append(tok)
+                cyr_exact.add(tok.lower())
                 if translit:
                     latin_forms.add(translit_ru(tok))
             else:
@@ -468,9 +495,15 @@ def propagate_names(text: str, person_surfaces, capitalized_only: bool = True,
         is_cyr = bool(re.match(r"[А-Яа-яЁё]", w))
         hit = False
         if is_cyr:
-            if any(_same_name(w, n) for n in cyr_stems):
+            lw = w.lower()
+            # Exact match to a detected name. Long, non-colliding surnames may be
+            # masked even when dictated lowercase (e.g. "лебедев" in an email);
+            # short or common-word names stay capitalization-gated.
+            exact_lower_ok = (lw in cyr_exact and len(w) >= 5
+                              and lw not in _COMMON_COLLISIONS)
+            if lw in cyr_exact or any(_same_name(w, n) for n in cyr_stems):
                 hit = True
-                if capitalized_only and not w[0].isupper():
+                if capitalized_only and not w[0].isupper() and not exact_lower_ok:
                     hit = False
         elif translit and w.lower() in latin_forms:
             hit = True  # transliterated name (e.g. Timur) — always mask
@@ -592,6 +625,7 @@ def anonymize(text: str, layers: list[str] = None, model: str = "qwen2.5:3b",
     # any PERSON already detected by a prior layer (closes the benchmark's
     # residual name-variant leaks). Skipped if explicitly disabled.
     if "no-propagate" not in layers:
+        all_spans.extend(find_patronymics(text))  # RU patronymics (direct IDs)
         person_surfaces = {s.text for s in all_spans if s.label == "PERSON"}
         if person_surfaces:
             all_spans.extend(propagate_names(text, person_surfaces))
