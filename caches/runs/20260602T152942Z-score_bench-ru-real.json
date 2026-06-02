@@ -1,0 +1,116 @@
+{
+  "ts": "2026-06-02T15:29:42+00:00",
+  "kind": "score_bench",
+  "dataset": "ru-real",
+  "privacy": "synthetic",
+  "git_commit": "f137ea2",
+  "git_dirty": true,
+  "code_sha": "91f90cf5ee4c",
+  "runner_sha": "b022bc75454d",
+  "model": null,
+  "versions": {
+    "python": "3.13.9",
+    "torch": "2.9.1",
+    "transformers": "5.9.0"
+  },
+  "host": {
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "metrics": {
+    "n_docs": 60,
+    "n_gold": 77,
+    "default_coverage_recall": 0.792,
+    "default_coverage_f2": 0.674,
+    "default_entity_recall": 0.792,
+    "default_harm_weighted_recall": 0.795
+  },
+  "extra": {
+    "combos": {
+      "regex": {
+        "support": 77,
+        "c": 0,
+        "fp": 13,
+        "fn": 77,
+        "p": 0.0,
+        "r": 0.0,
+        "f1": 0.0,
+        "f2": 0.0,
+        "macro_f1": 0.0,
+        "macro_r": 0.0
+      },
+      "natasha": {
+        "support": 77,
+        "c": 31,
+        "fp": 32,
+        "fn": 46,
+        "p": 0.492,
+        "r": 0.403,
+        "f1": 0.443,
+        "f2": 0.418,
+        "macro_f1": 0.448,
+        "macro_r": 0.443
+      },
+      "ollama": {
+        "support": 77,
+        "c": 47,
+        "fp": 98,
+        "fn": 30,
+        "p": 0.388,
+        "r": 0.61,
+        "f1": 0.474,
+        "f2": 0.547,
+        "macro_f1": 0.579,
+        "macro_r": 0.633
+      },
+      "natasha+regex": {
+        "support": 77,
+        "c": 31,
+        "fp": 45,
+        "fn": 46,
+        "p": 0.408,
+        "r": 0.403,
+        "f1": 0.405,
+        "f2": 0.404,
+        "macro_f1": 0.448,
+        "macro_r": 0.443
+      },
+      "natasha+ollama": {
+        "support": 77,
+        "c": 61,
+        "fp": 104,
+        "fn": 16,
+        "p": 0.422,
+        "r": 0.792,
+        "f1": 0.551,
+        "f2": 0.674,
+        "macro_f1": 0.645,
+        "macro_r": 0.809
+      },
+      "regex+ollama": {
+        "support": 77,
+        "c": 47,
+        "fp": 98,
+        "fn": 30,
+        "p": 0.388,
+        "r": 0.61,
+        "f1": 0.474,
+        "f2": 0.547,
+        "macro_f1": 0.579,
+        "macro_r": 0.633
+      },
+      "natasha+regex+ollama ★": {
+        "support": 77,
+        "c": 61,
+        "fp": 104,
+        "fn": 16,
+        "p": 0.422,
+        "r": 0.792,
+        "f1": 0.551,
+        "f2": 0.674,
+        "macro_f1": 0.645,
+        "macro_r": 0.809
+      }
+    }
+  }
+}
