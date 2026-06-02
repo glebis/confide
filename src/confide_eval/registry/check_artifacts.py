@@ -31,8 +31,9 @@ from confide_eval.scoring import score_bench as sb
 HERE = os.path.dirname(os.path.abspath(__file__))
 RESULTS = os.fspath(paths.RESULTS)
 DOCS = os.fspath(paths.DOCS)
-DATASETS = ["ru", "ru-adv", "en", "en-real"]
-PREFIX = {"ru": "ru-", "ru-adv": "ru-adv-", "en": "en-", "en-real": "en-real-"}
+DATASETS = ["ru", "ru-adv", "en", "en-real", "ru-real"]
+PREFIX = {"ru": "ru-", "ru-adv": "ru-adv-", "en": "en-", "en-real": "en-real-",
+          "ru-real": "ru-real-"}
 
 problems = []
 
