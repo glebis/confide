@@ -1,0 +1,39 @@
+{
+  "ts": "2026-06-02T06:03:11+00:00",
+  "kind": "confide_red_linkability",
+  "dataset": "ru",
+  "privacy": "synthetic-cloud",
+  "git_commit": "daf2578",
+  "git_dirty": true,
+  "code_sha": "5b8367c633c5",
+  "runner_sha": "29774334aa90",
+  "model": "qwen/qwen3-32b",
+  "versions": {
+    "python": "3.13.9",
+    "torch": "2.9.1",
+    "transformers": "5.9.0"
+  },
+  "host": {
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "metrics": {
+    "accuracy": 0.5,
+    "roc_auc": 0.4583,
+    "f1": 0.2857,
+    "majority_accuracy": 0.6
+  },
+  "extra": {
+    "n_pairs": 100,
+    "n_same": 60,
+    "n_diff": 40,
+    "acc_ci95": [
+      0.41,
+      0.6
+    ],
+    "auc_ci95": [
+      0.3756,
+      0.5437
+    ]
+  }
+}

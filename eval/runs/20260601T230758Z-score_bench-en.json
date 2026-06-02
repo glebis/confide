@@ -1,0 +1,162 @@
+{
+  "ts": "2026-06-01T23:07:58+00:00",
+  "kind": "score_bench",
+  "dataset": "en",
+  "privacy": "synthetic",
+  "git_commit": "0f20d9a",
+  "git_dirty": true,
+  "code_sha": "8b37d3b2b35f",
+  "runner_sha": "29774334aa90",
+  "model": null,
+  "versions": {
+    "python": "3.13.9",
+    "torch": "2.9.1",
+    "transformers": "5.9.0"
+  },
+  "host": {
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "metrics": {
+    "n_docs": 32,
+    "n_gold": 46,
+    "default_coverage_recall": 0.978,
+    "default_coverage_f2": 0.91
+  },
+  "extra": {
+    "combos": {
+      "regex": {
+        "support": 46,
+        "c": 17,
+        "fp": 2,
+        "fn": 29,
+        "p": 0.895,
+        "r": 0.37,
+        "f1": 0.523,
+        "f2": 0.419,
+        "macro_f1": 0.493,
+        "macro_r": 0.485
+      },
+      "opf": {
+        "support": 46,
+        "c": 36,
+        "fp": 0,
+        "fn": 10,
+        "p": 1.0,
+        "r": 0.783,
+        "f1": 0.878,
+        "f2": 0.818,
+        "macro_f1": 0.859,
+        "macro_r": 0.766
+      },
+      "ollama": {
+        "support": 46,
+        "c": 23,
+        "fp": 17,
+        "fn": 23,
+        "p": 0.653,
+        "r": 0.5,
+        "f1": 0.566,
+        "f2": 0.525,
+        "macro_f1": 0.433,
+        "macro_r": 0.466
+      },
+      "opf+regex": {
+        "support": 46,
+        "c": 42,
+        "fp": 2,
+        "fn": 4,
+        "p": 0.957,
+        "r": 0.913,
+        "f1": 0.934,
+        "f2": 0.921,
+        "macro_f1": 0.927,
+        "macro_r": 0.921
+      },
+      "opf+ollama": {
+        "support": 46,
+        "c": 39,
+        "fp": 17,
+        "fn": 7,
+        "p": 0.707,
+        "r": 0.848,
+        "f1": 0.771,
+        "f2": 0.815,
+        "macro_f1": 0.796,
+        "macro_r": 0.825
+      },
+      "regex+ollama": {
+        "support": 46,
+        "c": 35,
+        "fp": 19,
+        "fn": 11,
+        "p": 0.678,
+        "r": 0.761,
+        "f1": 0.717,
+        "f2": 0.743,
+        "macro_f1": 0.766,
+        "macro_r": 0.826
+      },
+      "opf+regex+ollama ★": {
+        "support": 46,
+        "c": 45,
+        "fp": 19,
+        "fn": 1,
+        "p": 0.712,
+        "r": 0.978,
+        "f1": 0.824,
+        "f2": 0.91,
+        "macro_f1": 0.862,
+        "macro_r": 0.98
+      },
+      "natasha+regex+ollama": {
+        "support": 46,
+        "c": 36,
+        "fp": 20,
+        "fn": 10,
+        "p": 0.672,
+        "r": 0.783,
+        "f1": 0.723,
+        "f2": 0.758,
+        "macro_f1": 0.773,
+        "macro_r": 0.835
+      },
+      "presidio": {
+        "support": 46,
+        "c": 42,
+        "fp": 6,
+        "fn": 4,
+        "p": 0.882,
+        "r": 0.913,
+        "f1": 0.897,
+        "f2": 0.907,
+        "macro_f1": 0.683,
+        "macro_r": 0.91
+      },
+      "philter": {
+        "support": 46,
+        "c": 36,
+        "fp": 6,
+        "fn": 10,
+        "p": 0.872,
+        "r": 0.783,
+        "f1": 0.825,
+        "f2": 0.799,
+        "macro_f1": 0.11,
+        "macro_r": 0.776
+      },
+      "presidio+regex+ollama": {
+        "support": 46,
+        "c": 43,
+        "fp": 19,
+        "fn": 3,
+        "p": 0.712,
+        "r": 0.935,
+        "f1": 0.808,
+        "f2": 0.88,
+        "macro_f1": 0.825,
+        "macro_r": 0.939
+      }
+    }
+  }
+}

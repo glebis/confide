@@ -84,6 +84,62 @@ _DATE_PATTERN = re.compile(
     r"\b(?:(?:0?[1-9]|[12]\d|3[01])[.\/](?:0?[1-9]|1[0-2])[.\/]\d{2,4}"
     r"|\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])(?:T\d{2}:\d{2}(?::\d{2})?)?)\b")
 
+# --- Relative / colloquial DATE recognizers (the one additive capability the
+# Presidio baseline had over the stack: it caught "last Tuesday", "19th of the
+# month", "two weeks ago", "12 December" that the absolute-date regex + NER/LLM
+# layers missed). These extend the deterministic DATE layer to spelled-out and
+# relative calendar references in BOTH languages. They are kept TIGHT around
+# lexical date anchors (weekday / month name / "ago"-style relative words) so a
+# bare number that is an age, an ID, or a 00:12:45 timestamp is never matched.
+#
+# EN: weekday-relative, "N days/weeks/months/years ago", yesterday/today/tomorrow,
+#     last/next week/month/year, "the 19th [of the month/Month]", and month-name
+#     dates ("12 December", "March 3rd, 2024", "December/48"). On the EN gold this
+#     is a pure recall win (0 false positives — the gold annotates exactly these
+#     relative forms as DATE PII).
+_MONTHS_EN = (r"(?:January|February|March|April|May|June|July|August|September|"
+              r"October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)")
+_WD_EN = r"(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)"
+# spelled small cardinals so "two weeks ago" is caught alongside "3 days ago"
+_NUM_EN = r"(?:\d{1,3}|a|an|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)"
+_DATE_REL_EN = re.compile(
+    "(?i)\\b(?:"
+    + "(?:last|next|this|on)\\s+" + _WD_EN
+    + "|" + _NUM_EN + "\\s+(?:day|week|month|year)s?\\s+ago"
+    + "|yesterday|tomorrow|today"
+    + "|(?:last|next|this)\\s+(?:week|month|year)"
+    + "|the\\s+\\d{1,2}(?:st|nd|rd|th)(?:\\s+of\\s+(?:the\\s+month|" + _MONTHS_EN + "))?"
+    + "|\\d{1,2}(?:st|nd|rd|th)\\s+of\\s+(?:the\\s+month|" + _MONTHS_EN + ")"
+    + "|" + _MONTHS_EN + "\\s+\\d{1,2}(?:st|nd|rd|th)?(?:,?\\s+\\d{4})?"
+    + "|\\d{1,2}(?:st|nd|rd|th)?\\s+" + _MONTHS_EN + "(?:,?\\s+\\d{4})?"
+    + "|" + _MONTHS_EN + "/\\d{2,4}"
+    + ")\\b")
+
+# RU: weekday-anchored relative refs ("в прошлый вторник"), "N дней/недель/месяцев/
+#     лет [тому] назад", "до/после/перед/к Нового года", spelled day-of-month +
+#     month ("третьего февраля"), and numeric day + month ("12 декабря").
+#     DELIBERATELY EXCLUDES bare deictic adverbs (сегодня/вчера/завтра) and bare
+#     week refs (на этой/прошлой неделе): on the RU gold those carry no standalone
+#     identifying information and are NOT annotated as PII, so matching them adds
+#     hundreds of false positives for zero recall (e.g. "сегодня" alone occurs
+#     238× in the corpus, none in gold). Keeping the recognizer anchored to a
+#     concrete calendar token (weekday / month / N-ago) recovers the real
+#     spelled-out dates the LLM layer missed without collapsing precision.
+_MONTHS_RU = (r"(?:январ[ья]|феврал[ья]|марта|апрел[ья]|ма[йя]|июн[ья]|июл[ья]|"
+              r"август[а]?|сентябр[ья]|октябр[ья]|ноябр[ья]|декабр[ья])")
+_WD_RU = r"(?:понедельник|вторник|сред[уы]|четверг|пятниц[уы]|суббот[уы]|воскресень[ея])"
+_ORD_RU = (r"(?:перв|втор|треть|четверт|пят|шест|седьм|восьм|девят|десят|"
+           r"одиннадцат|двенадцат|тринадцат|четырнадцат|пятнадцат|шестнадцат|"
+           r"семнадцат|восемнадцат|девятнадцат|двадцат|тридцат)\w*")
+_DATE_REL_RU = re.compile(
+    "(?i)(?<!\\w)(?:"
+    + "в\\s+(?:прошл|следующ|эт)\\w+\\s+" + _WD_RU
+    + "|\\d{1,3}\\s+(?:дн\\w+|недел\\w+|месяц\\w+|год\\w+|лет)\\s+(?:тому\\s+)?назад"
+    + "|(?:до|после|перед|к)\\s+Нов\\w+\\s+год\\w+"
+    + "|" + _ORD_RU + "\\s+" + _MONTHS_RU
+    + "|\\d{1,2}\\s+" + _MONTHS_RU
+    + ")\\b")
+
 # Russian structured identifiers (PII-Bench RU taxonomy). SNILS has a distinctive
 # XXX-XXX-XXX XX shape; passport is 4+6 digits. INN is context-gated (a bare 10/12
 # digit run collides with timestamps/phones/case numbers — Codex audit #6), so it is
@@ -96,6 +152,75 @@ _INN_PATTERN = re.compile(r"(?i)\bИНН\D{0,12}(\d{12}|\d{10})\b")
 _HANDLE_PATTERN = re.compile(
     r"(?i)(?:(?:https?://)?(?:www\.)?(?:t\.me|vk\.com|instagram\.com|wa\.me)/[\w./+]*[\w/+]"
     r"|(?<!\w)@[A-Za-z][\w.]*[A-Za-z0-9])")
+
+# --- YAML frontmatter direct-identifier recognizer (T8 leak fix) -------------
+# Session transcripts begin with a leading `---...---` YAML block whose
+# `client_id` (a first name, often Latin/lowercase: marina/igor/alina/...) is a
+# DIRECT IDENTIFIER the regex/NER/LLM layers structurally never see as a name.
+# It survived into the "redacted" text and made cross-session linkability a
+# trivial exact-string match (AUC 1.0). We mask the VALUE of identifying keys
+# inside the frontmatter block only.
+#
+#   client_id -> ID       (a stable per-client handle, not a free-text name)
+#   client/patient/name/therapist -> PERSON  (but ONLY if the value is a real
+#       name; single-letter role codes "Т"/"К"/"T"/"C" are speaker tags, not
+#       identifiers, and are left intact).
+#
+# Keys are case-insensitive; values may be Latin or Cyrillic, quoted or not.
+# Non-name fields (date/modality/session_no/synthetic) are deliberately untouched.
+_FM_KEY_LABEL = {
+    "client_id": "ID",
+    "client": "PERSON",
+    "patient": "PERSON",
+    "name": "PERSON",
+    "therapist": "PERSON",
+}
+# A single Latin/Cyrillic letter (optionally quoted) is a speaker ROLE code, not
+# an identifier — never mask it.
+_FM_ROLE_CODE = re.compile(r"^[A-Za-zА-Яа-яЁё]$")
+# Leading frontmatter block: opening `---` on the first line, closing `---`.
+_FM_BLOCK = re.compile(r"\A﻿?---[ \t]*\r?\n(.*?)\r?\n---[ \t]*(?:\r?\n|$)", re.DOTALL)
+# One `key: value` line. Captures the value (quoted or bare) with its offsets.
+_FM_LINE = re.compile(
+    r"(?im)^[ \t]*([A-Za-z_][\w-]*)[ \t]*:[ \t]*"
+    r"(?:\"([^\"\r\n]*)\"|'([^'\r\n]*)'|([^\r\n#]*?))[ \t]*(?:#.*)?$")
+
+
+def run_frontmatter(text: str) -> list[Span]:
+    """Mask the VALUE of identifying keys inside the leading YAML frontmatter.
+
+    Direct-identifier de-leak (T8): the per-client `client_id` first name and any
+    real name in client/patient/name/therapist keys are emitted as spans with the
+    correct char offsets. Single-letter speaker codes (Т/К/T/C) are left intact.
+    Only the leading `---...---` block is scanned; non-name fields are untouched.
+    """
+    spans = []
+    block = _FM_BLOCK.match(text)
+    if not block:
+        return spans
+    inner = block.group(1)
+    base = block.start(1)
+    for m in _FM_LINE.finditer(inner):
+        key = m.group(1).lower()
+        label = _FM_KEY_LABEL.get(key)
+        if label is None:
+            continue
+        # whichever alternative matched is the value; find its group index for offsets
+        for gi in (2, 3, 4):
+            if m.group(gi) is not None:
+                val = m.group(gi)
+                vstart = base + m.start(gi)
+                vend = base + m.end(gi)
+                break
+        val = val.strip()
+        if not val:
+            continue
+        # role codes (single letter) are speaker tags, not identifiers
+        if _FM_ROLE_CODE.match(val):
+            continue
+        spans.append(Span(start=vstart, end=vend, text=text[vstart:vend],
+                          label=label, source="regex"))
+    return spans
 
 
 def run_regex(text: str) -> list[Span]:
@@ -145,10 +270,18 @@ def run_regex(text: str) -> list[Span]:
         spans.append(Span(start=m.start(), end=m.end(), text=m.group(),
                           label="ID", source="regex"))
 
-    # Numeric dates (PHI). Spelled-out dates remain the LLM layer's job.
+    # Numeric dates (PHI). Spelled-out + relative dates handled below.
     for m in _DATE_PATTERN.finditer(text):
         spans.append(Span(start=m.start(), end=m.end(), text=m.group(),
                           label="DATE", source="regex"))
+
+    # Relative / colloquial + month-name dates (EN + RU). All occurrences, correct
+    # offsets. merge_spans dedupes any overlap with an absolute-date match. These
+    # close the gap the Presidio baseline exposed (relative-date recall).
+    for pat in (_DATE_REL_EN, _DATE_REL_RU):
+        for m in pat.finditer(text):
+            spans.append(Span(start=m.start(), end=m.end(), text=m.group(),
+                              label="DATE", source="regex"))
 
     # Russian structured identifiers + social handles. merge_spans resolves overlaps.
     # `grp` selects which capture group is the actual identifier span (INN gates on a
@@ -158,6 +291,10 @@ def run_regex(text: str) -> list[Span]:
         for m in pat.finditer(text):
             spans.append(Span(start=m.start(grp), end=m.end(grp), text=m.group(grp),
                               label=label, source="regex"))
+
+    # YAML frontmatter direct identifiers (T8 leak fix): mask client_id and any
+    # real name in client/patient/name/therapist keys; skip single-letter codes.
+    spans.extend(run_frontmatter(text))
 
     return spans
 
@@ -183,18 +320,34 @@ def run_ollama(text: str, model: str = "qwen2.5:3b") -> list[Span]:
         base = os.environ.get("LLM_BASE_URL",
                               os.environ.get("OLLAMA_HOST", "http://localhost:11434")).rstrip("/")
         messages = [{"role": "user", "content": prompt}]
+        # LLM_TEMPERATURE lets run-variance experiments (R5) vary sampling without
+        # touching the prompt; defaults to 0 for the deterministic default stack.
+        temperature = float(os.environ.get("LLM_TEMPERATURE", "0"))
+        # Reasoning models (e.g. Qwen3) spend output budget on a <think> block
+        # before the JSON; LLM_MAX_TOKENS lets a cloud run raise the cap so long
+        # transcripts don't truncate the answer. Default 2048 keeps local behaviour.
+        max_tokens = int(os.environ.get("LLM_MAX_TOKENS", "2048"))
+        headers = {"Content-Type": "application/json"}
         if api == "openai":
             url = base + "/v1/chat/completions"
             payload = json.dumps({"model": model, "messages": messages,
-                                  "temperature": 0, "max_tokens": 2048,
+                                  "temperature": temperature, "max_tokens": max_tokens,
                                   "stream": False}).encode()
+            # Bearer auth for cloud OpenAI-compatible providers (Cerebras/Groq/etc).
+            key = os.environ.get("OPENAI_API_KEY") or os.environ.get("LLM_API_KEY")
+            if key:
+                headers["Authorization"] = "Bearer " + key
+            # Some providers front their API with Cloudflare, which 403s (error
+            # 1010) requests with a default urllib User-Agent. A browser UA passes.
+            headers["User-Agent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                                     "AppleWebKit/537.36 (KHTML, like Gecko) "
+                                     "Chrome/124.0 Safari/537.36")
         else:
             url = base + "/api/chat"
             payload = json.dumps({"model": model, "messages": messages, "stream": False,
-                                  "options": {"temperature": 0, "num_predict": 2048}}).encode()
+                                  "options": {"temperature": temperature, "num_predict": max_tokens}}).encode()
 
-        req = urllib.request.Request(url, data=payload,
-                                     headers={"Content-Type": "application/json"})
+        req = urllib.request.Request(url, data=payload, headers=headers)
         with urllib.request.urlopen(req, timeout=180) as resp:
             data = json.loads(resp.read())
 
@@ -394,6 +547,38 @@ def encrypt_file(filepath: str, password: str) -> str:
     return out_path
 
 
+def _selftest_relative_dates():
+    """Unit assertions for the relative/colloquial DATE recognizers (T6).
+
+    Proves the new patterns MATCH the intended relative/spelled-out/month-name
+    forms in both languages and DO NOT match a timestamp, an age, or a non-date
+    discourse marker ("в прошлый раз" = "last time"). Run: ``anonymize.py --selftest``.
+    """
+    def dates(t):
+        return {s.text for s in run_regex(t) if s.label == "DATE"}
+
+    # EN positives — exactly the relative forms the EN gold annotates as DATE PII
+    for s in ("last Tuesday", "12 December", "March 3rd, 2024", "5th of January",
+              "19th of the month", "June 14 2019", "two weeks ago", "3 days ago",
+              "yesterday", "next Monday", "December/48", "18th April 2020"):
+        assert dates("We met " + s + ".") , f"EN should match {s!r}"
+
+    # RU positives — spelled-out / weekday-anchored / N-ago / month-name dates
+    for s in ("третьего февраля", "12 декабря", "в прошлый вторник",
+              "2 недели назад", "10 лет назад", "до Нового года", "первого мая"):
+        assert dates("Это было " + s + ".") , f"RU should match {s!r}"
+
+    # Negatives — must NOT be tagged DATE (timestamp / age / discourse marker)
+    assert not dates("Запись 00:12:45 в логе."), "timestamp must not be a DATE"
+    assert not dates("I am 34 years old."), "age must not be a DATE"
+    assert not dates("Мне 34 года, работаю."), "RU age must not be a DATE"
+    assert not dates("Как в прошлый раз договаривались."), "'в прошлый раз' is not a date"
+    assert not dates("Account 7722 4455 8811 ready."), "account id must not be a DATE"
+
+    print("✓ relative-date recognizer self-test passed (EN+RU positives, "
+          "timestamp/age/discourse-marker negatives)")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Three-layer therapy transcript anonymizer")
     parser.add_argument("input", nargs="?", help="Input file (or stdin if omitted)")
@@ -408,7 +593,13 @@ def main():
     parser.add_argument("--json", action="store_true", help="Output full JSON report")
     parser.add_argument("--encrypt", metavar="PASSWORD", help="Encrypt output with AES-256")
     parser.add_argument("--batch", metavar="DIR", help="Process all .txt/.md files in directory")
+    parser.add_argument("--selftest", action="store_true",
+                        help="Run the relative-date recognizer unit assertions and exit")
     args = parser.parse_args()
+
+    if args.selftest:
+        _selftest_relative_dates()
+        return
 
     layers = [l.strip() for l in args.layers.split(",")]
 

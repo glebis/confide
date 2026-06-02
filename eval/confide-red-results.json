@@ -10,13 +10,31 @@
       },
       "of": 5,
       "singling_out": {
-        "dims": [
-          "profession",
-          "age",
-          "medication"
+        "client": "a",
+        "surviving_quasi": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
         ],
-        "expected_matches": 104.3,
-        "singles_out": false
+        "dims_used": [
+          "AGE",
+          "PROFESSION",
+          "MEDICATION"
+        ],
+        "dims_entities": [
+          "a-age",
+          "a-profession",
+          "a-sertraline"
+        ],
+        "expected_matches": 50.1,
+        "singles_out": false,
+        "illustrative": true,
+        "dims": [
+          "AGE",
+          "PROFESSION",
+          "MEDICATION"
+        ],
+        "verdict_robust": true
       }
     },
     "b": {
@@ -27,12 +45,35 @@
       },
       "of": 5,
       "singling_out": {
-        "dims": [
-          "age",
-          "medication"
+        "client": "b",
+        "surviving_quasi": [
+          "AGE",
+          "LOCATION",
+          "MEDICATION",
+          "PROFESSION"
         ],
-        "expected_matches": 10428.6,
-        "singles_out": false
+        "dims_used": [
+          "AGE",
+          "LOCATION",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "dims_entities": [
+          "b-age",
+          "b-ekaterinburg",
+          "b-fluoxetine",
+          "b-profession"
+        ],
+        "expected_matches": 1.7,
+        "singles_out": false,
+        "illustrative": true,
+        "dims": [
+          "AGE",
+          "LOCATION",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "verdict_robust": false
       }
     },
     "c": {
@@ -43,13 +84,31 @@
       },
       "of": 5,
       "singling_out": {
-        "dims": [
-          "profession",
-          "age",
-          "medication"
+        "client": "c",
+        "surviving_quasi": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
         ],
-        "expected_matches": 104.3,
-        "singles_out": false
+        "dims_used": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "dims_entities": [
+          "c-age",
+          "c-escitalopram",
+          "c-profession"
+        ],
+        "expected_matches": 33.4,
+        "singles_out": false,
+        "illustrative": true,
+        "dims": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "verdict_robust": true
       }
     },
     "d": {
@@ -60,13 +119,31 @@
       },
       "of": 5,
       "singling_out": {
-        "dims": [
-          "profession",
-          "age",
-          "medication"
+        "client": "d",
+        "surviving_quasi": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
         ],
-        "expected_matches": 104.3,
-        "singles_out": false
+        "dims_used": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "dims_entities": [
+          "d-age",
+          "d-bupropion",
+          "d-profession"
+        ],
+        "expected_matches": 62.6,
+        "singles_out": false,
+        "illustrative": true,
+        "dims": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "verdict_robust": true
       }
     },
     "e": {
@@ -77,13 +154,28 @@
       },
       "of": 5,
       "singling_out": {
-        "dims": [
-          "profession",
-          "age",
-          "medication"
+        "client": "e",
+        "surviving_quasi": [
+          "MEDICATION",
+          "ORG",
+          "PROFESSION"
         ],
-        "expected_matches": 104.3,
-        "singles_out": false
+        "dims_used": [
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "dims_entities": [
+          "e-mirtazapine",
+          "e-profession"
+        ],
+        "expected_matches": 5256.0,
+        "singles_out": false,
+        "illustrative": true,
+        "dims": [
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "verdict_robust": true
       }
     },
     "f": {
@@ -94,20 +186,76 @@
       },
       "of": 5,
       "singling_out": {
-        "dims": [
-          "city",
-          "profession",
-          "age",
-          "medication"
+        "client": "f",
+        "surviving_quasi": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
         ],
-        "expected_matches": 0.9,
-        "singles_out": true
+        "dims_used": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "dims_entities": [
+          "f-age",
+          "f-atomoxetine",
+          "f-profession"
+        ],
+        "expected_matches": 83.4,
+        "singles_out": false,
+        "illustrative": true,
+        "dims": [
+          "AGE",
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "verdict_robust": true
       }
     }
   },
   "linkability": {
-    "same_pair_called_same": false,
-    "diff_pair_called_same": false,
-    "linkable": false
-  }
+    "model": "qwen/qwen3-32b",
+    "engine": "openai",
+    "n_docs": 30,
+    "sampling": {
+      "total_diff": 375,
+      "sampled_diff": 40,
+      "dropped_diff": 335,
+      "diff_stride": 5
+    },
+    "n_pairs": 100,
+    "n_same": 60,
+    "n_diff": 40,
+    "metrics": {
+      "n": 100,
+      "tp": 10,
+      "fn": 50,
+      "fp": 0,
+      "tn": 40,
+      "accuracy": 0.5,
+      "precision": 1.0,
+      "recall": 0.1667,
+      "f1": 0.2857,
+      "roc_auc": 0.4583,
+      "base_rate_same": 0.6,
+      "majority_accuracy": 0.6
+    },
+    "bootstrap_ci": {
+      "iters": 2000,
+      "accuracy": {
+        "mean": 0.5005,
+        "lo95": 0.41,
+        "hi95": 0.6
+      },
+      "roc_auc": {
+        "mean": 0.4578,
+        "lo95": 0.3756,
+        "hi95": 0.5437
+      }
+    },
+    "leaked_client_id_docs": 0,
+    "leak_note": "No cleartext client_id detected in the redacted docs; the score reflects content-based linkability."
+  },
+  "singling_out_note": "ILLUSTRATIVE singling-out (method demo, not a re-identification probability). Naive product of per-quasi fractions assumes the quasi-identifiers are statistically independent. They are not (profession/city/age/medication correlate), so this OVERSTATES uniqueness — the real matching population is larger and the person is LESS singled out than the point estimate implies."
 }

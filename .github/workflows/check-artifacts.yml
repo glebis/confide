@@ -1,0 +1,32 @@
+name: check-artifacts
+
+# Deterministic, LLM-free, network-free guard: fails the build if any committed
+# benchmark artifact has drifted from what the current gold + detector caches
+# produce. See eval/REPRODUCIBILITY.md §8 and eval/check_artifacts.py.
+#
+# This job runs ONLY stdlib Python against committed gold + detector caches
+# (JSONL in the repo). It does NOT need Ollama / OPF / Presidio / torch /
+# transformers or any network access.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run artifact drift check
+        # check_artifacts.py imports score_bench from its own directory, so the
+        # `make check` target is invoked from within eval/. No pip install is
+        # required — both modules are pure standard library.
+        working-directory: eval
+        run: make check

@@ -16,14 +16,18 @@ Per-attribute (top-3 correct?):
 | a | · | · | · | · | · |
 | b | · | · | · | ✓ | · |
 
-## Quasi-identifier combination (k-anonymity-style singling-out)
+## Quasi-identifier combination (k-anonymity-style singling-out) — ILLUSTRATIVE
 
-Direct identifiers can be perfectly masked and a person still singled out by the *combination* of surviving quasi-identifiers. Using declared, illustrative RU population fractions (pop ≈ 146M; **method demo, not census**), the surviving combination multiplies down to an expected number of matching people; below 1 means singling-out.
+> **ILLUSTRATIVE / methodological demonstration, not a re-identification probability.** Computed by the shared `kanon` estimator (identical to CONFIDE-Red). The personas are synthetic, so these counts show *how* a surviving quasi-identifier combination is assessed (GDPR Art-29 / k-anonymity; RU pop ≈ 146M), not a precise probability. The load-bearing signal is the **relative ranking** and the **sensitivity verdict**, not the point value.
 
-| Client | surviving quasi types | expected matches | singles out? |
-|---|---|--:|---|
-| a | MEDICATION, PROFESSION | 3504.0 | no |
-| b | AGE, DATE, LOCATION, MEDICATION, PROFESSION | 8342.86 | no |
+_Naive product of per-quasi fractions assumes the quasi-identifiers are statistically independent. They are not (profession/city/age/medication correlate), so this OVERSTATES uniqueness — the real matching population is larger and the person is LESS singled out than the point estimate implies._
+
+Direct identifiers can be perfectly masked and a person still singled out by the *combination* of surviving quasi-identifiers; an expected matching population below 1 would mean singling-out.
+
+| Client | surviving quasi types | expected matches (illustrative) | singles out? | verdict robust to ±0.5x–2x priors? |
+|---|---|--:|---|---|
+| a | AGE, MEDICATION, PROFESSION | 50.1 | no | yes |
+| b | AGE, LOCATION, MEDICATION, PROFESSION | 1.7 | no | **no (flips)** |
 
 ## Utility — downstream CBT-signal preservation (orig vs redacted)
 
