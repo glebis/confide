@@ -5,7 +5,7 @@ Proves the deterministic regex layer now covers relative, spelled-out, and
 month-name dates in EN + RU (the additive capability the Presidio baseline had),
 and that it does NOT fire on a timestamp, an age, or a non-date discourse marker.
 
-Run: python3 test_relative_dates.py   (or: pytest eval/test_relative_dates.py)
+Run: pytest tests/test_relative_dates.py   (exit 0 = pass)
 """
 import os
 import sys

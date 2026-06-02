@@ -1,6 +1,6 @@
-# Contributing to PsychoPII
+# Contributing to CONFIDE
 
-Thanks for your interest. PsychoPII is a **community / citizen-science** benchmark for
+Thanks for your interest. CONFIDE is a **community / citizen-science** benchmark for
 de-identifying psychotherapy transcripts. It is built and maintained by **volunteers**,
 not a funded research lab — contributions, scrutiny, and corrections are exactly what
 make it trustworthy. Please read this before opening an issue or PR.

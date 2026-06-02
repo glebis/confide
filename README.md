@@ -79,7 +79,7 @@ names" is never mistaken for "this is safe to send to the cloud."
 - **Harm ≠ identifier-strength** — an email is a strong linker but low therapy-harm, while
   a *medication* implies a diagnosis. CONFIDE therefore reports **harm-weighted recall**
   alongside plain recall; the gap between the two is itself a finding (see
-  [`HARM-TAXONOMY.md`](https://github.com/glebis/confide/blob/main/docs/HARM-TAXONOMY.md)).
+  [`docs/HARM-TAXONOMY.md`](https://github.com/glebis/confide/blob/main/docs/HARM-TAXONOMY.md)).
 
 ## Storage & isolation (real data)
 
@@ -100,7 +100,7 @@ Full statement in [`docs/ETHICS.md`](https://github.com/glebis/confide/blob/main
 - **No real data in public, ever.** Every therapy transcript shipped here is **synthetic**
   (fictional clients) — so this is **not human-subjects research** and exposes no one. Real
   or consented sessions are processed **only locally**, stats-only, behind device + store +
-  file encryption ([`THREE-LOCKS.md`](https://github.com/glebis/confide/blob/main/docs/THREE-LOCKS.md), [`ISOLATION.md`](https://github.com/glebis/confide/blob/main/docs/ISOLATION.md)); only
+  file encryption ([`docs/THREE-LOCKS.md`](https://github.com/glebis/confide/blob/main/docs/THREE-LOCKS.md), [`docs/ISOLATION.md`](https://github.com/glebis/confide/blob/main/docs/ISOLATION.md)); only
   aggregates ever leave the machine, never transcript text.
 - **Consent and scope.** Use real data only with explicit consent and only your own /
   consented sessions; therapist-side recordings need particular care.
@@ -146,10 +146,10 @@ re-identification recipe.
 | [`docs/DATASHEET.md`](https://github.com/glebis/confide/blob/main/docs/DATASHEET.md) | Datasheet / data statement: provenance, composition, limits of the synthetic corpus. |
 | [`docs/DATASETS.md`](https://github.com/glebis/confide/blob/main/docs/DATASETS.md) | Public datasets to extend the benchmark, fetched via the CLI. |
 | **Severity & privacy** | |
-| [`HARM-TAXONOMY.md`](https://github.com/glebis/confide/blob/main/docs/HARM-TAXONOMY.md) | Why harm ≠ identifier-strength, and how harm-weighted recall is computed. |
+| [`docs/HARM-TAXONOMY.md`](https://github.com/glebis/confide/blob/main/docs/HARM-TAXONOMY.md) | Why harm ≠ identifier-strength, and how harm-weighted recall is computed. |
 | [`docs/ETHICS.md`](https://github.com/glebis/confide/blob/main/docs/ETHICS.md) | Ethics statement and responsible-use policy (ACL / NeurIPS / Menlo / Belmont norms). |
-| [`ISOLATION.md`](https://github.com/glebis/confide/blob/main/docs/ISOLATION.md) | Red/green data flow, no-network containers, macOS VMs, sops/age encryption. |
-| [`THREE-LOCKS.md`](https://github.com/glebis/confide/blob/main/docs/THREE-LOCKS.md) | Device + encrypted store + per-file isolation, with a storage checklist for real data. |
+| [`docs/ISOLATION.md`](https://github.com/glebis/confide/blob/main/docs/ISOLATION.md) | Red/green data flow, no-network containers, macOS VMs, sops/age encryption. |
+| [`docs/THREE-LOCKS.md`](https://github.com/glebis/confide/blob/main/docs/THREE-LOCKS.md) | Device + encrypted store + per-file isolation, with a storage checklist for real data. |
 | **Reproducibility** | |
 | [`docs/REPRODUCIBILITY.md`](https://github.com/glebis/confide/blob/main/docs/REPRODUCIBILITY.md) | Keeping the benchmark comparable over time; versioning, re-run policy, cost. |
 | [`docs/SOURCES.md`](https://github.com/glebis/confide/blob/main/docs/SOURCES.md) | Primary/near-primary sources checked for publishable methodology claims. |
@@ -184,5 +184,4 @@ re-identification recipe.
   2026, https://github.com/glebis/confide*. It is research-grade, **not** peer-reviewed; cite
   it as a tool and a measurement, not as a compliance guarantee.
 
-CONFIDE grew out of the *Psychodemia · AI & Mental Health* masterclass (31 May 2026); the
-original masterclass materials are in `README-masterclass.md`.
+CONFIDE grew out of the *Psychodemia · AI & Mental Health* masterclass (31 May 2026).

@@ -1,8 +1,8 @@
 # CONFIDE — Red/Green isolation, VMs, and encryption at rest
 
 Turning the privacy *convention* (anonymize-before-cloud) into an **enforced boundary**.
-Three layers, strongest last. On this machine: **macOS 26 (Tahoe)** + **sops 3.12.2** +
-**age** are present, so all three are available today.
+Three layers, strongest last. On macOS with **sops** + **age** installed, all three
+are available today.
 
 ## The Red/Green model
 

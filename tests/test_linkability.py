@@ -7,7 +7,7 @@ client), (2) the DIFFERENT sample is the documented deterministic stride,
 (3) accuracy / precision / recall / F1 / confusion matrix compute correctly, and
 (4) ROC-AUC behaves on perfectly-separable and on chance score distributions.
 
-Run: python3 eval/test_linkability.py   (exit 0 = pass)
+Run: pytest tests/test_linkability.py   (exit 0 = pass)
 """
 import os
 import sys

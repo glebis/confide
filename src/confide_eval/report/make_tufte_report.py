@@ -2,7 +2,7 @@
 """Generate a standalone Tufte-style HTML report from the benchmark JSONs.
 
 Reads ru/en/en-real-bench-results.json + reconstruction-results.json and emits
-eval/benchmark-report.html — one file, no build step, Chart.js via CDN.
+results/benchmark-report.html — one file, no build step, Chart.js via CDN.
 Re-run after re-scoring (e.g. once OPF-RU lands) to refresh.
 
 Design follows the tufte-report skill design tokens (EB Garamond + Monaspace
