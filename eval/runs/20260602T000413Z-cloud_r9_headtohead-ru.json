@@ -1,0 +1,74 @@
+{
+  "ts": "2026-06-02T00:04:13+00:00",
+  "kind": "cloud_r9_headtohead",
+  "dataset": "ru",
+  "privacy": "synthetic-cloud",
+  "git_commit": "a8d664a",
+  "git_dirty": true,
+  "code_sha": "c7f9ece2e751",
+  "runner_sha": "29774334aa90",
+  "model": "qwen/qwen3-32b",
+  "versions": {
+    "python": "3.13.9",
+    "torch": "2.9.1",
+    "transformers": "5.9.0"
+  },
+  "host": {
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "metrics": {
+    "llm_only_entR_3b": 0.157,
+    "llm_only_entR_qwen3_32b": 0.565,
+    "llm_only_harmR_3b": 0.091,
+    "llm_only_harmR_qwen3_32b": 0.481,
+    "stack_entR_3b": 0.676,
+    "stack_entR_qwen3_32b": 0.815,
+    "stack_harmR_3b": 0.632,
+    "stack_harmR_qwen3_32b": 0.788,
+    "ms_per_doc_3b": 53973,
+    "ms_per_doc_qwen3_32b": 10210
+  },
+  "extra": {
+    "provider": "Groq",
+    "provider_base": "https://api.groq.com/openai",
+    "date": "2026-06-02",
+    "per_type": {
+      "MEDICATION": {
+        "support": 48,
+        "c": 35,
+        "r": 0.729
+      },
+      "AGE": {
+        "support": 24,
+        "c": 23,
+        "r": 0.958
+      },
+      "DATE": {
+        "support": 23,
+        "c": 21,
+        "r": 0.913
+      },
+      "PROFESSION": {
+        "support": 47,
+        "c": 28,
+        "r": 0.596
+      },
+      "ID": {
+        "support": 6,
+        "c": 4,
+        "r": 0.667
+      },
+      "PHONE": {
+        "support": 6,
+        "c": 5,
+        "r": 0.833
+      },
+      "EMAIL": {
+        "support": 8,
+        "c": 7,
+        "r": 0.875
+      }
+    }
+  }
+}
