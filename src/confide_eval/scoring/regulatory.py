@@ -148,6 +148,30 @@ def worst_case_leak(per_doc):
     }
 
 
+def is_spelled_out_digit(type_, text):
+    """A structured identifier written out in words (no digits) — out of scope
+    for the regex layer by design (e.g. a phone/policy number dictated aloud)."""
+    return type_ in {"PHONE", "ID"} and not any(ch.isdigit() for ch in text)
+
+
+def split_direct_residual(leaked_entities):
+    """Split unprotected direct entities into in-scope vs out-of-scope.
+
+    leaked_entities: [{entity_id, leaked:[{type,text}]}]. An entity is OUT-of-scope
+    only if EVERY one of its leaked mentions is a spelled-out digit string; one
+    in-scope leak makes the whole entity in-scope. The tier is driven by in-scope.
+    """
+    in_ids, oos_ids = [], []
+    for e in leaked_entities:
+        ms = e.get("leaked", [])
+        if ms and all(is_spelled_out_digit(m["type"], m["text"]) for m in ms):
+            oos_ids.append(e["entity_id"])
+        else:
+            in_ids.append(e["entity_id"])
+    return {"in_scope": len(in_ids), "out_of_scope": len(oos_ids),
+            "in_scope_ids": in_ids, "out_of_scope_ids": oos_ids}
+
+
 def inference_summary(recon):
     """Aggregate the B_inference_attack block into recovered/tested + per-client rate."""
     by = recon.get("B_inference_attack", {})
@@ -193,6 +217,27 @@ def _per_doc_leak(dataset, members):
     return per_doc
 
 
+def _direct_leak_entities(dataset, members):
+    """Unprotected DIRECT entities (grouped by entity_id across docs) with the
+    specific mentions that leaked — for the in-scope/out-of-scope split."""
+    gold = sb.load_gold(dataset)
+    docs_sha = hashlib.sha256("".join(g["text"] for g in gold).encode("utf-8")).hexdigest()[:12]
+    preds = sb.union_preds(dataset, members, [g["doc_id"] for g in gold], docs_sha)
+    if preds is None:
+        return []
+    ents = {}
+    for g in gold:
+        pr = preds.get(g["doc_id"], [])
+        for s in g["spans"]:
+            if s.get("identifier_class") != "direct":
+                continue
+            eid = s.get("entity_id") or f'{g["doc_id"]}:{s["start"]}'
+            e = ents.setdefault(eid, {"entity_id": eid, "leaked": []})
+            if not any(sb.overlaps(s, p) for p in pr):  # not even 1 char masked
+                e["leaked"].append({"type": s["type"], "text": g["text"][s["start"]:s["end"]]})
+    return [e for e in ents.values() if e["leaked"]]
+
+
 def compute(dataset):
     res = _load(f"{dataset}-bench-results.json")
     if not res:
@@ -201,10 +246,15 @@ def compute(dataset):
     hip = hipaa_coverage(combo.get("coverage_relaxed_per_type", {}))
 
     el = combo.get("entity_level", {})
-    direct = el.get("by_class", {}).get("direct", {})
-    direct_residual = direct.get("total", 0) - direct.get("protected", 0)
     med = el.get("by_type", {}).get("MEDICATION", {})
     special_residual = med.get("total", 0) - med.get("protected", 0)
+
+    # Recompute direct leaks per entity and split in-scope vs out-of-scope
+    # (spelled-out digit IDs are out of scope for the regex layer by design).
+    members = combo.get("members", [])
+    direct_leaks = _direct_leak_entities(dataset, members)
+    dsplit = split_direct_residual(direct_leaks)
+    direct_in_scope = dsplit["in_scope"]
 
     recon = _load("reconstruction-results.json")
     inf = inference_summary(recon) if recon else {"n_recovered": 0, "n_tested": 0, "rate": 0.0, "by_client": {}}
@@ -223,8 +273,9 @@ def compute(dataset):
         except Exception:  # caches absent in a fresh checkout
             singling = []
 
-    worst = worst_case_leak(_per_doc_leak(dataset, combo.get("members", [])))
-    tier = residual_risk_tier(direct_residual, special_residual, inf["rate"], link_above_base)
+    worst = worst_case_leak(_per_doc_leak(dataset, members))
+    # In-scope direct residual drives the tier; out-of-scope (spelled-out) is reported alongside.
+    tier = residual_risk_tier(direct_in_scope, special_residual, inf["rate"], link_above_base)
 
     return {
         "dataset": dataset,
@@ -238,7 +289,10 @@ def compute(dataset):
         "hipaa": hip,
         "tier": {
             "tier": tier,
-            "direct_residual": direct_residual,
+            "direct_residual": direct_in_scope,            # in-scope drives the tier
+            "direct_residual_out_of_scope": dsplit["out_of_scope"],
+            "out_of_scope_ids": dsplit["out_of_scope_ids"],
+            "in_scope_ids": dsplit["in_scope_ids"],
             "special_residual": special_residual,
             "inference_rate": inf["rate"],
             "linkability_above_base": link_above_base,

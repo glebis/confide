@@ -111,6 +111,36 @@ def test_worst_case_leak_empty():
     assert out["min_recall"] == 1.0          # nothing to leak == fully protected
 
 
+# ----------------------------------------------- in-scope vs out-of-scope
+def test_spelled_out_digit_phone_words_only():
+    assert reg.is_spelled_out_digit("PHONE", "плюс семь, девять-один-шесть") is True
+
+
+def test_spelled_out_digit_phone_with_digits_is_in_scope():
+    assert reg.is_spelled_out_digit("PHONE", "+7 916 555-21-43") is False
+
+
+def test_spelled_out_digit_only_for_phone_and_id():
+    assert reg.is_spelled_out_digit("PERSON", "Вера") is False  # a name is never "spelled-out digits"
+
+
+def test_spelled_out_digit_id_words():
+    assert reg.is_spelled_out_digit("ID", "семь-семь-два-два") is True
+
+
+def test_split_direct_residual_classifies_entities():
+    leaked = [
+        {"entity_id": "a-phone-spelled", "leaked": [{"type": "PHONE", "text": "плюс семь девять"}]},
+        {"entity_id": "d-roman", "leaked": [{"type": "PERSON", "text": "Роман"}]},
+        # mixed: one in-scope leak makes the whole entity in-scope
+        {"entity_id": "mixed", "leaked": [{"type": "ID", "text": "семь два"}, {"type": "PERSON", "text": "X"}]},
+    ]
+    out = reg.split_direct_residual(leaked)
+    assert out["out_of_scope"] == 1
+    assert out["in_scope"] == 2
+    assert out["out_of_scope_ids"] == ["a-phone-spelled"]
+
+
 # --------------------------------------------------------------- inference
 def test_inference_summary_aggregates_clients():
     recon = {"B_inference_attack": {

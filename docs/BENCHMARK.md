@@ -31,7 +31,7 @@ _Citations: Pilán et al., *The Text Anonymization Benchmark*, Computational Lin
 
 ## RU-synth — Russian synthetic therapy series (6 clients, 30 sessions)
 
-**30 documents, 1078 gold PII mentions.** ★ marks the proposed default stack for this language.
+**30 documents, 1076 gold PII mentions.** ★ marks the proposed default stack for this language.
 
 _Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **0.85** (CI **0.83–0.88**); entity recall 0.72 (CI 0.66–0.77) — wide, as small N demands; treat point estimates as directional._
 
@@ -40,18 +40,18 @@ _Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **
 | Combo | MaskCov F2 (rel) | MaskCov R | Type F2 | Macro-F1 | Ent-R (TAB) | Harm-wtd R | Direct-R | Quasi-R | Preds |
 |---|--:|--:|--:|--:|--:|--:|--:|--:|--:|
 | regex | **0.086** | 0.071 | 0.081 | 0.366 | 0.398 | 0.291 | 0.407 | 0.390 | 85 |
-| natasha | **0.751** | 0.774 | 0.746 | 0.200 | 0.292 | 0.350 | 0.352 | 0.237 | 1146 |
+| natasha | **0.752** | 0.775 | 0.747 | 0.200 | 0.301 | 0.363 | 0.370 | 0.237 | 1146 |
 | ollama | **0.106** | 0.093 | 0.093 | 0.245 | 0.150 | 0.090 | 0.241 | 0.068 | 360 |
-| natasha+regex | **0.807** | 0.844 | 0.798 | 0.566 | 0.690 | 0.641 | 0.759 | 0.627 | 1231 |
-| natasha+ollama | **0.736** | 0.801 | 0.725 | 0.391 | 0.425 | 0.423 | 0.593 | 0.271 | 1447 |
+| natasha+regex | **0.808** | 0.846 | 0.799 | 0.566 | 0.699 | 0.654 | 0.778 | 0.627 | 1231 |
+| natasha+ollama | **0.737** | 0.803 | 0.726 | 0.391 | 0.434 | 0.436 | 0.611 | 0.271 | 1447 |
 | regex+ollama | **0.164** | 0.146 | 0.151 | 0.416 | 0.425 | 0.316 | 0.407 | 0.441 | 425 |
-| natasha+regex+ollama ★ | **0.775** | 0.854 | 0.765 | 0.563 | 0.699 | 0.650 | 0.759 | 0.644 | 1512 |
+| natasha+regex+ollama ★ | **0.776** | 0.856 | 0.766 | 0.563 | 0.708 | 0.662 | 0.778 | 0.644 | 1512 |
 
 ### Dev / test split (★ stack, reporting only — nothing tuned on test)
 
 | Split | Docs | Gold | MaskCov R | MaskCov F2 | Ent-R (TAB) | Harm-wtd R |
 |---|--:|--:|--:|--:|--:|--:|
-| dev | 15 | 536 | 0.881 | 0.777 | 0.719 | 0.681 |
+| dev | 15 | 534 | 0.884 | 0.779 | 0.737 | 0.707 |
 | test | 15 | 542 | 0.828 | 0.772 | 0.679 | 0.619 |
 
 ### Per-category recall (relaxed, type-agnostic) — *which layer catches what*
@@ -61,7 +61,7 @@ _Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **
 | regex | 0.00 | 1.00 | 1.00 | 0.97 | 0.00 | 0.00 | 0.00 | 0.01 | 0.83 | 0.00 |
 | natasha | 0.00 | 0.00 | 0.00 | 0.00 | 0.95 | 0.04 | 0.86 | 0.94 | 0.00 | 0.02 |
 | ollama | 0.25 | 0.04 | 0.88 | 0.14 | 0.23 | 0.04 | 0.04 | 0.08 | 0.83 | 0.04 |
-| natasha+regex | 0.00 | 1.00 | 1.00 | 0.97 | 0.95 | 0.04 | 0.86 | 0.94 | 0.83 | 0.02 |
+| natasha+regex | 0.00 | 1.00 | 1.00 | 0.97 | 0.95 | 0.04 | 0.86 | 0.95 | 0.83 | 0.02 |
 | natasha+ollama | 0.25 | 0.04 | 0.88 | 0.14 | 0.95 | 0.08 | 0.86 | 0.94 | 0.83 | 0.06 |
 | regex+ollama | 0.25 | 1.00 | 1.00 | 0.97 | 0.23 | 0.04 | 0.04 | 0.08 | 0.83 | 0.04 |
 | natasha+regex+ollama ★ | 0.25 | 1.00 | 1.00 | 0.97 | 0.95 | 0.08 | 0.86 | 0.95 | 0.83 | 0.06 |
@@ -232,7 +232,7 @@ The pattern-derived gold (A1) was checked against an **independent** from-scratc
 
 ## Stricter headline check (containment)
 
-Beyond relaxed (≥1-char) overlap, a **containment** metric requires ≥80% of an identifier to be masked. For the RU default, containment recall is **0.853** vs relaxed **0.854**; strict exact-span recall is **0.736**. The small relaxed/containment gap means the headline is not driven by 1-character touches, while the strict gap mostly reflects boundary differences.
+Beyond relaxed (≥1-char) overlap, a **containment** metric requires ≥80% of an identifier to be masked. For the RU default, containment recall is **0.854** vs relaxed **0.856**; strict exact-span recall is **0.737**. The small relaxed/containment gap means the headline is not driven by 1-character touches, while the strict gap mostly reflects boundary differences.
 
 ## Known limitations
 
