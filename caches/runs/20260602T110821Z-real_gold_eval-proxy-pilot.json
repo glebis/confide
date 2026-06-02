@@ -1,0 +1,30 @@
+{
+  "ts": "2026-06-02T11:08:21+00:00",
+  "kind": "real_gold_eval",
+  "dataset": "proxy-pilot",
+  "privacy": "real-local-statsonly",
+  "git_commit": "eff13d8",
+  "git_dirty": true,
+  "code_sha": "5b8367c633c5",
+  "runner_sha": "a6070ea8d7b3",
+  "model": "qwen2.5:3b",
+  "versions": {
+    "python": "3.13.9",
+    "torch": "2.9.1",
+    "transformers": "5.9.0"
+  },
+  "host": {
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "metrics": {
+    "n_docs": 2,
+    "docs_paired": 2,
+    "coverage_recall": 0.8741,
+    "coverage_recall_ci": [
+      0.8462,
+      0.9091
+    ],
+    "entity_recall": 0.7692
+  }
+}

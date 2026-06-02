@@ -1,7 +1,7 @@
 ---
 client_id: timur
 document: ANSWER-KEY
-purpose: "de-identification gold reference for PsychoPII benchmark (Psychodemia 2026)"
+purpose: "de-identification gold reference for CONFIDE benchmark (Psychodemia 2026)"
 note: All content is fictional. No real people. Synthetic dataset for de-id benchmark.
 synthetic: true
 ---

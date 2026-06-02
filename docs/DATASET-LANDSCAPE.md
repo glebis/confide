@@ -108,7 +108,7 @@ Columns: Name | Lang | Domain | Annotation | Size | Real/Synth | Access & Licens
 
 | Name | Lang | Domain | Annotation | Size | Real/Synth | Access & License | Relevance | URL/ID |
 |---|---|---|---|---|---|---|---|---|
-| **ai4privacy pii-masking-300k/200k** | en/fr/de/it/nl/es | general | span-level PII, many types | 200–300K | **Synthetic** | **CC-BY-4.0** (OpenPII core) | Already CONFIDE EN-real slice; multilingual baseline | HF `ai4privacy/...` |
+| **ai4privacy pii-masking-300k/200k** | en/fr/de/it/nl/es | general | span-level PII, many types | 200–300K | **Synthetic** | **custom/other license — see HF license.md; redistribution restricted** | Already CONFIDE EN-real slice; multilingual baseline | HF `ai4privacy/...` |
 | **Text Anonymization Benchmark (TAB)** | EN | court (ECHR) | direct/quasi/coref spans | 1,268 docs | **Real** | **MIT** | Methodology ancestor; direct/quasi gold | git NorskRegnesentral/TAB |
 | **Microsoft Presidio eval data** **[NEW]** | EN(+) | general | PII spans (synthetic generator) | configurable | **Synthetic** | **MIT** | **Direct baseline harness** to score Presidio | github.com/microsoft/presidio-research |
 | **PII-Bench** | EN(+) | multi-party | 55 fine-grained subtypes | — | Synthetic | see card | Fine-grained taxonomy anchor (name-collision caution) | arXiv 2502.18545 |
@@ -177,7 +177,7 @@ Columns: Name | Lang | Domain | Annotation | Size | Real/Synth | Access & Licens
 - **TAB (MIT)** — real, direct/quasi/coref span gold; the methodological anchor for
   CONFIDE's identifier_class (direct/quasi) design.
 - **MEDDOCAN (CC-BY-4.0)** — open clinical PHI span gold; best open de-id F1 anchor.
-- **ai4privacy 300k (CC-BY-4.0)** — multilingual synthetic PII (already the EN-real slice).
+- **ai4privacy 300k (custom/other license — see HF license.md; redistribution restricted)** — multilingual synthetic PII (already the EN-real slice).
 - **RU anchors (currently CONFIDE has none):** **PII-Bench RU** (`hivetrace/pii-bench`,
   span-level 13 structured IDs incl. INN/SNILS/OGRN/passport — eval-only), **NEREL**
   (`iluvvatar/NEREL`, PERSON/AGE/PROFESSION/LOCATION/ORG/DATE), and **Natasha gold**

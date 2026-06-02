@@ -114,6 +114,6 @@ Ollama / OPF / Presidio / torch / transformers, and needs no network. The pre-ex
 `⚠` warnings about the stale RU `opf` cache and legacy `opf` manifests are non-fatal
 and do not fail CI.
 
-**Contributors: run `make check` (from `eval/`) before committing.** If it exits
+**Contributors: run `make check` (from the repo root) before committing.** If it exits
 non-zero, regenerate the artifacts in the order above and re-run until it passes —
 otherwise CI will reject the change.
