@@ -32,7 +32,10 @@ positioning memo and is explicitly marked needs-verification.
     (patronymics, transliteration, handles, SNILS/INN/passport, code-switching).
   - **EN-synth** — 32 curated English therapy-style snippets, 46 spans.
   - **EN-real** — 15-row slice of `ai4privacy/pii-masking-300k` (English validation),
-    80 spans (real, generic; in-distribution sanity check).
+    80 spans (real, generic; in-distribution sanity check). **Source text NOT
+    redistributed** (ai4privacy license): the committed gold ships span offsets +
+    `text_sha256` + `text_len` only; reconstruct the text locally with
+    `python -m confide_eval.data.fetch_ai4privacy` (gitignored `.local.jsonl`).
 - **Label taxonomy (canonical).** PERSON, LOCATION, ORG, PHONE, EMAIL, URL, ID, DATE,
   MEDICATION, AGE, PROFESSION. Each RU span also carries: `identifier_class`
   (direct/quasi, TAB), `entity_id` (coreference grouping), `llm_required`,
@@ -74,7 +77,12 @@ positioning memo and is explicitly marked needs-verification.
 
 ### 6. Distribution
 - Synthetic RU/EN-synth: releasable for research/teaching with this datasheet. EN-real
-  inherits ai4privacy's license; consult that dataset card before redistribution.
+  inherits ai4privacy's license; **its source text is NOT redistributed by this repo.**
+  The committed EN-real gold ships span offsets + `text_sha256` + `text_len` only; users
+  reconstruct the text locally under ai4privacy's own license via
+  `python -m confide_eval.data.fetch_ai4privacy` (writes a gitignored
+  `data/sessions-en/pii-eval-ai4privacy.local.jsonl`). Consult ai4privacy's dataset card
+  before any redistribution.
 
 ### 7. Maintenance
 - Versioned in-repo (`data/sessions-ru/*.jsonl`, `src/confide_eval/`). v2 = post-IAA-adjudication. Detector
@@ -105,5 +113,6 @@ positioning memo and is explicitly marked needs-verification.
   references, and narrative quasi-identifiers — the material that makes therapy text both
   useful and re-identifying.
 - **Provenance appendix.** RU answer keys: `data/sessions-ru/client-{a..f}/ANSWER-KEY.md`.
-  EN-real: `ai4privacy/pii-masking-300k`. Reconstruction/utility method: Staab et al.,
+  EN-real: `ai4privacy/pii-masking-300k` — source text not redistributed; reconstruct via
+  `python -m confide_eval.data.fetch_ai4privacy` (sha256-verified). Reconstruction/utility method: Staab et al.,
   RAT-Bench, Tau-Eval (see `RESEARCH-FINDINGS.md` §10; verify before citing).
