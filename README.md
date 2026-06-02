@@ -168,7 +168,14 @@ re-identification recipe.
 > benchmark: that is **generic, non-therapy, non-clinical** PII text used only as an
 > **external anchor** for the EN detectors. It contains **no real therapy/clinical data**,
 > but it is *not* "synthetic" the way the therapy corpus is — it is real generic PII from a
-> public dataset, carried unmodified under that dataset's license. CONFIDE-Red attacks run
+> public dataset. **EN-real source text is NOT redistributed by this repo:** ai4privacy's
+> license restricts redistribution, so the committed gold ships only **span offsets + the
+> gold values + a per-document `text_sha256` and `text_len`** — never the source documents.
+> To run EN-real, fetch the text yourself under ai4privacy's own license:
+> `python -m confide_eval.data.fetch_ai4privacy` (needs `pip install datasets`). That
+> re-downloads ai4privacy, sha256-verifies the 15 documents, and writes a local, gitignored
+> `data/sessions-en/pii-eval-ai4privacy.local.jsonl` that the scorer picks up automatically.
+> Without it, EN-real is skipped gracefully; RU / EN-synth are unaffected. CONFIDE-Red attacks run
 > only against the fabricated therapy personas. Benchmark performance is **not** HIPAA or
 > GDPR anonymisation certification.
 
@@ -179,6 +186,8 @@ re-identification recipe.
   improve it; please credit and keep the synthetic-data notices intact.
 - **The one external slice** — EN-real comes from `ai4privacy/pii-masking-300k` and is
   carried under *that* dataset's own license (see the provenance note above), not CONFIDE's.
+  Its **source text is not redistributed**; the repo ships span offsets + sha256 only, and
+  `python -m confide_eval.data.fetch_ai4privacy` reconstructs it locally under ai4privacy's license.
 - **Citing CONFIDE** — until a paper exists, cite the repository: *Gleb Kalinin and CONFIDE
   contributors, "CONFIDE: a therapy-transcript de-identification benchmark and red team,"
   2026, https://github.com/glebis/confide*. It is research-grade, **not** peer-reviewed; cite

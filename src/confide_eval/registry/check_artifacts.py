@@ -89,8 +89,19 @@ def rescore(dataset):
     return results
 
 
+def en_real_text_present():
+    return paths.en_real_text_present()
+
+
 def check_json_freshness():
-    """Committed *-bench-results.json must equal a fresh rescore."""
+    """Committed *-bench-results.json must equal a fresh rescore.
+
+    EN-real is fetch-required: its source text is not redistributed (ai4privacy
+    license). When the text-bearing `.local.jsonl` has NOT been fetched we cannot
+    re-score it, so we keep the committed en-real results AS-IS (they are our
+    derived measurements, computed when the text was present) and only validate
+    the stripped gold's doc_ids against the committed result. ru/en/ru-adv are
+    validated exactly as strictly as before."""
     fresh = {}
     for ds in DATASETS:
         committed_path = os.path.join(RESULTS, f"{PREFIX[ds]}bench-results.json")
@@ -98,6 +109,15 @@ def check_json_freshness():
             fail(f"[json] {PREFIX[ds]}bench-results.json missing on disk")
             continue
         committed = json.load(open(committed_path, encoding="utf-8"))
+        if ds == "en-real" and not en_real_text_present():
+            # Fetch-required: keep committed results, validate stripped doc_ids only.
+            gold = sb.load_gold(ds)
+            gold_ids = [g["doc_id"] for g in gold]
+            if committed.get("n_docs") != len(gold_ids):
+                fail(f"[json] en-real: committed n_docs={committed.get('n_docs')} "
+                     f"!= stripped gold docs={len(gold_ids)}")
+            fresh[ds] = committed
+            continue
         now = rescore(ds)
         fresh[ds] = now
         # compare the JSON-normalized forms (round-trip to ignore key ordering)
@@ -134,7 +154,11 @@ def check_manifests(fresh):
     for ds in DATASETS:
         gold = sb.load_gold(ds)
         gold_ids = set(g["doc_id"] for g in gold)
-        docs_sha = _docs_sha(gold)
+        # EN-real without the fetched text: validate caches by DOC-ID only (we
+        # cannot recompute docs_sha without the source text — it's not
+        # redistributed). The committed caches were built when text was present.
+        en_real_no_text = (ds == "en-real" and not en_real_text_present())
+        docs_sha = None if en_real_no_text else _docs_sha(gold)
         # which detectors feed the combos that scored cleanly (have a numeric row)?
         cited = set()
         for name, members in sb.COMBOS[ds]:
@@ -152,7 +176,7 @@ def check_manifests(fresh):
                 fail(f"[manifest] {ds}/{det}: {man['invalid_spans']} invalid spans")
             if set(man.get("doc_ids", [])) != gold_ids:
                 fail(f"[manifest] {ds}/{det}: doc-id set differs from gold (stale cache)")
-            if man.get("docs_sha") and man["docs_sha"] != docs_sha:
+            if docs_sha is not None and man.get("docs_sha") and man["docs_sha"] != docs_sha:
                 fail(f"[manifest] {ds}/{det}: docs_sha differs from gold (transcript changed)")
 
 
