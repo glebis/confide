@@ -233,7 +233,15 @@ def main():
     args = ap.parse_args()
     os.makedirs(CACHE, exist_ok=True)
 
-    docs = [json.loads(l) for l in open(DATASETS[args.dataset], encoding="utf-8")]
+    src = DATASETS[args.dataset]
+    if args.dataset == "en-real":
+        if not paths.en_real_text_present():
+            print("en-real source text not present — run "
+                  "`python -m confide_eval.data.fetch_ai4privacy` to fetch it "
+                  "(ai4privacy license; not redistributed). Skipping en-real.")
+            return
+        src = os.fspath(paths.en_real_gold())
+    docs = [json.loads(l) for l in open(src, encoding="utf-8")]
     # normalize id field (en datasets may lack doc_id)
     for i, d in enumerate(docs):
         d.setdefault("doc_id", f"{args.dataset}-{i:03d}")

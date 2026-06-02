@@ -121,8 +121,28 @@ def prf(c, fp, fn):
     return p, r, f1, f2
 
 
+def gold_path(dataset):
+    """Resolve the gold file. EN-real prefers the fetched text-bearing local
+    file and falls back to the stripped (text-less) committed file."""
+    if dataset == "en-real":
+        return os.fspath(paths.en_real_gold())
+    return GOLD[dataset]
+
+
+def en_real_text_present():
+    """True iff the runnable text-bearing EN-real gold has been fetched."""
+    return paths.en_real_text_present()
+
+
+EN_REAL_FETCH_HINT = (
+    "en-real source text not present — run "
+    "`python -m confide_eval.data.fetch_ai4privacy` to fetch it "
+    "(ai4privacy license; not redistributed)"
+)
+
+
 def load_gold(dataset):
-    rows = [json.loads(l) for l in open(GOLD[dataset], encoding="utf-8")]
+    rows = [json.loads(l) for l in open(gold_path(dataset), encoding="utf-8")]
     for i, r in enumerate(rows):
         r.setdefault("doc_id", f"{dataset}-{i:03d}")
         for s in r["spans"]:
@@ -397,6 +417,10 @@ def main():
     ap.add_argument("--out-prefix", default="")
     args = ap.parse_args()
 
+    if args.dataset == "en-real" and not en_real_text_present():
+        print(EN_REAL_FETCH_HINT)
+        print("[score] skipping en-real (no source text).")
+        return
     gold = load_gold(args.dataset)
     import hashlib as _hl
     _docs_sha = _hl.sha256(''.join(g['text'] for g in gold).encode('utf-8')).hexdigest()[:12]

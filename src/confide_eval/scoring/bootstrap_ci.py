@@ -91,6 +91,11 @@ def main():
     # detector caches are fixed, so this CI is stable run-to-run)
     rng = random.Random(20260601)
 
+    if args.dataset == "en-real" and not sb.en_real_text_present():
+        print("en-real source text not present — run "
+              "`python -m confide_eval.data.fetch_ai4privacy` to fetch it "
+              "(ai4privacy license; not redistributed). Skipping en-real CI.")
+        return
     gold = sb.load_gold(args.dataset)
     name, members = star_combo(args.dataset)
     docs_sha = __import__("hashlib").sha256("".join(g["text"] for g in gold).encode()).hexdigest()[:12]
