@@ -6,7 +6,8 @@ Two tools turn the codebook into measured gold:
   span-F1), lists disagreements, and drafts the adjudicated gold.
 
 Read `ANNOTATION-CODEBOOK.md` first — it defines *what* to label; this defines *how* to drive
-the tools.
+the tools. For any unfamiliar term (PII / ПДн, quasi-identifier, span, κ…), the bilingual
+EN↔RU **[GLOSSARY.md](GLOSSARY.md)** gives a plain-language explanation in both languages.
 
 ---
 

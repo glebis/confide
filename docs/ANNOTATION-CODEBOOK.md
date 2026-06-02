@@ -4,7 +4,8 @@ The rulebook for labelling personally-identifying information (PII) in therapy/c
 transcripts, so that **independent annotators produce comparable gold** and we can measure
 inter-annotator agreement (IAA) and adjudicate disagreements. Applies to RU and EN (and is
 designed to extend to DE/FR/ES). Pairs with `HARM-TAXONOMY.md` (severity) and the schema in
-`build_ru_dataset.py` (the fields each span carries).
+`build_ru_dataset.py` (the fields each span carries). Unsure about a term (PII / ПДн,
+quasi-identifier, span, IAA…)? See the bilingual EN↔RU **[GLOSSARY.md](GLOSSARY.md)**.
 
 > **Why a codebook?** PII labelling is subjective at the edges ("is *a small gym in town* a
 > location?"). Disagreement almost always traces to an unclear rule, not a careless
