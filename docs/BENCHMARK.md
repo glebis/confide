@@ -33,26 +33,26 @@ _Citations: Pilán et al., *The Text Anonymization Benchmark*, Computational Lin
 
 **30 documents, 1076 gold PII mentions.** ★ marks the proposed default stack for this language.
 
-_Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **0.85** (CI **0.83–0.88**); entity recall 0.72 (CI 0.66–0.77) — wide, as small N demands; treat point estimates as directional._
+_Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **0.88** (CI **0.85–0.90**); entity recall 0.76 (CI 0.71–0.81) — wide, as small N demands; treat point estimates as directional._
 
 ### Ablation leaderboard
 
 | Combo | MaskCov F2 (rel) | MaskCov R | Type F2 | Macro-F1 | Ent-R (TAB) | Harm-wtd R | Direct-R | Quasi-R | Preds |
 |---|--:|--:|--:|--:|--:|--:|--:|--:|--:|
 | regex | **0.086** | 0.071 | 0.081 | 0.366 | 0.398 | 0.291 | 0.407 | 0.390 | 85 |
-| natasha | **0.752** | 0.775 | 0.747 | 0.200 | 0.301 | 0.363 | 0.370 | 0.237 | 1146 |
-| ollama | **0.106** | 0.093 | 0.093 | 0.245 | 0.150 | 0.090 | 0.241 | 0.068 | 360 |
-| natasha+regex | **0.808** | 0.846 | 0.799 | 0.566 | 0.699 | 0.654 | 0.778 | 0.627 | 1231 |
-| natasha+ollama | **0.737** | 0.803 | 0.726 | 0.391 | 0.434 | 0.436 | 0.611 | 0.271 | 1447 |
-| regex+ollama | **0.164** | 0.146 | 0.151 | 0.416 | 0.425 | 0.316 | 0.407 | 0.441 | 425 |
-| natasha+regex+ollama ★ | **0.776** | 0.856 | 0.766 | 0.563 | 0.708 | 0.662 | 0.778 | 0.644 | 1512 |
+| natasha | **0.752** | 0.775 | 0.746 | 0.196 | 0.301 | 0.363 | 0.370 | 0.237 | 1151 |
+| ollama | **0.329** | 0.293 | 0.294 | 0.338 | 0.230 | 0.184 | 0.185 | 0.271 | 421 |
+| natasha+regex | **0.807** | 0.846 | 0.798 | 0.562 | 0.699 | 0.654 | 0.778 | 0.627 | 1236 |
+| natasha+ollama | **0.774** | 0.825 | 0.765 | 0.407 | 0.487 | 0.504 | 0.537 | 0.441 | 1333 |
+| regex+ollama | **0.379** | 0.342 | 0.344 | 0.505 | 0.469 | 0.359 | 0.463 | 0.475 | 480 |
+| natasha+regex+ollama ★ | **0.811** | 0.875 | 0.802 | 0.574 | 0.726 | 0.679 | 0.815 | 0.644 | 1392 |
 
 ### Dev / test split (★ stack, reporting only — nothing tuned on test)
 
 | Split | Docs | Gold | MaskCov R | MaskCov F2 | Ent-R (TAB) | Harm-wtd R |
 |---|--:|--:|--:|--:|--:|--:|
-| dev | 15 | 534 | 0.884 | 0.779 | 0.737 | 0.707 |
-| test | 15 | 542 | 0.828 | 0.772 | 0.679 | 0.619 |
+| dev | 15 | 534 | 0.901 | 0.818 | 0.737 | 0.698 |
+| test | 15 | 542 | 0.849 | 0.804 | 0.714 | 0.661 |
 
 ### Per-category recall (relaxed, type-agnostic) — *which layer catches what*
 
@@ -60,11 +60,11 @@ _Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **
 |---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
 | regex | 0.00 | 1.00 | 1.00 | 0.97 | 0.00 | 0.00 | 0.00 | 0.01 | 0.83 | 0.00 |
 | natasha | 0.00 | 0.00 | 0.00 | 0.00 | 0.95 | 0.04 | 0.86 | 0.94 | 0.00 | 0.02 |
-| ollama | 0.25 | 0.04 | 0.88 | 0.14 | 0.23 | 0.04 | 0.04 | 0.08 | 0.83 | 0.04 |
+| ollama | 0.08 | 0.48 | 0.38 | 0.17 | 0.46 | 0.12 | 0.18 | 0.31 | 0.50 | 0.13 |
 | natasha+regex | 0.00 | 1.00 | 1.00 | 0.97 | 0.95 | 0.04 | 0.86 | 0.95 | 0.83 | 0.02 |
-| natasha+ollama | 0.25 | 0.04 | 0.88 | 0.14 | 0.95 | 0.08 | 0.86 | 0.94 | 0.83 | 0.06 |
-| regex+ollama | 0.25 | 1.00 | 1.00 | 0.97 | 0.23 | 0.04 | 0.04 | 0.08 | 0.83 | 0.04 |
-| natasha+regex+ollama ★ | 0.25 | 1.00 | 1.00 | 0.97 | 0.95 | 0.08 | 0.86 | 0.95 | 0.83 | 0.06 |
+| natasha+ollama | 0.08 | 0.48 | 0.38 | 0.17 | 1.00 | 0.17 | 0.86 | 0.96 | 0.50 | 0.15 |
+| regex+ollama | 0.08 | 1.00 | 1.00 | 1.00 | 0.46 | 0.12 | 0.18 | 0.32 | 0.83 | 0.13 |
+| natasha+regex+ollama ★ | 0.08 | 1.00 | 1.00 | 1.00 | 1.00 | 0.17 | 0.86 | 0.96 | 0.83 | 0.15 |
 
 ## EN-synth — English curated therapy-style snippets
 
@@ -232,7 +232,7 @@ The pattern-derived gold (A1) was checked against an **independent** from-scratc
 
 ## Stricter headline check (containment)
 
-Beyond relaxed (≥1-char) overlap, a **containment** metric requires ≥80% of an identifier to be masked. For the RU default, containment recall is **0.854** vs relaxed **0.856**; strict exact-span recall is **0.737**. The small relaxed/containment gap means the headline is not driven by 1-character touches, while the strict gap mostly reflects boundary differences.
+Beyond relaxed (≥1-char) overlap, a **containment** metric requires ≥80% of an identifier to be masked. For the RU default, containment recall is **0.873** vs relaxed **0.875**; strict exact-span recall is **0.759**. The small relaxed/containment gap means the headline is not driven by 1-character touches, while the strict gap mostly reflects boundary differences.
 
 ## Known limitations
 

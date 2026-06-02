@@ -5,7 +5,10 @@ date: 21.01.2026
 modality: CBT
 therapist: "Т"
 client: "К"
+synthetic: true
 ---
+
+⚠️ SYNTHETIC — AI-generated fictional session.
 
 # Сессия 2 — Игорь
 
