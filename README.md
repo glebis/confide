@@ -10,9 +10,15 @@
 
 **Conf**idential **F**iltering of **I**dentifying **De**tails (Locked) — the CON·F·I·DE spelling.
 
-> *"Confide in me."* — Kylie Minogue, *Confide in Me* (1994)
-
-> "in the name of understanding a problem should be shared"
+> And throw away the key
+> But sometimes to release it
+> Is to set our children free
+> We all get hurt by love
+> And we all have our cross to bear
+> But in the name of understanding now
+> Our problems should be shared
+>
+> — Kylie Minogue, [*Confide In Me*](https://www.youtube.com/watch?v=PxZkjq9z5wg)
 
 ---
 
@@ -30,8 +36,8 @@ and tells you, honestly, when it isn't enough (the benchmark + the attacks).
 | Part | What it is | Where |
 |---|---|---|
 | **CONFIDE** | The layered, local de-identification stack: deterministic regex (emails/phones/IDs/dates) → Russian NER (Natasha) → optional OpenAI Privacy Filter → local LLM (Qwen via Ollama/llama.cpp) for medications, ages, professions, contextual IDs. | `skills/session-anonymizer/` |
-| **CONFIDE-Bench** | A bilingual **RU + EN** psychotherapy-transcript de-identification **benchmark** — a layered-detector ablation scored the way the field does (recall-first / entity-level / direct vs quasi-identifier), plus a privacy–utility axis. To our knowledge the first *dedicated* therapy-*dialogue* de-id benchmark — adjacent public resources cover clinical notes, legal, or generic PII, or counseling dialogue *without* PII labels (see `eval/RESEARCH-FINDINGS.md` §7). | `eval/BENCHMARK.md` |
-| **CONFIDE-Red** | The **red team**: LLM-based **re-identification / de-anonymization** attacks on the redacted output — single-session inference, longitudinal cross-session linkage, quasi-identifier singling-out — aligned with the GDPR Art-29 attack taxonomy (singling-out / linkability / inference) and the Staab et al. / RAT-Bench inference-attack literature. | `eval/*_attack.py`, `eval/privacy_utility_eval.py` |
+| **CONFIDE-Bench** | A bilingual **RU + EN** psychotherapy-transcript de-identification **benchmark** — a layered-detector ablation scored the way the field does (recall-first / entity-level / direct vs quasi-identifier), plus a privacy–utility axis. To our knowledge the first *dedicated* therapy-*dialogue* de-id benchmark — adjacent public resources cover clinical notes, legal, or generic PII, or counseling dialogue *without* PII labels (see `docs/RESEARCH-FINDINGS.md` §7). | `docs/BENCHMARK.md` |
+| **CONFIDE-Red** | The **red team**: LLM-based **re-identification / de-anonymization** attacks on the redacted output — single-session inference, longitudinal cross-session linkage, quasi-identifier singling-out — aligned with the GDPR Art-29 attack taxonomy (singling-out / linkability / inference) and the Staab et al. / RAT-Bench inference-attack literature. | `src/confide_eval/redteam/*_attack.py`, `src/confide_eval/redteam/privacy_utility_eval.py` |
 
 CONFIDE *protects*; CONFIDE-Red *attacks* — measuring what survives so "we removed the
 names" is never mistaken for "this is safe to send to the cloud."
@@ -57,16 +63,16 @@ names" is never mistaken for "this is safe to send to the cloud."
 CONFIDE is local-first. For real session data: **`THREE-LOCKS.md`** (device + encrypted
 store + per-file/isolation, with a storage checklist) and **`ISOLATION.md`** (red/green
 flow, no-network containers, macOS VMs, sops/age encryption). Extend the benchmark with
-public datasets via `python3 confide.py datasets list` (see `eval/DATASETS.md`).
+public datasets via `python3 confide.py datasets list` (see `docs/DATASETS.md`).
 
 ## Reproducibility & ethics
 
-Pinned environment + Docker (`eval/Dockerfile`, `eval/requirements.lock`), an append-only
-run registry (`eval/runs/`), and full docs: `eval/REPRODUCIBILITY.md`, `eval/ETHICS.md`,
-`eval/DATASHEET.md`, `eval/EXPLAINER.md`.
+Pinned environment + Docker (`Dockerfile`, `requirements.lock`), an append-only
+run registry (`caches/runs/`), and full docs: `docs/REPRODUCIBILITY.md`, `docs/ETHICS.md`,
+`docs/DATASHEET.md`, `docs/EXPLAINER.md`.
 
 A benchmark is only as trustworthy as its reporting choices are explicit.
-[`eval/REPORTING.md`](eval/REPORTING.md) documents exactly what CONFIDE puts in the headline
+[`docs/REPORTING.md`](docs/REPORTING.md) documents exactly what CONFIDE puts in the headline
 and what it leaves out, and why — recall-led (a missed leak is the real failure), no raw
 real data, the OPF privacy filter kept as a lesson rather than a recommendation, and no
 re-identification recipe.
@@ -76,25 +82,25 @@ re-identification recipe.
 | Doc | What it answers |
 |---|---|
 | **Method & results** | |
-| [`eval/REPORTING.md`](eval/REPORTING.md) | What the benchmark includes/omits, and why (recall-led, no raw data, no re-id recipe). |
-| [`eval/RESEARCH-FINDINGS.md`](eval/RESEARCH-FINDINGS.md) | Deep-research positioning vs prior de-id benchmarks, methods, and datasets (needs-verification). |
-| [`eval/BENCHMARK.md`](eval/BENCHMARK.md) | The full layered-detector ablation results and scoring method. |
-| [`eval/CONFIDE-RED-RESULTS.md`](eval/CONFIDE-RED-RESULTS.md) | Red-team re-identification results (inference / singling-out / linkability). |
+| [`docs/REPORTING.md`](docs/REPORTING.md) | What the benchmark includes/omits, and why (recall-led, no raw data, no re-id recipe). |
+| [`docs/RESEARCH-FINDINGS.md`](docs/RESEARCH-FINDINGS.md) | Deep-research positioning vs prior de-id benchmarks, methods, and datasets (needs-verification). |
+| [`docs/BENCHMARK.md`](docs/BENCHMARK.md) | The full layered-detector ablation results and scoring method. |
+| [`results/CONFIDE-RED-RESULTS.md`](results/CONFIDE-RED-RESULTS.md) | Red-team re-identification results (inference / singling-out / linkability). |
 | **Data** | |
-| [`eval/DATASHEET.md`](eval/DATASHEET.md) | Datasheet / data statement: provenance, composition, limits of the synthetic corpus. |
-| [`eval/DATASETS.md`](eval/DATASETS.md) | Public datasets to extend the benchmark, fetched via the CLI. |
+| [`docs/DATASHEET.md`](docs/DATASHEET.md) | Datasheet / data statement: provenance, composition, limits of the synthetic corpus. |
+| [`docs/DATASETS.md`](docs/DATASETS.md) | Public datasets to extend the benchmark, fetched via the CLI. |
 | **Severity & privacy** | |
 | [`HARM-TAXONOMY.md`](HARM-TAXONOMY.md) | Why harm ≠ identifier-strength, and how harm-weighted recall is computed. |
-| [`eval/ETHICS.md`](eval/ETHICS.md) | Ethics statement and responsible-use policy (ACL / NeurIPS / Menlo / Belmont norms). |
+| [`docs/ETHICS.md`](docs/ETHICS.md) | Ethics statement and responsible-use policy (ACL / NeurIPS / Menlo / Belmont norms). |
 | [`ISOLATION.md`](ISOLATION.md) | Red/green data flow, no-network containers, macOS VMs, sops/age encryption. |
 | [`THREE-LOCKS.md`](THREE-LOCKS.md) | Device + encrypted store + per-file isolation, with a storage checklist for real data. |
 | **Reproducibility** | |
-| [`eval/REPRODUCIBILITY.md`](eval/REPRODUCIBILITY.md) | Keeping the benchmark comparable over time; versioning, re-run policy, cost. |
-| [`eval/SOURCES.md`](eval/SOURCES.md) | Primary/near-primary sources checked for publishable methodology claims. |
-| [`eval/requirements.lock`](eval/requirements.lock) | Pinned dependencies for a deterministic environment. |
-| [`eval/Dockerfile`](eval/Dockerfile) / [`eval/run-benchmark.sh`](eval/run-benchmark.sh) | Containerised, one-command benchmark run. |
+| [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) | Keeping the benchmark comparable over time; versioning, re-run policy, cost. |
+| [`docs/SOURCES.md`](docs/SOURCES.md) | Primary/near-primary sources checked for publishable methodology claims. |
+| [`requirements.lock`](requirements.lock) | Pinned dependencies for a deterministic environment. |
+| [`Dockerfile`](Dockerfile) / [`run-benchmark.sh`](run-benchmark.sh) | Containerised, one-command benchmark run. |
 | **Plain-language** | |
-| [`eval/EXPLAINER.md`](eval/EXPLAINER.md) | ELI5 → ELI14 explainer plus ready-to-paste blurbs for non-specialists. |
+| [`docs/EXPLAINER.md`](docs/EXPLAINER.md) | ELI5 → ELI14 explainer plus ready-to-paste blurbs for non-specialists. |
 
 > ⚠️ **Provenance, stated precisely.** Every **therapy/coaching transcript** in this
 > repository (the RU and EN-synth sessions) is **fully synthetic** — fictional clients,

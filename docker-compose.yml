@@ -1,0 +1,38 @@
+# Reproducible PsychoPII run: llama.cpp (primary, memory-efficient) serves Qwen
+# via the OpenAI-compatible API; the psychopii container runs the benchmark and
+# writes results + a provenance record to runs/. Usage:  docker compose up --build
+#
+# Swap the LLM engine by replacing the `llm` service (e.g. ollama/ollama) — the
+# detector code only needs an OpenAI-compatible /v1/chat/completions endpoint.
+services:
+  llm:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    # Pull the exact Qwen GGUF + quant for reproducibility (pin a digest for papers).
+    command: >
+      -hf Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M
+      --host 0.0.0.0 --port 8080 -c 8192
+    ports: ["8080:8080"]
+    volumes: ["llmcache:/root/.cache/llama.cpp"]
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  psychopii:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - LLM_API=openai
+      - LLM_BASE_URL=http://llm:8080
+      - LLM_MODEL=qwen2.5-3b-instruct
+      - DETECTORS=natasha,regex,ollama   # add 'opf' for the transformers route (CPU-slow in Docker)
+    depends_on:
+      llm:
+        condition: service_healthy
+    volumes:
+      - ./out:/app/out                 # results copied here for the host
+
+volumes:
+  llmcache: {}
