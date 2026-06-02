@@ -162,6 +162,24 @@ footer a { color:var(--ink-light); }
   <p><strong>Takeaway:</strong> a generic system is not a therapy-tuned one; the only coverage a baseline adds is relative/colloquial dates.</p></div>
 </div>
 
+<div class="ornament">:::</div>
+
+<h2 id="regulatory">7. Regulatory residual-risk (RU)</h2>
+<p class="state-line">Detection metrics measure what we catch; regulators care what <em>survives</em>. Mapped onto named risks, the RU default stack lands at <strong>RED</strong> — driven by 13 residual direct-identifier entities (a re-identification key left in the text).</p>
+<div class="status-strip">
+  <div class="status-cell r"><div class="status-label">residual-risk tier</div><div class="status-value">RED</div><div class="status-note">ordinal R/A/G · RU ★ stack</div></div>
+  <div class="status-cell b"><div class="status-label">HIPAA-inspired coverage</div><div class="status-value">2/6</div><div class="status-note">categories fully removed</div></div>
+  <div class="status-cell r"><div class="status-label">worst-doc recall</div><div class="status-value">67%</div><div class="status-note">containment · 1.653 leaks / 10k chars</div></div>
+  <div class="status-cell a"><div class="status-label">singled out</div><div class="status-value">0/6</div><div class="status-note">clients · residual quasi surface</div></div>
+</div>
+<div class="aside-container">
+  <div class="aside" style="border:none">
+  <p style="font-size:.95rem"><strong>WP29 (Art-29 WP 05/2014) re-identification triad</strong> — identifiability decomposes into <em>singling out</em> (residual quasi surface via a caveated population-fraction estimator — NOT corpus k-anonymity, N is tiny), <em>linkability</em> (pairwise session-linking ROC&nbsp;AUC 0.46; at or below 0.50 = chance, which is the safe direction), and <em>inference</em> (attribute-recovery attack recovers 20%). HIPAA coverage is a Safe-Harbor-<em>inspired</em> checklist, not a legal determination (AGE is N/A; structured IDs collapsed).</p></div>
+  <div class="aside"><div class="t">reading the tier</div>
+  <p><strong>RED</strong> = any direct identifier leaks at entity level (one unmasked mention is a key). <strong>AMBER</strong> = special-category residual, nonzero inference, or linkability above chance. <strong>GREEN</strong> = all clear.</p>
+  <p>Source: <code>results/regulatory-results.json</code> (<code>confide_eval.scoring.regulatory</code>, unit-tested). Singling-out is illustrative — see its independence caveat in the JSON.</p></div>
+</div>
+
 <div class="flyout"><div class="t">methodology</div>
 <p>Each detector runs once per dataset; combinations are span-unions of cached spans, interval-merged to the deployed redaction mask before scoring. This report headlines <strong>coverage recall</strong> (relaxed overlap) — the privacy-critical number — and recall-weighted <strong>F2</strong> + precision sit in the leaderboard table. Type-aware micro/macro-F1 (i2b2) and entity-level recall (TAB; all mentions masked) are also reported. Numbers are mention-level unless marked entity-level. Gold for RU is located from the two answer-key PII inventories and hand-verified (a planted-signal recovery eval, not independently annotated gold); English reuses curated + real ai4privacy slices. Synthetic data — no real patients. Small N: treat per-type numbers as directional.</p></div>
 

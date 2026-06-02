@@ -1,0 +1,415 @@
+{
+  "datasets": {
+    "ru": {
+      "dataset": "ru",
+      "combo": "natasha+regex+ollama ★",
+      "wp29": {
+        "singling_out": {
+          "clients": [
+            {
+              "client": "a",
+              "surviving_quasi": [
+                "AGE",
+                "MEDICATION",
+                "PROFESSION"
+              ],
+              "dims_used": [
+                "AGE",
+                "PROFESSION",
+                "MEDICATION"
+              ],
+              "dims_entities": [
+                "a-age",
+                "a-profession",
+                "a-sertraline"
+              ],
+              "expected_matches": 50.1,
+              "singles_out": false,
+              "illustrative": true
+            },
+            {
+              "client": "b",
+              "surviving_quasi": [
+                "AGE",
+                "LOCATION",
+                "MEDICATION",
+                "PROFESSION"
+              ],
+              "dims_used": [
+                "AGE",
+                "LOCATION",
+                "MEDICATION",
+                "PROFESSION"
+              ],
+              "dims_entities": [
+                "b-age",
+                "b-ekaterinburg",
+                "b-fluoxetine",
+                "b-profession"
+              ],
+              "expected_matches": 1.7,
+              "singles_out": false,
+              "illustrative": true
+            },
+            {
+              "client": "c",
+              "surviving_quasi": [
+                "AGE",
+                "MEDICATION",
+                "PROFESSION"
+              ],
+              "dims_used": [
+                "AGE",
+                "MEDICATION",
+                "PROFESSION"
+              ],
+              "dims_entities": [
+                "c-age",
+                "c-escitalopram",
+                "c-profession"
+              ],
+              "expected_matches": 33.4,
+              "singles_out": false,
+              "illustrative": true
+            },
+            {
+              "client": "d",
+              "surviving_quasi": [
+                "AGE",
+                "MEDICATION",
+                "PROFESSION"
+              ],
+              "dims_used": [
+                "AGE",
+                "MEDICATION",
+                "PROFESSION"
+              ],
+              "dims_entities": [
+                "d-age",
+                "d-bupropion",
+                "d-profession"
+              ],
+              "expected_matches": 62.6,
+              "singles_out": false,
+              "illustrative": true
+            },
+            {
+              "client": "e",
+              "surviving_quasi": [
+                "MEDICATION",
+                "ORG",
+                "PROFESSION"
+              ],
+              "dims_used": [
+                "MEDICATION",
+                "PROFESSION"
+              ],
+              "dims_entities": [
+                "e-mirtazapine",
+                "e-profession"
+              ],
+              "expected_matches": 5256.0,
+              "singles_out": false,
+              "illustrative": true
+            },
+            {
+              "client": "f",
+              "surviving_quasi": [
+                "AGE",
+                "MEDICATION",
+                "PROFESSION"
+              ],
+              "dims_used": [
+                "AGE",
+                "MEDICATION",
+                "PROFESSION"
+              ],
+              "dims_entities": [
+                "f-age",
+                "f-atomoxetine",
+                "f-profession"
+              ],
+              "expected_matches": 83.4,
+              "singles_out": false,
+              "illustrative": true
+            }
+          ],
+          "caveat": "Naive product of per-quasi fractions assumes the quasi-identifiers are statistically independent. They are not (profession/city/age/medication correlate), so this OVERSTATES uniqueness — the real matching population is larger and the person is LESS singled out than the point estimate implies."
+        },
+        "linkability": {
+          "roc_auc": 0.4583,
+          "recall": 0.1667,
+          "f1": 0.2857,
+          "above_chance": false
+        },
+        "inference": {
+          "n_recovered": 2,
+          "n_tested": 10,
+          "rate": 0.2,
+          "by_client": {
+            "a": 0.4,
+            "b": 0.0
+          }
+        }
+      },
+      "hipaa": {
+        "categories": {
+          "DATE": {
+            "hipaa": "C: dates",
+            "support": 23,
+            "fn": 0,
+            "passed": true
+          },
+          "EMAIL": {
+            "hipaa": "F: email",
+            "support": 8,
+            "fn": 0,
+            "passed": true
+          },
+          "ID": {
+            "hipaa": "G-M: structured IDs (collapsed)",
+            "support": 36,
+            "fn": 1,
+            "passed": false
+          },
+          "LOCATION": {
+            "hipaa": "B: geographic (< state)",
+            "support": 22,
+            "fn": 1,
+            "passed": false
+          },
+          "PERSON": {
+            "hipaa": "A: names",
+            "support": 842,
+            "fn": 45,
+            "passed": false
+          },
+          "PHONE": {
+            "hipaa": "D: phone",
+            "support": 6,
+            "fn": 1,
+            "passed": false
+          }
+        },
+        "na": [
+          "AGE"
+        ],
+        "special_category": [
+          "MEDICATION",
+          "PROFESSION"
+        ],
+        "unmapped": [
+          "ORG"
+        ],
+        "applicable": 6,
+        "passed": 2,
+        "removed_frac": 0.3333333333333333,
+        "note": "HIPAA-inspired coverage, not legal certification. AGE is N/A (only ages>89 count, no value in gold); structured IDs collapsed."
+      },
+      "tier": {
+        "tier": "RED",
+        "direct_residual": 13,
+        "special_residual": 6,
+        "inference_rate": 0.2,
+        "linkability_above_base": false
+      },
+      "worst_case": {
+        "min_recall": 0.6667,
+        "p10_recall": 0.7214,
+        "mean_recall": 0.8613,
+        "total_leaked": 159,
+        "total_gold": 1078,
+        "total_chars": 961703,
+        "leaked_per_10k_chars": 1.653,
+        "worst_doc": "ru-d-s02",
+        "n_docs": 30
+      }
+    },
+    "en": {
+      "dataset": "en",
+      "combo": "opf+regex+ollama ★",
+      "wp29": {
+        "singling_out": {
+          "clients": [],
+          "caveat": "Naive product of per-quasi fractions assumes the quasi-identifiers are statistically independent. They are not (profession/city/age/medication correlate), so this OVERSTATES uniqueness — the real matching population is larger and the person is LESS singled out than the point estimate implies."
+        },
+        "linkability": {
+          "roc_auc": 0.4583,
+          "recall": 0.1667,
+          "f1": 0.2857,
+          "above_chance": false
+        },
+        "inference": {
+          "n_recovered": 2,
+          "n_tested": 10,
+          "rate": 0.2,
+          "by_client": {
+            "a": 0.4,
+            "b": 0.0
+          }
+        }
+      },
+      "hipaa": {
+        "categories": {
+          "DATE": {
+            "hipaa": "C: dates",
+            "support": 8,
+            "fn": 0,
+            "passed": true
+          },
+          "EMAIL": {
+            "hipaa": "F: email",
+            "support": 4,
+            "fn": 0,
+            "passed": true
+          },
+          "ID": {
+            "hipaa": "G-M: structured IDs (collapsed)",
+            "support": 7,
+            "fn": 1,
+            "passed": false
+          },
+          "LOCATION": {
+            "hipaa": "B: geographic (< state)",
+            "support": 5,
+            "fn": 0,
+            "passed": true
+          },
+          "PERSON": {
+            "hipaa": "A: names",
+            "support": 15,
+            "fn": 0,
+            "passed": true
+          },
+          "PHONE": {
+            "hipaa": "D: phone",
+            "support": 4,
+            "fn": 0,
+            "passed": true
+          },
+          "URL": {
+            "hipaa": "N: URLs",
+            "support": 3,
+            "fn": 0,
+            "passed": true
+          }
+        },
+        "na": [],
+        "special_category": [],
+        "unmapped": [],
+        "applicable": 7,
+        "passed": 6,
+        "removed_frac": 0.8571428571428571,
+        "note": "HIPAA-inspired coverage, not legal certification. AGE is N/A (only ages>89 count, no value in gold); structured IDs collapsed."
+      },
+      "tier": {
+        "tier": "AMBER",
+        "direct_residual": 0,
+        "special_residual": 0,
+        "inference_rate": 0.2,
+        "linkability_above_base": false
+      },
+      "worst_case": {
+        "min_recall": 0.0,
+        "p10_recall": 1.0,
+        "mean_recall": 0.9062,
+        "total_leaked": 3,
+        "total_gold": 46,
+        "total_chars": 2754,
+        "leaked_per_10k_chars": 10.893,
+        "worst_doc": "en-003",
+        "n_docs": 32
+      }
+    },
+    "en-real": {
+      "dataset": "en-real",
+      "combo": "opf+regex+ollama ★",
+      "wp29": {
+        "singling_out": {
+          "clients": [],
+          "caveat": "Naive product of per-quasi fractions assumes the quasi-identifiers are statistically independent. They are not (profession/city/age/medication correlate), so this OVERSTATES uniqueness — the real matching population is larger and the person is LESS singled out than the point estimate implies."
+        },
+        "linkability": {
+          "roc_auc": 0.4583,
+          "recall": 0.1667,
+          "f1": 0.2857,
+          "above_chance": false
+        },
+        "inference": {
+          "n_recovered": 2,
+          "n_tested": 10,
+          "rate": 0.2,
+          "by_client": {
+            "a": 0.4,
+            "b": 0.0
+          }
+        }
+      },
+      "hipaa": {
+        "categories": {
+          "DATE": {
+            "hipaa": "C: dates",
+            "support": 7,
+            "fn": 0,
+            "passed": true
+          },
+          "EMAIL": {
+            "hipaa": "F: email",
+            "support": 8,
+            "fn": 0,
+            "passed": true
+          },
+          "ID": {
+            "hipaa": "G-M: structured IDs (collapsed)",
+            "support": 23,
+            "fn": 4,
+            "passed": false
+          },
+          "LOCATION": {
+            "hipaa": "B: geographic (< state)",
+            "support": 9,
+            "fn": 1,
+            "passed": false
+          },
+          "PERSON": {
+            "hipaa": "A: names",
+            "support": 25,
+            "fn": 2,
+            "passed": false
+          },
+          "PHONE": {
+            "hipaa": "D: phone",
+            "support": 8,
+            "fn": 0,
+            "passed": true
+          }
+        },
+        "na": [],
+        "special_category": [],
+        "unmapped": [],
+        "applicable": 6,
+        "passed": 3,
+        "removed_frac": 0.5,
+        "note": "HIPAA-inspired coverage, not legal certification. AGE is N/A (only ages>89 count, no value in gold); structured IDs collapsed."
+      },
+      "tier": {
+        "tier": "AMBER",
+        "direct_residual": 0,
+        "special_residual": 0,
+        "inference_rate": 0.2,
+        "linkability_above_base": false
+      },
+      "worst_case": {
+        "min_recall": 0.3333,
+        "p10_recall": 0.5,
+        "mean_recall": 0.8667,
+        "total_leaked": 8,
+        "total_gold": 80,
+        "total_chars": 4385,
+        "leaked_per_10k_chars": 18.244,
+        "worst_doc": "en-real-000",
+        "n_docs": 15
+      }
+    }
+  }
+}

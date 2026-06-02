@@ -27,6 +27,7 @@ ENR = load("en-real-bench-results.json")
 RUADV = load("ru-adv-bench-results.json")
 REC = load("reconstruction-results.json")
 PU = load("privacy-utility-results.json")
+REG = load("regulatory-results.json")
 
 
 def combos_clean(res):
@@ -147,6 +148,27 @@ if PU:
     pu_risk = " / ".join(PU["privacy"][c]["risk_class"] for c in ("a", "b"))
 else:
     pu_top3, pu_n, pu_util, pu_cnp, pu_risk = 0, 0, 0.0, 0.0, "—"
+
+# regulatory / residual-risk (from confide_eval.scoring.regulatory)
+reg_ru = (REG or {}).get("datasets", {}).get("ru")
+if reg_ru:
+    reg_tier = reg_ru["tier"]["tier"]
+    reg_direct = reg_ru["tier"]["direct_residual"]
+    reg_special = reg_ru["tier"]["special_residual"]
+    reg_inf = reg_ru["wp29"]["inference"]["rate"]
+    reg_link_roc = reg_ru["wp29"]["linkability"].get("roc_auc") or 0.0
+    reg_hip_pass = reg_ru["hipaa"]["passed"]
+    reg_hip_app = reg_ru["hipaa"]["applicable"]
+    reg_wc_min = reg_ru["worst_case"]["min_recall"]
+    reg_wc_rate = reg_ru["worst_case"]["leaked_per_10k_chars"]
+    _clients = reg_ru["wp29"]["singling_out"]["clients"]
+    reg_nsingle = len(_clients)
+    reg_singles = sum(1 for c in _clients if c.get("singles_out"))
+else:
+    reg_tier, reg_direct, reg_special, reg_inf, reg_link_roc = "—", 0, 0, 0.0, 0.0
+    reg_hip_pass = reg_hip_app = reg_wc_rate = reg_singles = reg_nsingle = 0
+    reg_wc_min = 0.0
+reg_tier_class = {"RED": "r", "AMBER": "a", "GREEN": "g"}.get(reg_tier, "b")
 
 # RU default per-type fn list for the flyout
 def llm_required_line():
@@ -348,6 +370,24 @@ footer a {{ color:var(--ink-light); }}
   <p>On <strong>EN-synth</strong>, Presidio edges the stack on coverage F2 (a broad <code>DATE_TIME</code> recognizer) but its type-F1 is far lower; <strong>Philter</strong> is high-coverage yet emits almost everything as untyped <code>OTHER</code>, so its type-F1 is unusable.</p>
   <p>On <strong>EN-real</strong>, Presidio <em>collapses</em> on coverage — generic NER + structured recognizers miss the bespoke ID/markup formats the stack catches.</p>
   <p><strong>Takeaway:</strong> a generic system is not a therapy-tuned one; the only coverage a baseline adds is relative/colloquial dates.</p></div>
+</div>
+
+<div class="ornament">:::</div>
+
+<h2 id="regulatory">7. Regulatory residual-risk (RU)</h2>
+<p class="state-line">Detection metrics measure what we catch; regulators care what <em>survives</em>. Mapped onto named risks, the RU default stack lands at <strong>{reg_tier}</strong> — driven by {reg_direct} residual direct-identifier {"entity" if reg_direct == 1 else "entities"} (a re-identification key left in the text).</p>
+<div class="status-strip">
+  <div class="status-cell {reg_tier_class}"><div class="status-label">residual-risk tier</div><div class="status-value">{reg_tier}</div><div class="status-note">ordinal R/A/G · RU ★ stack</div></div>
+  <div class="status-cell b"><div class="status-label">HIPAA-inspired coverage</div><div class="status-value">{reg_hip_pass}/{reg_hip_app}</div><div class="status-note">categories fully removed</div></div>
+  <div class="status-cell r"><div class="status-label">worst-doc recall</div><div class="status-value">{reg_wc_min:.0%}</div><div class="status-note">containment · {reg_wc_rate} leaks / 10k chars</div></div>
+  <div class="status-cell a"><div class="status-label">singled out</div><div class="status-value">{reg_singles}/{reg_nsingle}</div><div class="status-note">clients · residual quasi surface</div></div>
+</div>
+<div class="aside-container">
+  <div class="aside" style="border:none">
+  <p style="font-size:.95rem"><strong>WP29 (Art-29 WP 05/2014) re-identification triad</strong> — identifiability decomposes into <em>singling out</em> (residual quasi surface via a caveated population-fraction estimator — NOT corpus k-anonymity, N is tiny), <em>linkability</em> (pairwise session-linking ROC&nbsp;AUC {reg_link_roc:.2f}; at or below 0.50 = chance, which is the safe direction), and <em>inference</em> (attribute-recovery attack recovers {reg_inf:.0%}). HIPAA coverage is a Safe-Harbor-<em>inspired</em> checklist, not a legal determination (AGE is N/A; structured IDs collapsed).</p></div>
+  <div class="aside"><div class="t">reading the tier</div>
+  <p><strong>RED</strong> = any direct identifier leaks at entity level (one unmasked mention is a key). <strong>AMBER</strong> = special-category residual, nonzero inference, or linkability above chance. <strong>GREEN</strong> = all clear.</p>
+  <p>Source: <code>results/regulatory-results.json</code> (<code>confide_eval.scoring.regulatory</code>, unit-tested). Singling-out is illustrative — see its independence caveat in the JSON.</p></div>
 </div>
 
 <div class="flyout"><div class="t">methodology</div>
