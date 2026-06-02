@@ -2,7 +2,7 @@ name: check-artifacts
 
 # Deterministic, LLM-free, network-free guard: fails the build if any committed
 # benchmark artifact has drifted from what the current gold + detector caches
-# produce. See eval/REPRODUCIBILITY.md §8 and eval/check_artifacts.py.
+# produce. See docs/REPRODUCIBILITY.md §8 and src/confide_eval/registry/check_artifacts.py.
 #
 # This job runs ONLY stdlib Python against committed gold + detector caches
 # (JSONL in the repo). It does NOT need Ollama / OPF / Presidio / torch /

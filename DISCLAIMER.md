@@ -1,6 +1,6 @@
 # Disclaimer & Status
 
-**Read this first.** PsychoPII is a **citizen-science** project: an open de-identification
+**Read this first.** CONFIDE is a **citizen-science** project: an open de-identification
 benchmark built and maintained by **volunteers**, not a funded research group or a
 commercial vendor. It is offered in the spirit of open, reproducible, community-reviewed
 work — useful, honestly-scoped, and improvable by anyone.
@@ -40,7 +40,7 @@ work — useful, honestly-scoped, and improvable by anyone.
 
 ## How to cite (if you must)
 
-> PsychoPII: a community/citizen-science synthetic benchmark for bilingual (RU/EN)
+> CONFIDE: a community/citizen-science synthetic benchmark for bilingual (RU/EN)
 > psychotherapy-transcript de-identification. Volunteer-built, not peer-reviewed.
 > Treat results as directional. See repository for methods, datasheet, ethics, and limits.
 

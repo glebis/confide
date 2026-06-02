@@ -16,13 +16,12 @@ long RU transcripts: LLM-only entity recall **0.157**, and the layer is *unstabl
 across runs (see R5 local subset below). R9 asks whether a bigger model in the
 same family recovers the LLM-only types (MEDICATION / AGE / DATE / PROFESSION).
 
-Connectivity probe (this host): both `CEREBRAS_API_KEY` and `GROQ_API_KEY` are
-present and both providers are **reachable** — but only after adding a browser
-`User-Agent` header (their Cloudflare front returns HTTP 403 *error 1010* to the
-default `urllib` UA). Cerebras' served catalogue here was only `gpt-oss-120b` and
-`zai-glm-4.7` (no big Qwen). Groq exposes **`qwen/qwen3-32b`** — the clean
-scale-up from `qwen2.5:3b` — plus `llama-3.3-70b-versatile`. Picked
-`qwen/qwen3-32b` to keep the comparison within the Qwen family.
+This experiment used a Groq-hosted model via an OpenAI-compatible endpoint.
+Note: some providers' Cloudflare front returns HTTP 403 *error 1010* to the
+default `urllib` UA, so a browser `User-Agent` header may be required. Groq
+exposes **`qwen/qwen3-32b`** — the clean scale-up from `qwen2.5:3b` — plus
+`llama-3.3-70b-versatile`. We picked `qwen/qwen3-32b` to keep the comparison
+within the Qwen family.
 
 Transport fixes required in `anonymize.run_ollama` (engine-agnostic layer):
 add the `Authorization: Bearer $OPENAI_API_KEY` header, a browser `User-Agent`,

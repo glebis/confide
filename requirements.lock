@@ -1,5 +1,5 @@
-# Pinned environment for reproducible PsychoPII runs (see REPRODUCIBILITY.md §6).
-# Used by eval/Dockerfile. Bump deliberately + log the change in runs/runs.jsonl.
+# Pinned environment for reproducible CONFIDE runs (see docs/REPRODUCIBILITY.md §6).
+# Used by Dockerfile. Bump deliberately + log the change in runs/runs.jsonl.
 
 # Layer 1 — Russian NER
 natasha==1.6.0

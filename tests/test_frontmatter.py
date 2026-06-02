@@ -7,7 +7,7 @@ linkability a trivial exact-string match (AUC 1.0). `run_frontmatter` /
 `run_regex` now mask the VALUE of identifying keys inside the frontmatter while
 leaving non-name fields and single-letter speaker codes intact.
 
-Run: python3 eval/test_frontmatter.py   (exit 0 = pass)
+Run: pytest tests/test_frontmatter.py   (exit 0 = pass)
 """
 import os
 import sys

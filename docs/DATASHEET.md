@@ -77,7 +77,7 @@ positioning memo and is explicitly marked needs-verification.
   inherits ai4privacy's license; consult that dataset card before redistribution.
 
 ### 7. Maintenance
-- Versioned in-repo (`data/sessions-ru/*.jsonl`, `eval/`). v2 = post-IAA-adjudication. Detector
+- Versioned in-repo (`data/sessions-ru/*.jsonl`, `src/confide_eval/`). v2 = post-IAA-adjudication. Detector
   caches carry manifests (code/docs sha) so stale results are detectable. Future work:
   full-corpus double annotation, citation verification (several 2026 preprints).
 
