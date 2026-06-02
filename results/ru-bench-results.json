@@ -1,7 +1,7 @@
 {
   "dataset": "ru",
   "n_docs": 30,
-  "n_gold_mentions": 1078,
+  "n_gold_mentions": 1076,
   "combos": {
     "regex": {
       "members": [
@@ -9,10 +9,10 @@
       ],
       "n_pred": 85,
       "coverage_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 76,
         "fp": 14,
-        "fn": 1002,
+        "fn": 1000,
         "p": 0.835,
         "r": 0.071,
         "f1": 0.13,
@@ -21,10 +21,10 @@
         "macro_r": 0.381
       },
       "coverage_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 76,
         "fp": 14,
-        "fn": 1002,
+        "fn": 1000,
         "p": 0.835,
         "r": 0.071,
         "f1": 0.13,
@@ -33,10 +33,10 @@
         "macro_r": 0.381
       },
       "coverage_containment": {
-        "support": 1078,
+        "support": 1076,
         "c": 76,
         "fp": 14,
-        "fn": 1002,
+        "fn": 1000,
         "p": 0.835,
         "r": 0.071,
         "f1": 0.13,
@@ -45,10 +45,10 @@
         "macro_r": 0.381
       },
       "type_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 71,
         "fp": 14,
-        "fn": 1007,
+        "fn": 1005,
         "p": 0.835,
         "r": 0.066,
         "f1": 0.122,
@@ -57,10 +57,10 @@
         "macro_r": 0.38
       },
       "type_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 71,
         "fp": 14,
-        "fn": 1007,
+        "fn": 1005,
         "p": 0.835,
         "r": 0.066,
         "f1": 0.122,
@@ -140,10 +140,10 @@
           "f2": 0.0
         },
         "PERSON": {
-          "support": 842,
+          "support": 840,
           "c": 5,
           "fp": 0,
-          "fn": 837,
+          "fn": 835,
           "p": 0.0,
           "r": 0.006,
           "f1": 0.0,
@@ -247,62 +247,62 @@
       ],
       "n_pred": 1151,
       "coverage_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 720,
         "fp": 431,
-        "fn": 358,
+        "fn": 356,
         "p": 0.626,
-        "r": 0.668,
-        "f1": 0.646,
-        "f2": 0.659,
+        "r": 0.669,
+        "f1": 0.647,
+        "f2": 0.66,
         "macro_f1": 0.198,
         "macro_r": 0.269
       },
       "coverage_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 834,
         "fp": 379,
-        "fn": 244,
+        "fn": 242,
         "p": 0.671,
-        "r": 0.774,
+        "r": 0.775,
         "f1": 0.719,
-        "f2": 0.751,
+        "f2": 0.752,
         "macro_f1": 0.206,
         "macro_r": 0.282
       },
       "coverage_containment": {
-        "support": 1078,
+        "support": 1076,
         "c": 834,
         "fp": 379,
-        "fn": 244,
+        "fn": 242,
         "p": 0.671,
-        "r": 0.774,
+        "r": 0.775,
         "f1": 0.719,
-        "f2": 0.751,
+        "f2": 0.752,
         "macro_f1": 0.206,
         "macro_r": 0.282
       },
       "type_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 714,
         "fp": 437,
-        "fn": 364,
+        "fn": 362,
         "p": 0.62,
-        "r": 0.662,
+        "r": 0.664,
         "f1": 0.641,
-        "f2": 0.653,
+        "f2": 0.654,
         "macro_f1": 0.188,
         "macro_r": 0.253
       },
       "type_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 828,
         "fp": 385,
-        "fn": 250,
+        "fn": 248,
         "p": 0.666,
-        "r": 0.768,
-        "f1": 0.713,
-        "f2": 0.745,
+        "r": 0.77,
+        "f1": 0.714,
+        "f2": 0.746,
         "macro_f1": 0.196,
         "macro_r": 0.267
       },
@@ -378,14 +378,14 @@
           "f2": 0.696
         },
         "PERSON": {
-          "support": 842,
+          "support": 840,
           "c": 791,
           "fp": 334,
-          "fn": 51,
+          "fn": 49,
           "p": 0.686,
-          "r": 0.939,
-          "f1": 0.793,
-          "f2": 0.875
+          "r": 0.942,
+          "f1": 0.794,
+          "f2": 0.876
         },
         "PHONE": {
           "support": 6,
@@ -409,15 +409,15 @@
         }
       },
       "entity_level": {
-        "protected": 33,
+        "protected": 34,
         "total": 113,
-        "entity_recall": 0.292,
-        "harm_weighted_recall": 0.35,
+        "entity_recall": 0.301,
+        "harm_weighted_recall": 0.363,
         "by_class": {
           "direct": {
-            "protected": 19,
+            "protected": 20,
             "total": 54,
-            "recall": 0.352
+            "recall": 0.37
           },
           "quasi": {
             "protected": 14,
@@ -437,9 +437,9 @@
             "recall": 0.0
           },
           "PERSON": {
-            "protected": 16,
+            "protected": 17,
             "total": 26,
-            "recall": 0.615
+            "recall": 0.654
           },
           "PHONE": {
             "protected": 0,
@@ -485,62 +485,62 @@
       ],
       "n_pred": 421,
       "coverage_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 176,
         "fp": 246,
-        "fn": 902,
+        "fn": 900,
         "p": 0.416,
-        "r": 0.163,
-        "f1": 0.234,
+        "r": 0.164,
+        "f1": 0.235,
         "f2": 0.186,
         "macro_f1": 0.249,
         "macro_r": 0.197
       },
       "coverage_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 315,
         "fp": 149,
-        "fn": 763,
+        "fn": 761,
         "p": 0.646,
-        "r": 0.292,
-        "f1": 0.402,
-        "f2": 0.328,
+        "r": 0.293,
+        "f1": 0.403,
+        "f2": 0.329,
         "macro_f1": 0.368,
         "macro_r": 0.281
       },
       "coverage_containment": {
-        "support": 1078,
+        "support": 1076,
         "c": 303,
         "fp": 149,
-        "fn": 775,
+        "fn": 773,
         "p": 0.646,
-        "r": 0.281,
+        "r": 0.282,
         "f1": 0.392,
         "f2": 0.317,
         "macro_f1": 0.359,
         "macro_r": 0.272
       },
       "type_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 162,
         "fp": 259,
-        "fn": 916,
+        "fn": 914,
         "p": 0.385,
-        "r": 0.15,
+        "r": 0.151,
         "f1": 0.216,
         "f2": 0.171,
         "macro_f1": 0.231,
         "macro_r": 0.187
       },
       "type_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 282,
         "fp": 181,
-        "fn": 796,
+        "fn": 794,
         "p": 0.57,
         "r": 0.262,
         "f1": 0.359,
-        "f2": 0.293,
+        "f2": 0.294,
         "macro_f1": 0.338,
         "macro_r": 0.269
       },
@@ -626,14 +626,14 @@
           "f2": 0.217
         },
         "PERSON": {
-          "support": 842,
+          "support": 840,
           "c": 264,
           "fp": 15,
-          "fn": 578,
+          "fn": 576,
           "p": 0.928,
           "r": 0.314,
           "f1": 0.469,
-          "f2": 0.361
+          "f2": 0.362
         },
         "PHONE": {
           "support": 6,
@@ -764,62 +764,62 @@
       ],
       "n_pred": 1236,
       "coverage_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 796,
         "fp": 445,
-        "fn": 282,
+        "fn": 280,
         "p": 0.64,
-        "r": 0.738,
+        "r": 0.74,
         "f1": 0.686,
-        "f2": 0.716,
+        "f2": 0.717,
         "macro_f1": 0.564,
         "macro_r": 0.65
       },
       "coverage_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 910,
         "fp": 393,
-        "fn": 168,
+        "fn": 166,
         "p": 0.682,
-        "r": 0.844,
-        "f1": 0.754,
-        "f2": 0.806,
+        "r": 0.846,
+        "f1": 0.755,
+        "f2": 0.807,
         "macro_f1": 0.572,
         "macro_r": 0.663
       },
       "coverage_containment": {
-        "support": 1078,
+        "support": 1076,
         "c": 910,
         "fp": 393,
-        "fn": 168,
+        "fn": 166,
         "p": 0.682,
-        "r": 0.844,
-        "f1": 0.754,
-        "f2": 0.806,
+        "r": 0.846,
+        "f1": 0.755,
+        "f2": 0.807,
         "macro_f1": 0.572,
         "macro_r": 0.663
       },
       "type_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 785,
         "fp": 451,
-        "fn": 293,
+        "fn": 291,
         "p": 0.635,
-        "r": 0.728,
-        "f1": 0.678,
-        "f2": 0.707,
+        "r": 0.73,
+        "f1": 0.679,
+        "f2": 0.708,
         "macro_f1": 0.554,
         "macro_r": 0.634
       },
       "type_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 899,
         "fp": 399,
-        "fn": 179,
+        "fn": 177,
         "p": 0.677,
-        "r": 0.834,
-        "f1": 0.747,
-        "f2": 0.797,
+        "r": 0.836,
+        "f1": 0.748,
+        "f2": 0.798,
         "macro_f1": 0.562,
         "macro_r": 0.647
       },
@@ -895,14 +895,14 @@
           "f2": 0.696
         },
         "PERSON": {
-          "support": 842,
+          "support": 840,
           "c": 796,
           "fp": 334,
-          "fn": 46,
+          "fn": 44,
           "p": 0.686,
-          "r": 0.945,
-          "f1": 0.795,
-          "f2": 0.879
+          "r": 0.948,
+          "f1": 0.796,
+          "f2": 0.88
         },
         "PHONE": {
           "support": 6,
@@ -926,15 +926,15 @@
         }
       },
       "entity_level": {
-        "protected": 78,
+        "protected": 79,
         "total": 113,
-        "entity_recall": 0.69,
-        "harm_weighted_recall": 0.641,
+        "entity_recall": 0.699,
+        "harm_weighted_recall": 0.654,
         "by_class": {
           "direct": {
-            "protected": 41,
+            "protected": 42,
             "total": 54,
-            "recall": 0.759
+            "recall": 0.778
           },
           "quasi": {
             "protected": 37,
@@ -954,9 +954,9 @@
             "recall": 1.0
           },
           "PERSON": {
-            "protected": 16,
+            "protected": 17,
             "total": 26,
-            "recall": 0.615
+            "recall": 0.654
           },
           "PHONE": {
             "protected": 5,
@@ -1003,62 +1003,62 @@
       ],
       "n_pred": 1333,
       "coverage_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 762,
         "fp": 572,
-        "fn": 316,
+        "fn": 314,
         "p": 0.571,
-        "r": 0.707,
+        "r": 0.708,
         "f1": 0.632,
-        "f2": 0.675,
+        "f2": 0.676,
         "macro_f1": 0.355,
         "macro_r": 0.405
       },
       "coverage_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 888,
         "fp": 507,
-        "fn": 190,
+        "fn": 188,
         "p": 0.62,
-        "r": 0.824,
-        "f1": 0.707,
-        "f2": 0.773,
+        "r": 0.825,
+        "f1": 0.708,
+        "f2": 0.774,
         "macro_f1": 0.433,
         "macro_r": 0.474
       },
       "coverage_containment": {
-        "support": 1078,
+        "support": 1076,
         "c": 886,
         "fp": 507,
-        "fn": 192,
+        "fn": 190,
         "p": 0.62,
-        "r": 0.822,
+        "r": 0.823,
         "f1": 0.707,
-        "f2": 0.772,
+        "f2": 0.773,
         "macro_f1": 0.429,
         "macro_r": 0.467
       },
       "type_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 753,
         "fp": 580,
-        "fn": 325,
+        "fn": 323,
         "p": 0.565,
-        "r": 0.699,
+        "r": 0.7,
         "f1": 0.625,
-        "f2": 0.667,
+        "f2": 0.668,
         "macro_f1": 0.333,
         "macro_r": 0.381
       },
       "type_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 878,
         "fp": 516,
-        "fn": 200,
+        "fn": 198,
         "p": 0.613,
-        "r": 0.814,
-        "f1": 0.699,
-        "f2": 0.764,
+        "r": 0.816,
+        "f1": 0.7,
+        "f2": 0.765,
         "macro_f1": 0.407,
         "macro_r": 0.45
       },
@@ -1144,14 +1144,14 @@
           "f2": 0.696
         },
         "PERSON": {
-          "support": 842,
+          "support": 840,
           "c": 807,
           "fp": 338,
-          "fn": 35,
+          "fn": 33,
           "p": 0.688,
-          "r": 0.958,
-          "f1": 0.801,
-          "f2": 0.889
+          "r": 0.961,
+          "f1": 0.802,
+          "f2": 0.89
         },
         "PHONE": {
           "support": 6,
@@ -1205,15 +1205,15 @@
         }
       },
       "entity_level": {
-        "protected": 54,
+        "protected": 55,
         "total": 113,
-        "entity_recall": 0.478,
-        "harm_weighted_recall": 0.491,
+        "entity_recall": 0.487,
+        "harm_weighted_recall": 0.504,
         "by_class": {
           "direct": {
-            "protected": 28,
+            "protected": 29,
             "total": 54,
-            "recall": 0.519
+            "recall": 0.537
           },
           "quasi": {
             "protected": 26,
@@ -1233,9 +1233,9 @@
             "recall": 0.478
           },
           "PERSON": {
-            "protected": 16,
+            "protected": 17,
             "total": 26,
-            "recall": 0.615
+            "recall": 0.654
           },
           "PHONE": {
             "protected": 3,
@@ -1282,62 +1282,62 @@
       ],
       "n_pred": 480,
       "coverage_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 231,
         "fp": 254,
-        "fn": 847,
+        "fn": 845,
         "p": 0.471,
-        "r": 0.214,
+        "r": 0.215,
         "f1": 0.295,
-        "f2": 0.24,
+        "f2": 0.241,
         "macro_f1": 0.449,
         "macro_r": 0.462
       },
       "coverage_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 368,
         "fp": 159,
-        "fn": 710,
+        "fn": 708,
         "p": 0.669,
-        "r": 0.341,
-        "f1": 0.452,
-        "f2": 0.378,
+        "r": 0.342,
+        "f1": 0.453,
+        "f2": 0.379,
         "macro_f1": 0.526,
         "macro_r": 0.512
       },
       "coverage_containment": {
-        "support": 1078,
+        "support": 1076,
         "c": 356,
         "fp": 159,
-        "fn": 722,
+        "fn": 720,
         "p": 0.669,
-        "r": 0.33,
-        "f1": 0.442,
-        "f2": 0.367,
+        "r": 0.331,
+        "f1": 0.443,
+        "f2": 0.368,
         "macro_f1": 0.519,
         "macro_r": 0.504
       },
       "type_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 216,
         "fp": 265,
-        "fn": 862,
+        "fn": 860,
         "p": 0.448,
-        "r": 0.2,
+        "r": 0.201,
         "f1": 0.277,
-        "f2": 0.225,
+        "f2": 0.226,
         "macro_f1": 0.439,
         "macro_r": 0.46
       },
       "type_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 334,
         "fp": 189,
-        "fn": 744,
+        "fn": 742,
         "p": 0.606,
         "r": 0.31,
-        "f1": 0.41,
-        "f2": 0.343,
+        "f1": 0.411,
+        "f2": 0.344,
         "macro_f1": 0.505,
         "macro_r": 0.508
       },
@@ -1423,14 +1423,14 @@
           "f2": 0.217
         },
         "PERSON": {
-          "support": 842,
+          "support": 840,
           "c": 268,
           "fp": 15,
-          "fn": 574,
+          "fn": 572,
           "p": 0.927,
-          "r": 0.318,
-          "f1": 0.474,
-          "f2": 0.366
+          "r": 0.319,
+          "f1": 0.475,
+          "f2": 0.367
         },
         "PHONE": {
           "support": 6,
@@ -1562,62 +1562,62 @@
       ],
       "n_pred": 1392,
       "coverage_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 817,
         "fp": 580,
-        "fn": 261,
+        "fn": 259,
         "p": 0.583,
-        "r": 0.758,
-        "f1": 0.659,
-        "f2": 0.715,
-        "macro_f1": 0.554,
+        "r": 0.759,
+        "f1": 0.66,
+        "f2": 0.716,
+        "macro_f1": 0.555,
         "macro_r": 0.67
       },
       "coverage_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 941,
+        "fp": 517,
+        "fn": 135,
+        "p": 0.629,
+        "r": 0.875,
+        "f1": 0.731,
+        "f2": 0.811,
+        "macro_f1": 0.59,
+        "macro_r": 0.706
+      },
+      "coverage_containment": {
+        "support": 1076,
+        "c": 939,
         "fp": 517,
         "fn": 137,
         "p": 0.629,
         "r": 0.873,
         "f1": 0.731,
         "f2": 0.81,
-        "macro_f1": 0.59,
-        "macro_r": 0.706
-      },
-      "coverage_containment": {
-        "support": 1078,
-        "c": 939,
-        "fp": 517,
-        "fn": 139,
-        "p": 0.629,
-        "r": 0.871,
-        "f1": 0.73,
-        "f2": 0.809,
         "macro_f1": 0.587,
         "macro_r": 0.699
       },
       "type_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 807,
         "fp": 586,
-        "fn": 271,
+        "fn": 269,
         "p": 0.579,
-        "r": 0.749,
-        "f1": 0.653,
-        "f2": 0.707,
+        "r": 0.75,
+        "f1": 0.654,
+        "f2": 0.708,
         "macro_f1": 0.541,
         "macro_r": 0.654
       },
       "type_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 930,
         "fp": 524,
-        "fn": 148,
+        "fn": 146,
         "p": 0.624,
-        "r": 0.863,
+        "r": 0.864,
         "f1": 0.724,
-        "f2": 0.801,
+        "f2": 0.802,
         "macro_f1": 0.574,
         "macro_r": 0.69
       },
@@ -1703,14 +1703,14 @@
           "f2": 0.696
         },
         "PERSON": {
-          "support": 842,
+          "support": 840,
           "c": 811,
           "fp": 338,
-          "fn": 31,
+          "fn": 29,
           "p": 0.687,
-          "r": 0.963,
-          "f1": 0.802,
-          "f2": 0.892
+          "r": 0.965,
+          "f1": 0.803,
+          "f2": 0.893
         },
         "PHONE": {
           "support": 6,
@@ -1764,15 +1764,15 @@
         }
       },
       "entity_level": {
-        "protected": 81,
+        "protected": 82,
         "total": 113,
-        "entity_recall": 0.717,
-        "harm_weighted_recall": 0.667,
+        "entity_recall": 0.726,
+        "harm_weighted_recall": 0.679,
         "by_class": {
           "direct": {
-            "protected": 43,
+            "protected": 44,
             "total": 54,
-            "recall": 0.796
+            "recall": 0.815
           },
           "quasi": {
             "protected": 38,
@@ -1792,9 +1792,9 @@
             "recall": 1.0
           },
           "PERSON": {
-            "protected": 17,
+            "protected": 18,
             "total": 26,
-            "recall": 0.654
+            "recall": 0.692
           },
           "PHONE": {
             "protected": 5,
@@ -1836,11 +1836,11 @@
       "by_split": {
         "dev": {
           "n_docs": 15,
-          "n_gold_mentions": 536,
-          "mask_coverage_recall": 0.897,
-          "mask_coverage_f2": 0.815,
-          "entity_recall": 0.719,
-          "harm_weighted_recall": 0.672
+          "n_gold_mentions": 534,
+          "mask_coverage_recall": 0.901,
+          "mask_coverage_f2": 0.818,
+          "entity_recall": 0.737,
+          "harm_weighted_recall": 0.698
         },
         "test": {
           "n_docs": 15,
