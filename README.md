@@ -31,6 +31,29 @@ The premise: to *understand* a problem with AI, the transcript has to be shared 
 model — so first it must be made safe to share. CONFIDE both does that (the anonymizer)
 and tells you, honestly, when it isn't enough (the benchmark + the attacks).
 
+## Why this exists
+
+Therapists and coaches increasingly want AI to help them review sessions, spot patterns,
+and prepare — but a session transcript is among the **most sensitive data a person ever
+produces**. It can name a diagnosis, a medication, an employer, an abuser, a sexual
+orientation, a suicidal moment. Pasting it into a cloud model can leak all of that, and
+the harm is not hypothetical: stigma, discrimination, loss of work, danger to someone
+fleeing abuse. Russia's 152-ФЗ and the EU's GDPR both treat this as special-category data
+with heavy penalties — but **compliance is the floor, not the point**; the point is not
+hurting the people who trusted a therapist with their story.
+
+The honest problem is that "we removed the names" is routinely mistaken for "this is safe
+to send." It usually isn't: quasi-identifiers (age + profession + a small city) and a
+stigmatised disclosure can re-identify someone after every name is gone. Yet there was **no
+public benchmark** that measured de-identification on *therapy dialogue* specifically — the
+existing de-id datasets are clinical notes, court records, or generic PII, not the messy,
+disclosive back-and-forth of a real session.
+
+CONFIDE exists to (1) make a transcript **safe to share locally, before anything reaches a
+cloud**, and (2) **measure, out loud, how safe it actually is** — including by attacking its
+own output. It is deliberately built in the open, by volunteers, so the people whose
+privacy is at stake can inspect exactly how it works.
+
 ## The three parts
 
 | Part | What it is | Where |
@@ -56,20 +79,53 @@ names" is never mistaken for "this is safe to send to the cloud."
 - **Harm ≠ identifier-strength** — an email is a strong linker but low therapy-harm, while
   a *medication* implies a diagnosis. CONFIDE therefore reports **harm-weighted recall**
   alongside plain recall; the gap between the two is itself a finding (see
-  [`HARM-TAXONOMY.md`](HARM-TAXONOMY.md)).
+  [`HARM-TAXONOMY.md`](docs/HARM-TAXONOMY.md)).
 
 ## Storage & isolation (real data)
 
-CONFIDE is local-first. For real session data: **`THREE-LOCKS.md`** (device + encrypted
-store + per-file/isolation, with a storage checklist) and **`ISOLATION.md`** (red/green
+CONFIDE is local-first. For real session data: **`docs/THREE-LOCKS.md`** (device + encrypted
+store + per-file/isolation, with a storage checklist) and **`docs/ISOLATION.md`** (red/green
 flow, no-network containers, macOS VMs, sops/age encryption). Extend the benchmark with
 public datasets via `python3 confide.py datasets list` (see `docs/DATASETS.md`).
 
-## Reproducibility & ethics
+## Ethics & responsible use
+
+CONFIDE is a privacy tool about vulnerable people; the ethics are not an afterthought.
+Full statement in [`docs/ETHICS.md`](docs/ETHICS.md); the load-bearing commitments:
+
+- **AI here is a microscope, not a surgeon.** It is for de-identification and analysis
+  support — **never** for suicide/crisis-risk assessment, diagnosis, or automated decisions
+  about a person's care. Risk assessment is always a human's job. A clinician stays in the
+  loop; the tool informs, it does not decide.
+- **No real data in public, ever.** Every therapy transcript shipped here is **synthetic**
+  (fictional clients) — so this is **not human-subjects research** and exposes no one. Real
+  or consented sessions are processed **only locally**, stats-only, behind device + store +
+  file encryption ([`THREE-LOCKS.md`](docs/THREE-LOCKS.md), [`ISOLATION.md`](docs/ISOLATION.md)); only
+  aggregates ever leave the machine, never transcript text.
+- **Consent and scope.** Use real data only with explicit consent and only your own /
+  consented sessions; therapist-side recordings need particular care.
+- **Dual-use, handled openly.** The red team (CONFIDE-Red) re-identifies redacted text — the
+  same measurement could be misused. We counter this by **headlining recall** (a miss is a
+  leak), reporting residual risk as rates on fabricated personas, and publishing **no
+  re-identification recipe** for real people.
+- **Honest limits.** Benchmark numbers are our own measurements on a small synthetic corpus
+  — **not** a HIPAA/GDPR/152-ФЗ anonymisation certificate and not clinical validation. Green
+  output still needs human review before any cloud use. See [`DISCLAIMER.md`](DISCLAIMER.md).
+
+## Contributing
+
+CONFIDE is a **community / citizen-science** project, built by **volunteers**, not a funded
+lab — scrutiny, corrections, and especially **annotation help** are what make it
+trustworthy. The gold standard needs independent human annotators (see the bilingual
+[`docs/CALL-FOR-VOLUNTEERS.md`](docs/CALL-FOR-VOLUNTEERS.md) and the turnkey tooling:
+`tools/annotator.html` + `docs/ANNOTATION-CODEBOOK.md`). Start at
+[`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+## Reproducibility & honest reporting
 
 Pinned environment + Docker (`Dockerfile`, `requirements.lock`), an append-only
-run registry (`caches/runs/`), and full docs: `docs/REPRODUCIBILITY.md`, `docs/ETHICS.md`,
-`docs/DATASHEET.md`, `docs/EXPLAINER.md`.
+run registry (`caches/runs/`), a CI artifact stale-check, and full docs:
+`docs/REPRODUCIBILITY.md`, `docs/DATASHEET.md`, `docs/EXPLAINER.md`.
 
 A benchmark is only as trustworthy as its reporting choices are explicit.
 [`docs/REPORTING.md`](docs/REPORTING.md) documents exactly what CONFIDE puts in the headline
@@ -90,10 +146,10 @@ re-identification recipe.
 | [`docs/DATASHEET.md`](docs/DATASHEET.md) | Datasheet / data statement: provenance, composition, limits of the synthetic corpus. |
 | [`docs/DATASETS.md`](docs/DATASETS.md) | Public datasets to extend the benchmark, fetched via the CLI. |
 | **Severity & privacy** | |
-| [`HARM-TAXONOMY.md`](HARM-TAXONOMY.md) | Why harm ≠ identifier-strength, and how harm-weighted recall is computed. |
+| [`HARM-TAXONOMY.md`](docs/HARM-TAXONOMY.md) | Why harm ≠ identifier-strength, and how harm-weighted recall is computed. |
 | [`docs/ETHICS.md`](docs/ETHICS.md) | Ethics statement and responsible-use policy (ACL / NeurIPS / Menlo / Belmont norms). |
-| [`ISOLATION.md`](ISOLATION.md) | Red/green data flow, no-network containers, macOS VMs, sops/age encryption. |
-| [`THREE-LOCKS.md`](THREE-LOCKS.md) | Device + encrypted store + per-file isolation, with a storage checklist for real data. |
+| [`ISOLATION.md`](docs/ISOLATION.md) | Red/green data flow, no-network containers, macOS VMs, sops/age encryption. |
+| [`THREE-LOCKS.md`](docs/THREE-LOCKS.md) | Device + encrypted store + per-file isolation, with a storage checklist for real data. |
 | **Reproducibility** | |
 | [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) | Keeping the benchmark comparable over time; versioning, re-run policy, cost. |
 | [`docs/SOURCES.md`](docs/SOURCES.md) | Primary/near-primary sources checked for publishable methodology claims. |
@@ -112,6 +168,18 @@ re-identification recipe.
 > public dataset, carried unmodified under that dataset's license. CONFIDE-Red attacks run
 > only against the fabricated therapy personas. Benchmark performance is **not** HIPAA or
 > GDPR anonymisation certification.
+
+## License & citation
+
+- **Code** — MIT. **Data & docs** (the synthetic corpora, gold, and documentation) —
+  Creative Commons Attribution 4.0 (CC-BY-4.0). See [`LICENSE`](LICENSE). Use it, fork it,
+  improve it; please credit and keep the synthetic-data notices intact.
+- **The one external slice** — EN-real comes from `ai4privacy/pii-masking-300k` and is
+  carried under *that* dataset's own license (see the provenance note above), not CONFIDE's.
+- **Citing CONFIDE** — until a paper exists, cite the repository: *Gleb Kalinin and CONFIDE
+  contributors, "CONFIDE: a therapy-transcript de-identification benchmark and red team,"
+  2026, https://github.com/glebis/confide*. It is research-grade, **not** peer-reviewed; cite
+  it as a tool and a measurement, not as a compliance guarantee.
 
 CONFIDE grew out of the *Psychodemia · AI & Mental Health* masterclass (31 May 2026); the
 original masterclass materials are in `README-masterclass.md`.
