@@ -1,0 +1,23 @@
+{
+  "scope": "SUBSET ESTIMATE (5 docs, LLM layer only)",
+  "subset": [
+    "ru-a-s01",
+    "ru-b-s03",
+    "ru-c-s02",
+    "ru-d-s04",
+    "ru-e-s05"
+  ],
+  "model": "qwen2.5:3b",
+  "provider": "local Ollama",
+  "temperature": 0.3,
+  "N": 3,
+  "date": "2026-06-02",
+  "entity_recall_runs": [
+    0.047,
+    0.14,
+    0.209
+  ],
+  "mean": 0.132,
+  "std": 0.066,
+  "sample_std": 0.081
+}

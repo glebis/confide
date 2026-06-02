@@ -247,18 +247,34 @@ def run_ollama(text: str, model: str = "qwen2.5:3b") -> list[Span]:
         base = os.environ.get("LLM_BASE_URL",
                               os.environ.get("OLLAMA_HOST", "http://localhost:11434")).rstrip("/")
         messages = [{"role": "user", "content": prompt}]
+        # LLM_TEMPERATURE lets run-variance experiments (R5) vary sampling without
+        # touching the prompt; defaults to 0 for the deterministic default stack.
+        temperature = float(os.environ.get("LLM_TEMPERATURE", "0"))
+        # Reasoning models (e.g. Qwen3) spend output budget on a <think> block
+        # before the JSON; LLM_MAX_TOKENS lets a cloud run raise the cap so long
+        # transcripts don't truncate the answer. Default 2048 keeps local behaviour.
+        max_tokens = int(os.environ.get("LLM_MAX_TOKENS", "2048"))
+        headers = {"Content-Type": "application/json"}
         if api == "openai":
             url = base + "/v1/chat/completions"
             payload = json.dumps({"model": model, "messages": messages,
-                                  "temperature": 0, "max_tokens": 2048,
+                                  "temperature": temperature, "max_tokens": max_tokens,
                                   "stream": False}).encode()
+            # Bearer auth for cloud OpenAI-compatible providers (Cerebras/Groq/etc).
+            key = os.environ.get("OPENAI_API_KEY") or os.environ.get("LLM_API_KEY")
+            if key:
+                headers["Authorization"] = "Bearer " + key
+            # Some providers front their API with Cloudflare, which 403s (error
+            # 1010) requests with a default urllib User-Agent. A browser UA passes.
+            headers["User-Agent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                                     "AppleWebKit/537.36 (KHTML, like Gecko) "
+                                     "Chrome/124.0 Safari/537.36")
         else:
             url = base + "/api/chat"
             payload = json.dumps({"model": model, "messages": messages, "stream": False,
-                                  "options": {"temperature": 0, "num_predict": 2048}}).encode()
+                                  "options": {"temperature": temperature, "num_predict": max_tokens}}).encode()
 
-        req = urllib.request.Request(url, data=payload,
-                                     headers={"Content-Type": "application/json"})
+        req = urllib.request.Request(url, data=payload, headers=headers)
         with urllib.request.urlopen(req, timeout=180) as resp:
             data = json.loads(resp.read())
 

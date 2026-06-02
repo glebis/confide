@@ -66,6 +66,21 @@ _Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **
 | regex+ollama | 0.25 | 1.00 | 1.00 | 0.83 | 0.23 | 0.04 | 0.04 | 0.08 | 0.83 | 0.04 |
 | natasha+regex+ollama ★ | 0.25 | 1.00 | 1.00 | 0.83 | 0.95 | 0.08 | 0.86 | 0.93 | 0.83 | 0.06 |
 
+> **Bigger LLM layer (R9) and run-variance (R5).** The default LLM layer is the
+> fully-local `qwen2.5:3b`, which collapses on these long (~32 K-char) RU
+> transcripts — LLM-only entity recall **0.157** and the LLM-only types
+> (MEDICATION / DATE / PROFESSION ≈ 0.04, AGE 0.25). Swapping in a cloud big
+> model (**Groq `qwen/qwen3-32b`**, synthetic data only) recovers exactly those
+> types — MEDICATION 0.04→0.73, AGE 0.25→0.96, DATE 0.04→0.91, PROFESSION
+> 0.04→0.60 — lifting LLM-only entity recall to **0.565** and the full stack from
+> **0.676 → 0.815** (harm-weighted 0.632 → 0.788), at ~5× the speed and 0 JSON
+> errors. The LLM layer's N=5 run-variance (temp 0.3) is small: LLM-only entity
+> recall **0.526 ± 0.022**, full stack **0.796 ± 0.017**; the local 3b is both
+> lower and ~4× more *unstable* run-to-run (subset estimate 0.132 ± 0.081). The
+> committed default stays local `qwen2.5:3b` (no data egress); cloud inference is
+> opt-in, synthetic-only. See [`CLOUD-MODEL-RESULTS.md`](CLOUD-MODEL-RESULTS.md)
+> and [`CLOUD-INFERENCE.md`](CLOUD-INFERENCE.md).
+
 ## EN-synth — English curated therapy-style snippets
 
 **32 documents, 46 gold PII mentions.** ★ marks the proposed default stack for this language.

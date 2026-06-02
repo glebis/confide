@@ -1,0 +1,72 @@
+{
+  "dataset": "ru",
+  "n_docs": 30,
+  "N": 5,
+  "model": "qwen/qwen3-32b",
+  "provider": "Groq",
+  "provider_base": "https://api.groq.com/openai",
+  "temperature": 0.3,
+  "date": "2026-06-02",
+  "rows": {
+    "LLM-only (qwen3-32b)": {
+      "entity_recall": {
+        "mean": 0.526,
+        "std": 0.02,
+        "sample_std": 0.022,
+        "min": 0.491,
+        "max": 0.546,
+        "runs": [
+          0.537,
+          0.537,
+          0.519,
+          0.491,
+          0.546
+        ]
+      },
+      "harm_weighted_recall": {
+        "mean": 0.434,
+        "std": 0.02,
+        "sample_std": 0.022,
+        "min": 0.398,
+        "max": 0.459,
+        "runs": [
+          0.442,
+          0.437,
+          0.433,
+          0.398,
+          0.459
+        ]
+      }
+    },
+    "stack: natasha+regex+qwen3-32b": {
+      "entity_recall": {
+        "mean": 0.796,
+        "std": 0.015,
+        "sample_std": 0.017,
+        "min": 0.769,
+        "max": 0.815,
+        "runs": [
+          0.815,
+          0.796,
+          0.806,
+          0.769,
+          0.796
+        ]
+      },
+      "harm_weighted_recall": {
+        "mean": 0.765,
+        "std": 0.019,
+        "sample_std": 0.021,
+        "min": 0.732,
+        "max": 0.788,
+        "runs": [
+          0.788,
+          0.762,
+          0.779,
+          0.732,
+          0.766
+        ]
+      }
+    }
+  }
+}
