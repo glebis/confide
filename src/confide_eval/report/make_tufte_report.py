@@ -229,12 +229,24 @@ td:first-child {{ font-family:'EB Garamond',serif; }}
 .ornament {{ text-align:center; color:var(--rule); font-family:'Monaspace Argon',monospace; margin:2rem 0; letter-spacing:.3em; }}
 code {{ font-family:'Monaspace Argon',monospace; font-size:.82em; background:#f0ece0; padding:.05em .3em; }}
 .lede::first-letter {{ font-size:3.2rem; float:left; line-height:.8; padding:.05em .12em 0 0; }}
+.credit {{ font-size:.9rem; color:var(--ink-light); margin:.1rem 0 1.2rem; }}
+.credit a {{ color:var(--accent); text-decoration:none; border-bottom:1px solid #e5cccc; }}
+.credit a:hover {{ border-bottom-color:var(--accent); }}
+.refs {{ font-size:.9rem; line-height:1.5; }}
+.refs h3 {{ font-size:1rem; font-variant:small-caps; letter-spacing:.04em; color:var(--ink); margin:1.4rem 0 .5rem; border-bottom:1px solid #eee; padding-bottom:.2rem; }}
+.refs ul {{ list-style:none; margin:.2rem 0 1rem; padding:0; }}
+.refs li {{ margin:.45rem 0; padding-left:1.1rem; text-indent:-1.1rem; }}
+.refs a {{ color:var(--accent); text-decoration:none; border-bottom:1px solid #e5cccc; }}
+.refs a:hover {{ border-bottom-color:var(--accent); }}
+.refs .meta {{ color:var(--ink-muted); font-style:italic; }}
 footer {{ border-top:1px solid var(--rule); margin-top:3rem; padding-top:1rem; font-size:.8rem; color:var(--ink-muted); }}
+footer a {{ color:var(--ink-light); }}
 @media(max-width:800px){{ .status-strip{{grid-template-columns:repeat(2,1fr)}} .aside-container{{grid-template-columns:1fr}} }}
 </style></head><body>
 
 <h1>CONFIDE-Bench — Which Layer Earns Its Compute?</h1>
 <p class="sub">A bilingual de-identification benchmark for psychotherapy transcripts.</p>
+<p class="credit"><strong>CONFIDE</strong> · <a href="https://github.com/glebis/confide">github.com/glebis/confide</a> · by <a href="https://github.com/glebis">Gleb Kalinin</a> &amp; CONFIDE contributors · released for research &amp; teaching under the repository license. All transcripts are synthetic/fictional — no real patient data.</p>
 <p class="tags">sources: ru/ru-adv/en/en-real-bench-results.json · reconstruction-results.json &nbsp;|&nbsp; metrics: TAB · i2b2 · Presidio-F2 · datasheets-for-datasets</p>
 
 <div class="status-strip">
@@ -341,7 +353,51 @@ footer {{ border-top:1px solid var(--rule); margin-top:3rem; padding-top:1rem; f
 <div class="flyout"><div class="t">methodology</div>
 <p>Each detector runs once per dataset; combinations are span-unions of cached spans, interval-merged to the deployed redaction mask before scoring. This report headlines <strong>coverage recall</strong> (relaxed overlap) — the privacy-critical number — and recall-weighted <strong>F2</strong> + precision sit in the leaderboard table. Type-aware micro/macro-F1 (i2b2) and entity-level recall (TAB; all mentions masked) are also reported. Numbers are mention-level unless marked entity-level. Gold for RU is located from the two answer-key PII inventories and hand-verified (a planted-signal recovery eval, not independently annotated gold); English reuses curated + real ai4privacy slices. Synthetic data — no real patients. Small N: treat per-type numbers as directional.</p></div>
 
-<footer>Generated from eval/*-bench-results.json. CONFIDE-Bench benchmark, Psychodemia 2026. Metrics: TAB (Pilán 2022), i2b2/n2c2 2014, Presidio-research, Datasheets for Datasets. Synthetic/fictional data.</footer>
+<h2 id="references">References &amp; credits</h2>
+<div class="refs prose">
+<p>CONFIDE-Bench builds on the de-identification, re-identification, and documentation literature listed below. Every work named or relied on in this report is credited here with a link to its canonical page (DOI / arXiv / HuggingFace / GitHub). We credit only what the report actually uses; inclusion does not imply endorsement by those authors. URLs verified against <code>docs/CITATION-AUDIT.md</code>.</p>
+
+<h3>Benchmarks &amp; metrics</h3>
+<ul>
+  <li><strong>TAB — Text Anonymization Benchmark.</strong> Pilán, Lison, Øvrelid, Papadopoulou, Sánchez &amp; Batet (2022), <em>Computational Linguistics</em> 48(4):1053–1101. <span class="meta">Source of the direct vs. quasi-identifier distinction and entity-level (all-mentions-masked) recall.</span> <a href="https://doi.org/10.1162/coli_a_00458">doi:10.1162/coli_a_00458</a> · <a href="https://aclanthology.org/2022.cl-4.19/">ACL Anthology</a></li>
+  <li><strong>2014 i2b2/UTHealth de-identification (Track&nbsp;1).</strong> Stubbs, Kotfila &amp; Uzuner (2015), <em>J. Biomedical Informatics</em>. <span class="meta">Strict entity-based de-id evaluation; comparison point for clinical-note de-id.</span> <a href="https://pubmed.ncbi.nlm.nih.gov/26225918/">PubMed 26225918</a></li>
+  <li><strong>2016 CEGS N-GRID / n2c2 psychiatric-intake de-identification.</strong> Stubbs, Filannino &amp; Uzuner (2017), <em>J. Biomedical Informatics</em>. <span class="meta">Psychiatric-intake-note de-id comparison point.</span> <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5705537/">PMC5705537</a></li>
+  <li><strong>MEDDOCAN.</strong> Spanish synthetic clinical-case de-identification shared task (IberLEF 2019), ~22 PHI types. <span class="meta">Related clinical de-id benchmark.</span> <a href="https://github.com/PlanTL-GOB-ES/SPACCC_MEDDOCAN">PlanTL SPACCC_MEDDOCAN</a></li>
+  <li><strong>Presidio-research (F2 evaluation).</strong> Microsoft, MIT-licensed. <span class="meta">Basis for the recall-weighted F<sub>2</sub> (β=2) de-id scoring framing.</span> <a href="https://github.com/microsoft/presidio-research">github.com/microsoft/presidio-research</a></li>
+  <li><strong>Tau-Eval.</strong> Loiseau et al. (2025), EMNLP System Demonstrations. <span class="meta">Task-sensitive privacy-and-utility evaluation framing.</span> <a href="https://arxiv.org/abs/2506.05979">arXiv:2506.05979</a></li>
+</ul>
+
+<h3>Re-identification &amp; privacy attacks</h3>
+<ul>
+  <li><strong>Staab et al. — Beyond Memorization: Violating Privacy via Inference with LLMs.</strong> ICLR 2024. <span class="meta">LLM inference-attack framing; frontier attackers infer far more than the local lower-bound attacker used here.</span> <a href="https://arxiv.org/abs/2310.07298">arXiv:2310.07298</a></li>
+  <li><strong>Anonymeter.</strong> Giomi, Boenisch, Wehmeyer &amp; Tasnádi (2022/PETS 2023), Statice. <span class="meta">Attack-based singling-out / linkability / inference framing (the three GDPR risks).</span> <a href="https://arxiv.org/abs/2211.10459">arXiv:2211.10459</a> · <a href="https://github.com/statice/anonymeter">GitHub</a></li>
+  <li><strong>RAT-Bench.</strong> Imperial College (2026 preprint). <span class="meta">Attacker-based residual re-identification benchmark framing (cited as preprint evidence).</span> <a href="https://openreview.net/forum?id=FjbU4kLriN">OpenReview FjbU4kLriN</a></li>
+</ul>
+
+<h3>Detectors &amp; tools</h3>
+<ul>
+  <li><strong>Microsoft Presidio.</strong> MIT license; spaCy-backed PII detection (EN-first baseline). <a href="https://github.com/microsoft/presidio">github.com/microsoft/presidio</a></li>
+  <li><strong>Philter / philter-lite.</strong> UCSF clinical de-identification rule set; <code>philter-lite</code> is the Sirona Medical fork. <a href="https://github.com/SironaMedical/philter-lite">github.com/SironaMedical/philter-lite</a> · <a href="https://pypi.org/project/philter-lite/">PyPI</a></li>
+  <li><strong>Natasha.</strong> Russian NLP/NER toolkit (Cyrillic-only — the basis for the documented transliteration leak). <a href="https://github.com/natasha/natasha">github.com/natasha/natasha</a></li>
+  <li><strong>OpenAI Privacy Filter (OPF), <code>openai/privacy-filter</code>.</strong> Apache-2.0 token-classification PII model (used as the EN name/address backbone). The model card states it is a redaction / data-minimization aid, <em>not</em> an anonymization or compliance guarantee. <a href="https://huggingface.co/openai/privacy-filter">huggingface.co/openai/privacy-filter</a></li>
+  <li><strong>Ollama + Qwen.</strong> Local LLM runner and the Qwen model family used for the local-LLM detector layer and the local 3B re-identification attacker. <a href="https://ollama.com/">ollama.com</a> · <a href="https://github.com/QwenLM/Qwen2.5">QwenLM/Qwen2.5</a></li>
+</ul>
+
+<h3>Datasets</h3>
+<ul>
+  <li><strong>ai4privacy / pii-masking-300k.</strong> Multilingual synthetic PII dataset; the EN-real validation slice is drawn from it. <span class="meta">License is custom/<code>other</code> (see the dataset's <code>license.md</code>) — verify before redistributing.</span> <a href="https://huggingface.co/datasets/ai4privacy/pii-masking-300k">huggingface.co/datasets/ai4privacy/pii-masking-300k</a></li>
+</ul>
+
+<h3>Documentation &amp; regulatory framing</h3>
+<ul>
+  <li><strong>Datasheets for Datasets.</strong> Gebru et al. (2021), <em>CACM</em>. <a href="https://www.microsoft.com/en-us/research/publication/datasheets-for-datasets/">Microsoft Research</a></li>
+  <li><strong>Data Statements for NLP.</strong> Bender &amp; Friedman (2018), <em>TACL</em>. <a href="https://aclanthology.org/Q18-1041/">ACL Anthology Q18-1041</a></li>
+  <li><strong>GDPR Recital 26 &amp; WP29/EDPB anonymisation framework.</strong> &ldquo;Reasonably likely means&rdquo; and the singling-out / linkability / inference triad. <a href="https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng">GDPR (EUR-Lex)</a> · <a href="https://www.edpb.europa.eu/sme-data-protection-guide/secure-personal-data_en">EDPB SME guide</a></li>
+  <li><strong>HIPAA de-identification (Safe Harbor &amp; Expert Determination).</strong> Mapping is illustrative only — benchmark success is <em>not</em> a compliance certification. <a href="https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html">HHS HIPAA de-id guidance</a></li>
+</ul>
+</div>
+
+<footer>Generated by <code>make_tufte_report.py</code> from <code>results/*-bench-results.json</code>. <strong>CONFIDE-Bench</strong>, part of <a href="https://github.com/glebis/confide">CONFIDE</a> — by Gleb Kalinin &amp; CONFIDE contributors, Psychodemia 2026. Metrics &amp; methods credit: TAB (Pilán et al. 2022), i2b2/n2c2 2014/2016, Microsoft Presidio-research, Datasheets for Datasets — see References above for full links. All data is synthetic/fictional — not real patient data.</footer>
 
 <script>
 const DATA = {json.dumps(DATA, ensure_ascii=False)};
