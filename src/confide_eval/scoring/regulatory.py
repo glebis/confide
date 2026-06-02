@@ -239,6 +239,13 @@ def _direct_leak_entities(dataset, members):
 
 
 def compute(dataset):
+    if dataset == "en-real" and not paths.en_real_text_present():
+        # EN-real source text is fetch-required (ai4privacy license; not
+        # redistributed). The per-doc/per-entity leak recompute needs the text;
+        # without the fetched .local.jsonl we cannot recompute it, so skip.
+        print("[regulatory] en-real source text not present — run "
+              "`python -m confide_eval.data.fetch_ai4privacy` to include it. Skipping.")
+        raise FileNotFoundError("en-real source text not fetched")
     res = _load(f"{dataset}-bench-results.json")
     if not res:
         raise FileNotFoundError(f"{dataset}-bench-results.json")

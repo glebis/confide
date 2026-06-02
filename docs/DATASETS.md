@@ -14,7 +14,7 @@ research-only. None replaces the therapy-dialogue focus — they're for breadth/
 
 | Key | Source | Lang | License | Why it's useful |
 |---|---|---|---|---|
-| `ai4privacy-300k` | HF `ai4privacy/pii-masking-300k` | en/fr/de/it/nl/es | custom/other (see HF `license.md`; commercial use gated) | broad synthetic PII; CONFIDE-Bench's EN-real slice comes from here |
+| `ai4privacy-300k` | HF `ai4privacy/pii-masking-300k` | en/fr/de/it/nl/es | custom/other (see HF `license.md`; commercial use gated) | broad synthetic PII; CONFIDE-Bench's EN-real slice comes from here. **Source text not redistributed** — see note below |
 | `ai4privacy-200k` | HF `ai4privacy/pii-masking-200k` | en/fr/de/it | varies | smaller synthetic PII |
 | `nemotron-pii` | HF `nvidia/Nemotron-PII` | en | CC-BY-4.0 | synthetic, **50+ entity types** — taxonomy reference |
 | `reddit-self-disclosure` | HF `douy/reddit-self-disclosure` | en | research-only | **19 disclosed-experience categories** — closest to therapy self-disclosure |
@@ -34,3 +34,29 @@ full ranked RU/EN/DE/FR/ES acquisition map.
 To score a fetched set with CONFIDE-Bench, add a loader that maps it into the
 `*-eval.jsonl` schema (per-doc `{text, spans:[{start,end,type}]}`) and register it in
 `score_bench.py` GOLD/COMBOS.
+
+## EN-real (ai4privacy) — source text is NOT redistributed
+
+CONFIDE-Bench's **EN-real** slice is 15 documents sampled from
+`ai4privacy/pii-masking-300k`, whose license restricts redistribution of its source
+text. **This repo therefore does not ship that text.** The committed gold
+`data/sessions-en/pii-eval-ai4privacy.jsonl` carries, per document, only:
+`doc_id`, the `spans` (offsets + gold `value`s + types), `source`, a `text_sha256`
+(sha256 of the original document), and `text_len` — **never the source document**.
+
+To make EN-real runnable, reconstruct the text locally **under ai4privacy's own license**:
+
+```bash
+pip install datasets            # one-time, if needed
+python -m confide_eval.data.fetch_ai4privacy
+```
+
+This re-downloads ai4privacy from Hugging Face, finds the 15 source rows by matching
+each recorded `text_sha256` (failing loudly on any mismatch), and writes a local,
+**gitignored** `data/sessions-en/pii-eval-ai4privacy.local.jsonl` (`{doc_id, text, spans}`).
+The scorer and detectors prefer this local file automatically when present (see
+`paths.en_real_gold()`). If it is absent, EN-real is **skipped gracefully** — RU,
+EN-synth and RU-adv are unaffected, and `make test` / `make check` still pass. The
+committed EN-real *results* (derived measurements computed when the text was present)
+remain in the repo; `make check` treats EN-real as fetch-required and never fails merely
+because the source text is not in the repo.
