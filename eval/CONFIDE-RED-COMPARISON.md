@@ -52,24 +52,30 @@ The floor model is erratic across framings (e.g. client d: only the "reason"
 prompt scored). gpt-5 is consistently high across all three framings — the
 anonymizer's residual leakage is robustly exploitable, not a prompt artifact.
 
-## 2. Singling-out
+## 2. Singling-out — ILLUSTRATIVE
 
-Deterministic k-anonymity over declared RU population priors — **independent of
-the attacker model** (no LLM in this attack), so it is identical in both runs:
+> **ILLUSTRATIVE / methodological demonstration, not a re-identification probability.**
+Computed by the shared `kanon` estimator (entity-aware survivor detection over the
+gold + detector caches, one sourced prior table) — **independent of the attacker
+model** (no LLM in this attack), so identical in both runs. Personas are synthetic;
+this shows *how* singling-out is assessed, not a precise probability. The naive
+product assumes independent quasi-identifiers and therefore OVERSTATES uniqueness.
 
-| Client | singled out? | expected matches |
-|---|---|--:|
-| a | no | 104.3 |
-| b | no | 10428.6 |
-| c | no | 104.3 |
-| d | no | 104.3 |
-| e | no | 104.3 |
-| f | **YES** | 0.9 |
+| Client | singled out? | expected matches (illustrative) | verdict robust to ±0.5x–2x priors? |
+|---|---|--:|---|
+| a | no | 50.1 | yes |
+| b | no | 1.7 | **no (flips)** |
+| c | no | 33.4 | yes |
+| d | no | 62.6 | yes |
+| e | no | 5256.0 | yes |
+| f | no | 83.4 | yes |
 
-Client f (student at КФУ in Казань, 23) is singled out: surviving
-city+profession+age+medication multiply below 1 expected match. Unchanged by
-attacker strength — this is a property of what survived redaction, not of who
-reads it.
+No client is singled out under the unified estimate. The **relative ranking** is
+the signal: client b (k≈1.7) is by far the most exposed — its surviving
+age+location+medication+profession combination sits right at the k=1 threshold and
+its "not singled out" verdict **flips** if the priors are tightened 2x, so it is not
+robust. This is attacker-independent: a property of what survived redaction, not of
+who reads it.
 
 ## 3. Linkability — can the attacker tell two sessions are the same person?
 
@@ -90,7 +96,7 @@ attacks toward the attacker:
 
 - **Inference:** 9/30 → 23/30 attributes recovered (+14, 2.6×).
 - **Linkability:** not-linkable → **linkable**.
-- **Singling-out:** unchanged (1/6 clients, f) — it's attacker-independent.
+- **Singling-out (illustrative):** unchanged across attackers — 0/6 clients singled out, but client b (k≈1.7) is the most exposed and its verdict is *not* robust to a 2x prior tightening.
 
 The synthetic corpus's residual re-identification risk after CONFIDE redaction is
 **substantially higher than the 3b floor suggests**. The gap between floor and

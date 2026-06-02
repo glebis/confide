@@ -1,0 +1,35 @@
+{
+  "ts": "2026-06-02T00:04:20+00:00",
+  "kind": "local_r5_variance_subset",
+  "dataset": "ru",
+  "privacy": "synthetic",
+  "git_commit": "a8d664a",
+  "git_dirty": true,
+  "code_sha": "c7f9ece2e751",
+  "runner_sha": "29774334aa90",
+  "model": "qwen2.5:3b",
+  "versions": {
+    "python": "3.13.9",
+    "torch": "2.9.1",
+    "transformers": "5.9.0"
+  },
+  "host": {
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "metrics": {
+    "llm_only_entR_mean": 0.132,
+    "llm_only_entR_std": 0.081,
+    "runs": [
+      0.047,
+      0.14,
+      0.209
+    ]
+  },
+  "extra": {
+    "scope": "SUBSET 5 docs",
+    "N": 3,
+    "temperature": 0.3,
+    "date": "2026-06-02"
+  }
+}

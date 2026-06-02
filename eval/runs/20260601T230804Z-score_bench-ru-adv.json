@@ -1,0 +1,92 @@
+{
+  "ts": "2026-06-01T23:08:04+00:00",
+  "kind": "score_bench",
+  "dataset": "ru-adv",
+  "privacy": "synthetic",
+  "git_commit": "0f20d9a",
+  "git_dirty": true,
+  "code_sha": "8b37d3b2b35f",
+  "runner_sha": "29774334aa90",
+  "model": null,
+  "versions": {
+    "python": "3.13.9",
+    "torch": "2.9.1",
+    "transformers": "5.9.0"
+  },
+  "host": {
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "metrics": {
+    "n_docs": 16,
+    "n_gold": 20,
+    "default_coverage_recall": 0.95,
+    "default_coverage_f2": 0.887,
+    "default_entity_recall": 0.95,
+    "default_harm_weighted_recall": 0.925
+  },
+  "extra": {
+    "combos": {
+      "regex": {
+        "support": 20,
+        "c": 8,
+        "fp": 0,
+        "fn": 12,
+        "p": 1.0,
+        "r": 0.4,
+        "f1": 0.571,
+        "f2": 0.455,
+        "macro_f1": 0.667,
+        "macro_r": 0.667
+      },
+      "natasha": {
+        "support": 20,
+        "c": 7,
+        "fp": 3,
+        "fn": 13,
+        "p": 0.7,
+        "r": 0.35,
+        "f1": 0.467,
+        "f2": 0.389,
+        "macro_f1": 0.189,
+        "macro_r": 0.167
+      },
+      "ollama": {
+        "support": 20,
+        "c": 13,
+        "fp": 7,
+        "fn": 7,
+        "p": 0.72,
+        "r": 0.65,
+        "f1": 0.683,
+        "f2": 0.663,
+        "macro_f1": 0.537,
+        "macro_r": 0.57
+      },
+      "natasha+regex": {
+        "support": 20,
+        "c": 15,
+        "fp": 3,
+        "fn": 5,
+        "p": 0.833,
+        "r": 0.75,
+        "f1": 0.789,
+        "f2": 0.765,
+        "macro_f1": 0.856,
+        "macro_r": 0.833
+      },
+      "natasha+regex+ollama ★": {
+        "support": 20,
+        "c": 19,
+        "fp": 9,
+        "fn": 1,
+        "p": 0.7,
+        "r": 0.95,
+        "f1": 0.806,
+        "f2": 0.887,
+        "macro_f1": 0.888,
+        "macro_r": 0.979
+      }
+    }
+  }
+}

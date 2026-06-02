@@ -30,7 +30,7 @@ and tells you, honestly, when it isn't enough (the benchmark + the attacks).
 | Part | What it is | Where |
 |---|---|---|
 | **CONFIDE** | The layered, local de-identification stack: deterministic regex (emails/phones/IDs/dates) → Russian NER (Natasha) → optional OpenAI Privacy Filter → local LLM (Qwen via Ollama/llama.cpp) for medications, ages, professions, contextual IDs. | `skills/session-anonymizer/` |
-| **CONFIDE-Bench** | A bilingual **RU + EN** psychotherapy-transcript de-identification **benchmark** — a layered-detector ablation scored the way the field does (recall-first / entity-level / direct vs quasi-identifier), plus a privacy–utility axis. To our knowledge the first therapy-*dialogue* de-id benchmark. | `eval/BENCHMARK.md` |
+| **CONFIDE-Bench** | A bilingual **RU + EN** psychotherapy-transcript de-identification **benchmark** — a layered-detector ablation scored the way the field does (recall-first / entity-level / direct vs quasi-identifier), plus a privacy–utility axis. To our knowledge the first *dedicated* therapy-*dialogue* de-id benchmark — adjacent public resources cover clinical notes, legal, or generic PII, or counseling dialogue *without* PII labels (see `eval/RESEARCH-FINDINGS.md` §7). | `eval/BENCHMARK.md` |
 | **CONFIDE-Red** | The **red team**: LLM-based **re-identification / de-anonymization** attacks on the redacted output — single-session inference, longitudinal cross-session linkage, quasi-identifier singling-out — aligned with the GDPR Art-29 attack taxonomy (singling-out / linkability / inference) and the Staab et al. / RAT-Bench inference-attack literature. | `eval/*_attack.py`, `eval/privacy_utility_eval.py` |
 
 CONFIDE *protects*; CONFIDE-Red *attacks* — measuring what survives so "we removed the

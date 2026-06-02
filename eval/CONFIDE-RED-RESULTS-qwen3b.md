@@ -4,18 +4,31 @@ Attacker `qwen2.5:3b` via ollama. Three GDPR Art-29 attacks (inference / singlin
 
 ## 1. Inference attack (by prompt strategy — top-3 attribute recovery)
 
-| Client | direct | reason | investigator | of | singled out? |
+| Client | direct | reason | investigator | of | singled out? (illustrative) |
 |---|--:|--:|--:|--:|---|
-| a | 2 | 1 | 0 | 5 | no (104.3) |
-| b | 1 | 1 | 2 | 5 | no (10428.6) |
-| c | 1 | 0 | 1 | 5 | no (104.3) |
-| d | 0 | 3 | 0 | 5 | no (104.3) |
-| e | 0 | 0 | 0 | 5 | no (104.3) |
-| f | 1 | 1 | 1 | 5 | **YES** (0.9) |
+| a | 2 | 1 | 0 | 5 | no (50.1) |
+| b | 1 | 1 | 2 | 5 | no (1.7) |
+| c | 1 | 0 | 1 | 5 | no (33.4) |
+| d | 0 | 3 | 0 | 5 | no (62.6) |
+| e | 0 | 0 | 0 | 5 | no (5256.0) |
+| f | 1 | 1 | 1 | 5 | no (83.4) |
 
-## 2. Singling-out
+## 2. Singling-out — ILLUSTRATIVE
 
-Deterministic k-anonymity over declared RU population priors (method demo): the surviving quasi-identifiers multiply to an expected matching-population count; below 1 ⇒ the redacted transcript still singles the person out.
+> **ILLUSTRATIVE / methodological demonstration, not a re-identification probability.** Computed by the shared `kanon` estimator (identical numbers to privacy-utility-RESULTS.md). Personas are synthetic, so this shows *how* a surviving quasi-identifier combination is assessed (GDPR Art-29 / k-anonymity), not a precise probability. The load-bearing signal is the **relative ranking** of exposure and the **sensitivity verdict**, not the point value.
+
+_Naive product of per-quasi fractions assumes the quasi-identifiers are statistically independent. They are not (profession/city/age/medication correlate), so this OVERSTATES uniqueness — the real matching population is larger and the person is LESS singled out than the point estimate implies._
+
+Entity-aware survivor detection (gold quasi entity left unmasked by the default stack) feeds one sourced prior table (`kanon.PRIORS`); the surviving fractions multiply to an expected matching-population count; below 1 would mean singling-out.
+
+| Client | expected matches (illustrative) | dims used | singles out? | verdict robust to ±0.5x–2x priors? |
+|---|--:|---|---|---|
+| a | 50.1 | AGE, PROFESSION, MEDICATION | no | yes |
+| b | 1.7 | AGE, LOCATION, MEDICATION, PROFESSION | no | **no (flips)** |
+| c | 33.4 | AGE, MEDICATION, PROFESSION | no | yes |
+| d | 62.6 | AGE, MEDICATION, PROFESSION | no | yes |
+| e | 5256.0 | MEDICATION, PROFESSION | no | yes |
+| f | 83.4 | AGE, MEDICATION, PROFESSION | no | yes |
 
 ## 3. Linkability
 

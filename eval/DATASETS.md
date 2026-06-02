@@ -14,7 +14,7 @@ research-only. None replaces the therapy-dialogue focus — they're for breadth/
 
 | Key | Source | Lang | License | Why it's useful |
 |---|---|---|---|---|
-| `ai4privacy-300k` | HF `ai4privacy/pii-masking-300k` | en/fr/de/it/nl/es | CC-BY-4.0 (OpenPII core) | broad synthetic PII; CONFIDE-Bench's EN-real slice comes from here |
+| `ai4privacy-300k` | HF `ai4privacy/pii-masking-300k` | en/fr/de/it/nl/es | custom/other (see HF `license.md`; commercial use gated) | broad synthetic PII; CONFIDE-Bench's EN-real slice comes from here |
 | `ai4privacy-200k` | HF `ai4privacy/pii-masking-200k` | en/fr/de/it | varies | smaller synthetic PII |
 | `nemotron-pii` | HF `nvidia/Nemotron-PII` | en | CC-BY-4.0 | synthetic, **50+ entity types** — taxonomy reference |
 | `reddit-self-disclosure` | HF `douy/reddit-self-disclosure` | en | research-only | **19 disclosed-experience categories** — closest to therapy self-disclosure |
@@ -25,8 +25,11 @@ research-only. None replaces the therapy-dialogue focus — they're for breadth/
 
 **DUA / not-auto-fetchable (listed for completeness — see `RESEARCH-MULTILINGUAL.md`):**
 MEDDOCAN (ES, Zenodo), CARMEN-I (ES+CA, PhysioNet DUA), GraSCCoPHI (de), eHOP/Rennes
-(fr, RGPD-locked), MultiGraSCCo / PARHAF (CC, arXiv), JayGuard & PII-Bench RU (ru),
-i2b2/n2c2 & MIMIC (en, credentialed).
+(fr, RGPD-locked), MultiGraSCCo / PARHAF (CC, arXiv),
+JayGuard (ru, HF `just-ai/jayguard-ner-benchmark`, MIT/Apache, **real** conversational, 850 rows —
+CONFIDE's strongest real-text RU acquisition) & PII-Bench RU (ru, HF `hivetrace/pii-bench`,
+eval-only, synthetic), i2b2/n2c2 & MIMIC (en, credentialed). See `DATASET-LANDSCAPE.md` for the
+full ranked RU/EN/DE/FR/ES acquisition map.
 
 To score a fetched set with CONFIDE-Bench, add a loader that maps it into the
 `*-eval.jsonl` schema (per-doc `{text, spans:[{start,end,type}]}`) and register it in
