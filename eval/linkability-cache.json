@@ -1,48 +1,48 @@
 {
   "a0|a1": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "a0|a2": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "a0|a3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "a0|a4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "a1|a2": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "a1|a3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "a1|a4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "a2|a3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "a2|a4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "a3|a4": {
     "label": "same",
@@ -51,33 +51,33 @@
   },
   "b0|b1": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "b0|b2": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "b0|b3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "b0|b4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "b1|b2": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "b1|b3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "b1|b4": {
     "label": "same",
@@ -87,22 +87,22 @@
   "b2|b3": {
     "label": "same",
     "called_same": true,
-    "confidence": 0.95
+    "confidence": 0.9
   },
   "b2|b4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "b3|b4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.9
+    "called_same": false,
+    "confidence": 0.0
   },
   "c0|c1": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "c0|c2": {
     "label": "same",
@@ -111,8 +111,8 @@
   },
   "c0|c3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "c0|c4": {
     "label": "same",
@@ -121,23 +121,23 @@
   },
   "c1|c2": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.9
+    "called_same": false,
+    "confidence": 0.0
   },
   "c1|c3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.8
+    "called_same": false,
+    "confidence": 0.0
   },
   "c1|c4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "c2|c3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "c2|c4": {
     "label": "same",
@@ -146,68 +146,68 @@
   },
   "c3|c4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "d0|d1": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "d0|d2": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "d0|d3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "d0|d4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "d1|d2": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.9
+    "called_same": false,
+    "confidence": 0.0
   },
   "d1|d3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "d1|d4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "d2|d3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "d2|d4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "d3|d4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "e0|e1": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.99
+    "called_same": false,
+    "confidence": 0.0
   },
   "e0|e2": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.99
+    "called_same": false,
+    "confidence": 0.0
   },
   "e0|e3": {
     "label": "same",
@@ -216,33 +216,33 @@
   },
   "e0|e4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "e1|e2": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "e1|e3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "e1|e4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "e2|e3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "e2|e4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "e3|e4": {
     "label": "same",
@@ -251,8 +251,8 @@
   },
   "f0|f1": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "f0|f2": {
     "label": "same",
@@ -261,28 +261,28 @@
   },
   "f0|f3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "f0|f4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "f1|f2": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.85
+    "called_same": false,
+    "confidence": 0.0
   },
   "f1|f3": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "f1|f4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.9
+    "called_same": false,
+    "confidence": 0.0
   },
   "f2|f3": {
     "label": "same",
@@ -291,38 +291,38 @@
   },
   "f2|f4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "f3|f4": {
     "label": "same",
-    "called_same": true,
-    "confidence": 0.95
+    "called_same": false,
+    "confidence": 0.0
   },
   "a0|b0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.050000000000000044
+    "confidence": 0.0
   },
   "a0|c0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.3
+    "confidence": 0.0
   },
   "a0|d0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.050000000000000044
+    "confidence": 0.0
   },
   "a0|e0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.15
+    "confidence": 0.0
   },
   "a0|f0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.1
+    "confidence": 0.0
   },
   "a1|b0": {
     "label": "diff",
@@ -332,122 +332,122 @@
   "a1|c0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.3
+    "confidence": 0.0
   },
   "a1|d0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.1
+    "confidence": 0.2
   },
   "a1|e0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.3
+    "confidence": 0.0
   },
   "a1|f0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.050000000000000044
+    "confidence": 0.0
   },
   "a2|b0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.050000000000000044
+    "confidence": 0.0
   },
   "a2|c0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.2
+    "confidence": 0.0
   },
   "a2|d0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.2
+    "confidence": 0.0
   },
   "a2|e0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.2
+    "confidence": 0.0
   },
   "a2|f0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.2
+    "confidence": 0.0
   },
   "a3|b0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.1
+    "confidence": 0.0
   },
   "a3|c0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.30000000000000004
+    "confidence": 0.0
   },
   "a3|d0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.1
+    "confidence": 0.0
   },
   "a3|e0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.2
+    "confidence": 0.0
   },
   "a3|f0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.050000000000000044
+    "confidence": 0.2
   },
   "a4|b0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.1
+    "confidence": 0.050000000000000044
   },
   "a4|c0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.2
+    "confidence": 0.0
   },
   "a4|d0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.1
+    "confidence": 0.2
   },
   "a4|e0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.1
+    "confidence": 0.0
   },
   "a4|f0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.1
+    "confidence": 0.0
   },
   "b0|c0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.19999999999999996
+    "confidence": 0.0
   },
   "b0|d0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.2
+    "confidence": 0.0
   },
   "b0|e0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.0
+    "confidence": 0.050000000000000044
   },
   "b0|f0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.1
+    "confidence": 0.2
   },
   "b1|c0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.3
+    "confidence": 0.0
   },
   "b1|d0": {
     "label": "diff",
@@ -462,37 +462,37 @@
   "b1|f0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.2
+    "confidence": 0.4
   },
   "b2|c0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.3
+    "confidence": 0.0
   },
   "b2|d0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.1
+    "confidence": 0.0
   },
   "b2|e0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.1
+    "confidence": 0.05
   },
   "b2|f0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.2
+    "confidence": 0.0
   },
   "b3|c0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.09999999999999998
+    "confidence": 0.0
   },
   "b3|d0": {
     "label": "diff",
     "called_same": false,
-    "confidence": 0.1
+    "confidence": 0.0
   },
   "b3|e0": {
     "label": "diff",

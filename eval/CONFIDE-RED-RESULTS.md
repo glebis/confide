@@ -36,11 +36,11 @@ Anonymeter framing: given two REDACTED sessions, can the attacker tell whether t
 
 | metric | value | 95% CI (bootstrap, 2000×) |
 |---|--:|---|
-| accuracy | 1.000 | 1.000–1.000 |
-| ROC-AUC | 1.000 | 1.000–1.000 |
+| accuracy | 0.500 | 0.410–0.600 |
+| ROC-AUC | 0.458 | 0.376–0.544 |
 | precision (SAME) | 1.000 | — |
-| recall (SAME) | 1.000 | — |
-| F1 (SAME) | 1.000 | — |
+| recall (SAME) | 0.167 | — |
+| F1 (SAME) | 0.286 | — |
 | base rate P(SAME) | 0.600 | — |
 | majority-class accuracy | 0.600 | — |
 
@@ -48,11 +48,11 @@ Confusion matrix (rows = truth, cols = attacker verdict):
 
 | | called SAME | called DIFFERENT |
 |---|--:|--:|
-| **truth SAME** | 60 (TP) | 0 (FN) |
+| **truth SAME** | 10 (TP) | 50 (FN) |
 | **truth DIFFERENT** | 0 (FP) | 40 (TN) |
 
-> **Mechanism (read the AUC honestly):** 28/30 redacted sessions still expose a cleartext YAML `client_id` (a first name) — a per-client CONSTANT key. The near-perfect score therefore reflects a SURVIVING DIRECT IDENTIFIER the default stack failed to mask, not stylometric inference. This is itself the load-bearing finding: the deployed redaction does not strip structured metadata.
+> **Mechanism (read the AUC honestly):** No cleartext `client_id` detected in the redacted docs; the score reflects content-based linkability. **Before the T8 leak fix this AUC was 1.000** — but that was an artifact: 28/30 redacted sessions leaked a cleartext YAML `client_id` (a per-client first name, a CONSTANT direct identifier the regex/NER/LLM layers never saw), so "linking" was a trivial exact-string match, not inference. The frontmatter recognizer (`anonymize.run_frontmatter`) now masks that value (`leaked_client_id_docs` 28→0). With the direct leak removed, AUC collapses to **0.458** (CI overlaps 0.5) and accuracy to **0.500** (below the 0.600 majority baseline): the attacker is at chance. Recall 0.167 with precision 1.000 shows it almost never confidently asserts SAME, and the AUC confirms it cannot rank SAME pairs above DIFFERENT ones from surviving stylometry / quasi-identifiers alone.
 
-**Verdict:** **Redaction does NOT fully defeat linkability** — the attacker beats chance.
+**Verdict:** **Redaction defeats cross-session linkability at this scale** — the attacker does not beat chance (accuracy CI overlaps the majority-class baseline and AUC CI overlaps 0.5). The earlier "perfect" linkage was a metadata-leak artifact, now fixed.
 
 _Prompt-strategy spread shows which framing the anonymizer is least robust to. Rising recovery + singling-out + linkability are the three ways therapy de-id fails after the names are gone._
