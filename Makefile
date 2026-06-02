@@ -29,8 +29,9 @@ rescore:
 ci:
 	$(PY) -m confide_eval.annotation.iaa_eval
 
-## report: regenerate BENCHMARK.md + the HTML report from the JSONs
+## report: regenerate regulatory metrics + BENCHMARK.md + the HTML report from the JSONs
 report:
+	$(PY) -m confide_eval.scoring.regulatory
 	$(PY) -m confide_eval.report.make_benchmark
 	$(PY) -m confide_eval.report.make_tufte_report
 
