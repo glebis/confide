@@ -2,7 +2,7 @@
   "dataset": "ru",
   "detector": "ollama",
   "n_docs": 30,
-  "n_spans": 388,
+  "n_spans": 424,
   "invalid_spans": 0,
   "doc_ids": [
     "ru-a-s01",
@@ -36,8 +36,8 @@
     "ru-f-s04",
     "ru-f-s05"
   ],
-  "docs_sha": "a2ff538cc685",
-  "code_sha": "26016c2392ed",
+  "docs_sha": "db42d2dea269",
+  "code_sha": "8dc620d71b11",
   "model": "qwen2.5:3b",
-  "seconds": 1619.2
+  "seconds": 1325.4
 }

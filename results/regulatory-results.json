@@ -31,23 +31,20 @@
               "client": "b",
               "surviving_quasi": [
                 "AGE",
-                "LOCATION",
                 "MEDICATION",
                 "PROFESSION"
               ],
               "dims_used": [
                 "AGE",
-                "LOCATION",
                 "MEDICATION",
                 "PROFESSION"
               ],
               "dims_entities": [
                 "b-age",
-                "b-ekaterinburg",
                 "b-fluoxetine",
                 "b-profession"
               ],
-              "expected_matches": 1.7,
+              "expected_matches": 166.9,
               "singles_out": false,
               "illustrative": true
             },
@@ -96,19 +93,22 @@
             {
               "client": "e",
               "surviving_quasi": [
+                "AGE",
                 "MEDICATION",
                 "ORG",
                 "PROFESSION"
               ],
               "dims_used": [
+                "AGE",
                 "MEDICATION",
                 "PROFESSION"
               ],
               "dims_entities": [
+                "e-age",
                 "e-mirtazapine",
                 "e-profession"
               ],
-              "expected_matches": 5256.0,
+              "expected_matches": 75.1,
               "singles_out": false,
               "illustrative": true
             },
@@ -169,19 +169,19 @@
           "ID": {
             "hipaa": "G-M: structured IDs (collapsed)",
             "support": 36,
-            "fn": 1,
-            "passed": false
+            "fn": 0,
+            "passed": true
           },
           "LOCATION": {
             "hipaa": "B: geographic (< state)",
             "support": 22,
-            "fn": 1,
-            "passed": false
+            "fn": 0,
+            "passed": true
           },
           "PERSON": {
             "hipaa": "A: names",
-            "support": 840,
-            "fn": 43,
+            "support": 842,
+            "fn": 31,
             "passed": false
           },
           "PHONE": {
@@ -202,27 +202,26 @@
           "ORG"
         ],
         "applicable": 6,
-        "passed": 2,
-        "removed_frac": 0.3333333333333333,
+        "passed": 4,
+        "removed_frac": 0.6666666666666666,
         "note": "HIPAA-inspired coverage, not legal certification. AGE is N/A (only ages>89 count, no value in gold); structured IDs collapsed."
       },
       "tier": {
         "tier": "RED",
         "direct_residual": 10,
-        "direct_residual_out_of_scope": 2,
+        "direct_residual_out_of_scope": 1,
         "out_of_scope_ids": [
-          "a-policy-spelled",
           "a-phone-spelled"
         ],
         "in_scope_ids": [
           "a-marina",
+          "c-maksim",
           "d-roman",
           "d-insight",
           "d-natalya",
           "d-artem",
           "e-vera",
           "e-sonya",
-          "f-timur-latin",
           "f-timur",
           "f-denis"
         ],
@@ -231,13 +230,13 @@
         "linkability_above_base": false
       },
       "worst_case": {
-        "min_recall": 0.6667,
-        "p10_recall": 0.7214,
-        "mean_recall": 0.8643,
-        "total_leaked": 157,
-        "total_gold": 1076,
-        "total_chars": 961703,
-        "leaked_per_10k_chars": 1.633,
+        "min_recall": 0.7,
+        "p10_recall": 0.7796,
+        "mean_recall": 0.8876,
+        "total_leaked": 139,
+        "total_gold": 1078,
+        "total_chars": 962343,
+        "leaked_per_10k_chars": 1.444,
         "worst_doc": "ru-d-s02",
         "n_docs": 30
       }
@@ -339,99 +338,6 @@
         "leaked_per_10k_chars": 10.893,
         "worst_doc": "en-003",
         "n_docs": 32
-      }
-    },
-    "en-real": {
-      "dataset": "en-real",
-      "combo": "opf+regex+ollama ★",
-      "wp29": {
-        "singling_out": {
-          "clients": [],
-          "caveat": "Naive product of per-quasi fractions assumes the quasi-identifiers are statistically independent. They are not (profession/city/age/medication correlate), so this OVERSTATES uniqueness — the real matching population is larger and the person is LESS singled out than the point estimate implies."
-        },
-        "linkability": {
-          "roc_auc": 0.4583,
-          "recall": 0.1667,
-          "f1": 0.2857,
-          "above_chance": false
-        },
-        "inference": {
-          "n_recovered": 2,
-          "n_tested": 10,
-          "rate": 0.2,
-          "by_client": {
-            "a": 0.4,
-            "b": 0.0
-          }
-        }
-      },
-      "hipaa": {
-        "categories": {
-          "DATE": {
-            "hipaa": "C: dates",
-            "support": 7,
-            "fn": 0,
-            "passed": true
-          },
-          "EMAIL": {
-            "hipaa": "F: email",
-            "support": 8,
-            "fn": 0,
-            "passed": true
-          },
-          "ID": {
-            "hipaa": "G-M: structured IDs (collapsed)",
-            "support": 23,
-            "fn": 4,
-            "passed": false
-          },
-          "LOCATION": {
-            "hipaa": "B: geographic (< state)",
-            "support": 9,
-            "fn": 1,
-            "passed": false
-          },
-          "PERSON": {
-            "hipaa": "A: names",
-            "support": 25,
-            "fn": 2,
-            "passed": false
-          },
-          "PHONE": {
-            "hipaa": "D: phone",
-            "support": 8,
-            "fn": 0,
-            "passed": true
-          }
-        },
-        "na": [],
-        "special_category": [],
-        "unmapped": [],
-        "applicable": 6,
-        "passed": 3,
-        "removed_frac": 0.5,
-        "note": "HIPAA-inspired coverage, not legal certification. AGE is N/A (only ages>89 count, no value in gold); structured IDs collapsed."
-      },
-      "tier": {
-        "tier": "AMBER",
-        "direct_residual": 0,
-        "direct_residual_out_of_scope": 0,
-        "out_of_scope_ids": [],
-        "in_scope_ids": [],
-        "special_residual": 0,
-        "inference_rate": 0.2,
-        "linkability_above_base": false
-      },
-      "worst_case": {
-        "min_recall": 0.3333,
-        "p10_recall": 0.5,
-        "mean_recall": 0.8667,
-        "total_leaked": 8,
-        "total_gold": 80,
-        "total_chars": 4385,
-        "leaked_per_10k_chars": 18.244,
-        "worst_doc": "en-real-000",
-        "n_docs": 15
       }
     }
   }
