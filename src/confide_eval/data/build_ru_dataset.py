@@ -109,7 +109,13 @@ CLIENTS = {
     "c": [  # Алина, UX-дизайнер, СПб
         ("c-alina",       "PERSON",     "direct", False, [rf"{WB}Алин[аыуе]\w*{WE}", rf"{WB}Кузнецов[а-я]+{WE}", rf"{WB}Сергеевн[а-я]+{WE}"]),
         ("c-clientid",    "ID",         "direct", False, [r"(?<=client_id: )alina"]),
-        ("c-maksim",      "PERSON",     "direct", False, [rf"{WB}Максим[а-я]*{WE}"]),
+        # Match the NAME Максим + its declensions (Максима/Максиму/Максимом/
+        # Максиме), but NOT the lowercase adverb "максимально" — note the regex
+        # build runs with re.IGNORECASE, so an unanchored "Максим[а-я]*" also
+        # matches "макс-им-альн-о". Anchoring on the capital М (which IGNORECASE
+        # ignores) is unreliable, so we instead allow only real declension
+        # endings via a closed alternation: optional а|у|ом|е after the stem.
+        ("c-maksim",      "PERSON",     "direct", False, [rf"{WB}Максим(?:а|у|ом|е)?{WE}"]),
         ("c-zaytseva",    "PERSON",     "direct", False, [rf"{WB}Зайцев[а-я]+{WE}"]),
         ("c-boss",        "PERSON",     "direct", False, [rf"{WB}Ольг[а-я]+\s+Викторовн[а-я]+{WE}"]),
         ("c-alliance",    "ORG",        "direct", False, [r"Альянс\w*"]),

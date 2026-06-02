@@ -180,8 +180,8 @@
           },
           "PERSON": {
             "hipaa": "A: names",
-            "support": 842,
-            "fn": 31,
+            "support": 840,
+            "fn": 29,
             "passed": false
           },
           "PHONE": {
@@ -208,14 +208,13 @@
       },
       "tier": {
         "tier": "RED",
-        "direct_residual": 10,
+        "direct_residual": 9,
         "direct_residual_out_of_scope": 1,
         "out_of_scope_ids": [
           "a-phone-spelled"
         ],
         "in_scope_ids": [
           "a-marina",
-          "c-maksim",
           "d-roman",
           "d-insight",
           "d-natalya",
@@ -232,11 +231,11 @@
       "worst_case": {
         "min_recall": 0.7,
         "p10_recall": 0.7796,
-        "mean_recall": 0.8876,
-        "total_leaked": 139,
-        "total_gold": 1078,
+        "mean_recall": 0.8906,
+        "total_leaked": 137,
+        "total_gold": 1076,
         "total_chars": 962343,
-        "leaked_per_10k_chars": 1.444,
+        "leaked_per_10k_chars": 1.424,
         "worst_doc": "ru-d-s02",
         "n_docs": 30
       }
