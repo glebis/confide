@@ -79,7 +79,7 @@ names" is never mistaken for "this is safe to send to the cloud."
 - **Harm ≠ identifier-strength** — an email is a strong linker but low therapy-harm, while
   a *medication* implies a diagnosis. CONFIDE therefore reports **harm-weighted recall**
   alongside plain recall; the gap between the two is itself a finding (see
-  [`HARM-TAXONOMY.md`](docs/HARM-TAXONOMY.md)).
+  [`HARM-TAXONOMY.md`](https://github.com/glebis/confide/blob/main/docs/HARM-TAXONOMY.md)).
 
 ## Storage & isolation (real data)
 
@@ -91,7 +91,7 @@ public datasets via `python3 confide.py datasets list` (see `docs/DATASETS.md`).
 ## Ethics & responsible use
 
 CONFIDE is a privacy tool about vulnerable people; the ethics are not an afterthought.
-Full statement in [`docs/ETHICS.md`](docs/ETHICS.md); the load-bearing commitments:
+Full statement in [`docs/ETHICS.md`](https://github.com/glebis/confide/blob/main/docs/ETHICS.md); the load-bearing commitments:
 
 - **AI here is a microscope, not a surgeon.** It is for de-identification and analysis
   support — **never** for suicide/crisis-risk assessment, diagnosis, or automated decisions
@@ -100,7 +100,7 @@ Full statement in [`docs/ETHICS.md`](docs/ETHICS.md); the load-bearing commitmen
 - **No real data in public, ever.** Every therapy transcript shipped here is **synthetic**
   (fictional clients) — so this is **not human-subjects research** and exposes no one. Real
   or consented sessions are processed **only locally**, stats-only, behind device + store +
-  file encryption ([`THREE-LOCKS.md`](docs/THREE-LOCKS.md), [`ISOLATION.md`](docs/ISOLATION.md)); only
+  file encryption ([`THREE-LOCKS.md`](https://github.com/glebis/confide/blob/main/docs/THREE-LOCKS.md), [`ISOLATION.md`](https://github.com/glebis/confide/blob/main/docs/ISOLATION.md)); only
   aggregates ever leave the machine, never transcript text.
 - **Consent and scope.** Use real data only with explicit consent and only your own /
   consented sessions; therapist-side recordings need particular care.
@@ -110,16 +110,16 @@ Full statement in [`docs/ETHICS.md`](docs/ETHICS.md); the load-bearing commitmen
   re-identification recipe** for real people.
 - **Honest limits.** Benchmark numbers are our own measurements on a small synthetic corpus
   — **not** a HIPAA/GDPR/152-ФЗ anonymisation certificate and not clinical validation. Green
-  output still needs human review before any cloud use. See [`DISCLAIMER.md`](DISCLAIMER.md).
+  output still needs human review before any cloud use. See [`DISCLAIMER.md`](https://github.com/glebis/confide/blob/main/DISCLAIMER.md).
 
 ## Contributing
 
 CONFIDE is a **community / citizen-science** project, built by **volunteers**, not a funded
 lab — scrutiny, corrections, and especially **annotation help** are what make it
 trustworthy. The gold standard needs independent human annotators (see the bilingual
-[`docs/CALL-FOR-VOLUNTEERS.md`](docs/CALL-FOR-VOLUNTEERS.md) and the turnkey tooling:
+[`docs/CALL-FOR-VOLUNTEERS.md`](https://github.com/glebis/confide/blob/main/docs/CALL-FOR-VOLUNTEERS.md) and the turnkey tooling:
 `tools/annotator.html` + `docs/ANNOTATION-CODEBOOK.md`). Start at
-[`CONTRIBUTING.md`](CONTRIBUTING.md).
+[`CONTRIBUTING.md`](https://github.com/glebis/confide/blob/main/CONTRIBUTING.md).
 
 ## Reproducibility & honest reporting
 
@@ -128,7 +128,7 @@ run registry (`caches/runs/`), a CI artifact stale-check, and full docs:
 `docs/REPRODUCIBILITY.md`, `docs/DATASHEET.md`, `docs/EXPLAINER.md`.
 
 A benchmark is only as trustworthy as its reporting choices are explicit.
-[`docs/REPORTING.md`](docs/REPORTING.md) documents exactly what CONFIDE puts in the headline
+[`docs/REPORTING.md`](https://github.com/glebis/confide/blob/main/docs/REPORTING.md) documents exactly what CONFIDE puts in the headline
 and what it leaves out, and why — recall-led (a missed leak is the real failure), no raw
 real data, the OPF privacy filter kept as a lesson rather than a recommendation, and no
 re-identification recipe.
@@ -138,25 +138,28 @@ re-identification recipe.
 | Doc | What it answers |
 |---|---|
 | **Method & results** | |
-| [`docs/REPORTING.md`](docs/REPORTING.md) | What the benchmark includes/omits, and why (recall-led, no raw data, no re-id recipe). |
-| [`docs/RESEARCH-FINDINGS.md`](docs/RESEARCH-FINDINGS.md) | Deep-research positioning vs prior de-id benchmarks, methods, and datasets (needs-verification). |
-| [`docs/BENCHMARK.md`](docs/BENCHMARK.md) | The full layered-detector ablation results and scoring method. |
-| [`results/CONFIDE-RED-RESULTS.md`](results/CONFIDE-RED-RESULTS.md) | Red-team re-identification results (inference / singling-out / linkability). |
+| [`docs/REPORTING.md`](https://github.com/glebis/confide/blob/main/docs/REPORTING.md) | What the benchmark includes/omits, and why (recall-led, no raw data, no re-id recipe). |
+| [`docs/RESEARCH-FINDINGS.md`](https://github.com/glebis/confide/blob/main/docs/RESEARCH-FINDINGS.md) | Deep-research positioning vs prior de-id benchmarks, methods, and datasets (needs-verification). |
+| [`docs/BENCHMARK.md`](https://github.com/glebis/confide/blob/main/docs/BENCHMARK.md) | The full layered-detector ablation results and scoring method. |
+| [`results/CONFIDE-RED-RESULTS.md`](https://github.com/glebis/confide/blob/main/results/CONFIDE-RED-RESULTS.md) | Red-team re-identification results (inference / singling-out / linkability). |
 | **Data** | |
-| [`docs/DATASHEET.md`](docs/DATASHEET.md) | Datasheet / data statement: provenance, composition, limits of the synthetic corpus. |
-| [`docs/DATASETS.md`](docs/DATASETS.md) | Public datasets to extend the benchmark, fetched via the CLI. |
+| [`docs/DATASHEET.md`](https://github.com/glebis/confide/blob/main/docs/DATASHEET.md) | Datasheet / data statement: provenance, composition, limits of the synthetic corpus. |
+| [`docs/DATASETS.md`](https://github.com/glebis/confide/blob/main/docs/DATASETS.md) | Public datasets to extend the benchmark, fetched via the CLI. |
 | **Severity & privacy** | |
-| [`HARM-TAXONOMY.md`](docs/HARM-TAXONOMY.md) | Why harm ≠ identifier-strength, and how harm-weighted recall is computed. |
-| [`docs/ETHICS.md`](docs/ETHICS.md) | Ethics statement and responsible-use policy (ACL / NeurIPS / Menlo / Belmont norms). |
-| [`ISOLATION.md`](docs/ISOLATION.md) | Red/green data flow, no-network containers, macOS VMs, sops/age encryption. |
-| [`THREE-LOCKS.md`](docs/THREE-LOCKS.md) | Device + encrypted store + per-file isolation, with a storage checklist for real data. |
+| [`HARM-TAXONOMY.md`](https://github.com/glebis/confide/blob/main/docs/HARM-TAXONOMY.md) | Why harm ≠ identifier-strength, and how harm-weighted recall is computed. |
+| [`docs/ETHICS.md`](https://github.com/glebis/confide/blob/main/docs/ETHICS.md) | Ethics statement and responsible-use policy (ACL / NeurIPS / Menlo / Belmont norms). |
+| [`ISOLATION.md`](https://github.com/glebis/confide/blob/main/docs/ISOLATION.md) | Red/green data flow, no-network containers, macOS VMs, sops/age encryption. |
+| [`THREE-LOCKS.md`](https://github.com/glebis/confide/blob/main/docs/THREE-LOCKS.md) | Device + encrypted store + per-file isolation, with a storage checklist for real data. |
 | **Reproducibility** | |
-| [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) | Keeping the benchmark comparable over time; versioning, re-run policy, cost. |
-| [`docs/SOURCES.md`](docs/SOURCES.md) | Primary/near-primary sources checked for publishable methodology claims. |
-| [`requirements.lock`](requirements.lock) | Pinned dependencies for a deterministic environment. |
-| [`Dockerfile`](Dockerfile) / [`run-benchmark.sh`](run-benchmark.sh) | Containerised, one-command benchmark run. |
+| [`docs/REPRODUCIBILITY.md`](https://github.com/glebis/confide/blob/main/docs/REPRODUCIBILITY.md) | Keeping the benchmark comparable over time; versioning, re-run policy, cost. |
+| [`docs/SOURCES.md`](https://github.com/glebis/confide/blob/main/docs/SOURCES.md) | Primary/near-primary sources checked for publishable methodology claims. |
+| [`requirements.lock`](https://github.com/glebis/confide/blob/main/requirements.lock) | Pinned dependencies for a deterministic environment. |
+| [`Dockerfile`](https://github.com/glebis/confide/blob/main/Dockerfile) / [`run-benchmark.sh`](https://github.com/glebis/confide/blob/main/run-benchmark.sh) | Containerised, one-command benchmark run. |
+| **Tools & glossary** | |
+| [`docs/TOOLS.md`](https://github.com/glebis/confide/blob/main/docs/TOOLS.md) | Every external tool CONFIDE uses — what it does, its role, link, and license. |
+| [`docs/GLOSSARY.md`](https://github.com/glebis/confide/blob/main/docs/GLOSSARY.md) | Bilingual EN↔RU glossary with plain-language explanations (PII/ПДн, de-id, κ, …). |
 | **Plain-language** | |
-| [`docs/EXPLAINER.md`](docs/EXPLAINER.md) | ELI5 → ELI14 explainer plus ready-to-paste blurbs for non-specialists. |
+| [`docs/EXPLAINER.md`](https://github.com/glebis/confide/blob/main/docs/EXPLAINER.md) | ELI5 → ELI14 explainer plus ready-to-paste blurbs for non-specialists. |
 
 > ⚠️ **Provenance, stated precisely.** Every **therapy/coaching transcript** in this
 > repository (the RU and EN-synth sessions) is **fully synthetic** — fictional clients,
@@ -172,7 +175,7 @@ re-identification recipe.
 ## License & citation
 
 - **Code** — MIT. **Data & docs** (the synthetic corpora, gold, and documentation) —
-  Creative Commons Attribution 4.0 (CC-BY-4.0). See [`LICENSE`](LICENSE). Use it, fork it,
+  Creative Commons Attribution 4.0 (CC-BY-4.0). See [`LICENSE`](https://github.com/glebis/confide/blob/main/LICENSE). Use it, fork it,
   improve it; please credit and keep the synthetic-data notices intact.
 - **The one external slice** — EN-real comes from `ai4privacy/pii-masking-300k` and is
   carried under *that* dataset's own license (see the provenance note above), not CONFIDE's.
