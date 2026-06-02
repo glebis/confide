@@ -13,31 +13,31 @@
   "n_diff": 40,
   "metrics": {
     "n": 100,
-    "tp": 60,
-    "fn": 0,
+    "tp": 10,
+    "fn": 50,
     "fp": 0,
     "tn": 40,
-    "accuracy": 1.0,
+    "accuracy": 0.5,
     "precision": 1.0,
-    "recall": 1.0,
-    "f1": 1.0,
-    "roc_auc": 1.0,
+    "recall": 0.1667,
+    "f1": 0.2857,
+    "roc_auc": 0.4583,
     "base_rate_same": 0.6,
     "majority_accuracy": 0.6
   },
   "bootstrap_ci": {
     "iters": 2000,
     "accuracy": {
-      "mean": 1.0,
-      "lo95": 1.0,
-      "hi95": 1.0
+      "mean": 0.5005,
+      "lo95": 0.41,
+      "hi95": 0.6
     },
     "roc_auc": {
-      "mean": 1.0,
-      "lo95": 1.0,
-      "hi95": 1.0
+      "mean": 0.4578,
+      "lo95": 0.3756,
+      "hi95": 0.5437
     }
   },
-  "leaked_client_id_docs": 28,
-  "leak_note": "28/30 redacted sessions still expose a cleartext YAML `client_id` (a first name) — a per-client CONSTANT key. The near-perfect score therefore reflects a SURVIVING DIRECT IDENTIFIER the default stack failed to mask, not stylometric inference. This is itself the load-bearing finding: the deployed redaction does not strip structured metadata."
+  "leaked_client_id_docs": 0,
+  "leak_note": "No cleartext client_id detected in the redacted docs; the score reflects content-based linkability."
 }

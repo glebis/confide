@@ -153,6 +153,75 @@ _HANDLE_PATTERN = re.compile(
     r"(?i)(?:(?:https?://)?(?:www\.)?(?:t\.me|vk\.com|instagram\.com|wa\.me)/[\w./+]*[\w/+]"
     r"|(?<!\w)@[A-Za-z][\w.]*[A-Za-z0-9])")
 
+# --- YAML frontmatter direct-identifier recognizer (T8 leak fix) -------------
+# Session transcripts begin with a leading `---...---` YAML block whose
+# `client_id` (a first name, often Latin/lowercase: marina/igor/alina/...) is a
+# DIRECT IDENTIFIER the regex/NER/LLM layers structurally never see as a name.
+# It survived into the "redacted" text and made cross-session linkability a
+# trivial exact-string match (AUC 1.0). We mask the VALUE of identifying keys
+# inside the frontmatter block only.
+#
+#   client_id -> ID       (a stable per-client handle, not a free-text name)
+#   client/patient/name/therapist -> PERSON  (but ONLY if the value is a real
+#       name; single-letter role codes "Т"/"К"/"T"/"C" are speaker tags, not
+#       identifiers, and are left intact).
+#
+# Keys are case-insensitive; values may be Latin or Cyrillic, quoted or not.
+# Non-name fields (date/modality/session_no/synthetic) are deliberately untouched.
+_FM_KEY_LABEL = {
+    "client_id": "ID",
+    "client": "PERSON",
+    "patient": "PERSON",
+    "name": "PERSON",
+    "therapist": "PERSON",
+}
+# A single Latin/Cyrillic letter (optionally quoted) is a speaker ROLE code, not
+# an identifier — never mask it.
+_FM_ROLE_CODE = re.compile(r"^[A-Za-zА-Яа-яЁё]$")
+# Leading frontmatter block: opening `---` on the first line, closing `---`.
+_FM_BLOCK = re.compile(r"\A﻿?---[ \t]*\r?\n(.*?)\r?\n---[ \t]*(?:\r?\n|$)", re.DOTALL)
+# One `key: value` line. Captures the value (quoted or bare) with its offsets.
+_FM_LINE = re.compile(
+    r"(?im)^[ \t]*([A-Za-z_][\w-]*)[ \t]*:[ \t]*"
+    r"(?:\"([^\"\r\n]*)\"|'([^'\r\n]*)'|([^\r\n#]*?))[ \t]*(?:#.*)?$")
+
+
+def run_frontmatter(text: str) -> list[Span]:
+    """Mask the VALUE of identifying keys inside the leading YAML frontmatter.
+
+    Direct-identifier de-leak (T8): the per-client `client_id` first name and any
+    real name in client/patient/name/therapist keys are emitted as spans with the
+    correct char offsets. Single-letter speaker codes (Т/К/T/C) are left intact.
+    Only the leading `---...---` block is scanned; non-name fields are untouched.
+    """
+    spans = []
+    block = _FM_BLOCK.match(text)
+    if not block:
+        return spans
+    inner = block.group(1)
+    base = block.start(1)
+    for m in _FM_LINE.finditer(inner):
+        key = m.group(1).lower()
+        label = _FM_KEY_LABEL.get(key)
+        if label is None:
+            continue
+        # whichever alternative matched is the value; find its group index for offsets
+        for gi in (2, 3, 4):
+            if m.group(gi) is not None:
+                val = m.group(gi)
+                vstart = base + m.start(gi)
+                vend = base + m.end(gi)
+                break
+        val = val.strip()
+        if not val:
+            continue
+        # role codes (single letter) are speaker tags, not identifiers
+        if _FM_ROLE_CODE.match(val):
+            continue
+        spans.append(Span(start=vstart, end=vend, text=text[vstart:vend],
+                          label=label, source="regex"))
+    return spans
+
 
 def run_regex(text: str) -> list[Span]:
     """Layer 2: deterministic PII — emails, URLs, phones, structured IDs.
@@ -222,6 +291,10 @@ def run_regex(text: str) -> list[Span]:
         for m in pat.finditer(text):
             spans.append(Span(start=m.start(grp), end=m.end(grp), text=m.group(grp),
                               label=label, source="regex"))
+
+    # YAML frontmatter direct identifiers (T8 leak fix): mask client_id and any
+    # real name in client/patient/name/therapist keys; skip single-letter codes.
+    spans.extend(run_frontmatter(text))
 
     return spans
 

@@ -31,55 +31,40 @@ _Citations: Pilán et al., *The Text Anonymization Benchmark*, Computational Lin
 
 ## RU-synth — Russian synthetic therapy series (6 clients, 30 sessions)
 
-**30 documents, 1058 gold PII mentions.** ★ marks the proposed default stack for this language.
+**30 documents, 1078 gold PII mentions.** ★ marks the proposed default stack for this language.
 
-_Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **0.84** (CI **0.81–0.86**); entity recall 0.63 (CI 0.58–0.68) — wide, as small N demands; treat point estimates as directional._
+_Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **0.85** (CI **0.83–0.88**); entity recall 0.72 (CI 0.66–0.77) — wide, as small N demands; treat point estimates as directional._
 
 ### Ablation leaderboard
 
 | Combo | MaskCov F2 (rel) | MaskCov R | Type F2 | Macro-F1 | Ent-R (TAB) | Harm-wtd R | Direct-R | Quasi-R | Preds |
 |---|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| regex | **0.048** | 0.039 | 0.048 | 0.358 | 0.361 | 0.268 | 0.327 | 0.390 | 55 |
-| natasha | **0.762** | 0.788 | 0.757 | 0.199 | 0.306 | 0.355 | 0.388 | 0.237 | 1146 |
-| ollama | **0.105** | 0.093 | 0.092 | 0.252 | 0.157 | 0.091 | 0.265 | 0.068 | 360 |
-| natasha+regex | **0.792** | 0.827 | 0.786 | 0.558 | 0.667 | 0.623 | 0.714 | 0.627 | 1201 |
-| natasha+ollama | **0.744** | 0.815 | 0.734 | 0.398 | 0.444 | 0.429 | 0.653 | 0.271 | 1447 |
-| regex+ollama | **0.132** | 0.116 | 0.122 | 0.378 | 0.389 | 0.294 | 0.327 | 0.441 | 397 |
-| natasha+regex+ollama ★ | **0.761** | 0.838 | 0.753 | 0.524 | 0.676 | 0.632 | 0.714 | 0.644 | 1484 |
+| regex | **0.086** | 0.071 | 0.081 | 0.366 | 0.398 | 0.291 | 0.407 | 0.390 | 85 |
+| natasha | **0.751** | 0.774 | 0.746 | 0.200 | 0.292 | 0.350 | 0.352 | 0.237 | 1146 |
+| ollama | **0.106** | 0.093 | 0.093 | 0.245 | 0.150 | 0.090 | 0.241 | 0.068 | 360 |
+| natasha+regex | **0.807** | 0.844 | 0.798 | 0.566 | 0.690 | 0.641 | 0.759 | 0.627 | 1231 |
+| natasha+ollama | **0.736** | 0.801 | 0.725 | 0.391 | 0.425 | 0.423 | 0.593 | 0.271 | 1447 |
+| regex+ollama | **0.164** | 0.146 | 0.151 | 0.416 | 0.425 | 0.316 | 0.407 | 0.441 | 425 |
+| natasha+regex+ollama ★ | **0.775** | 0.854 | 0.765 | 0.563 | 0.699 | 0.650 | 0.759 | 0.644 | 1512 |
 
 ### Dev / test split (★ stack, reporting only — nothing tuned on test)
 
 | Split | Docs | Gold | MaskCov R | MaskCov F2 | Ent-R (TAB) | Harm-wtd R |
 |---|--:|--:|--:|--:|--:|--:|
-| dev | 15 | 526 | 0.869 | 0.765 | 0.704 | 0.673 |
-| test | 15 | 532 | 0.808 | 0.756 | 0.648 | 0.593 |
+| dev | 15 | 536 | 0.881 | 0.777 | 0.719 | 0.681 |
+| test | 15 | 542 | 0.828 | 0.772 | 0.679 | 0.619 |
 
 ### Per-category recall (relaxed, type-agnostic) — *which layer catches what*
 
 | Combo | AGE | DATE | EMAIL | ID | LOCATION | MEDICATION | ORG | PERSON | PHONE | PROFESSION |
 |---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| regex | 0.00 | 1.00 | 1.00 | 0.83 | 0.00 | 0.00 | 0.00 | 0.00 | 0.83 | 0.00 |
-| natasha | 0.00 | 0.00 | 0.00 | 0.00 | 0.95 | 0.04 | 0.86 | 0.93 | 0.00 | 0.02 |
-| ollama | 0.25 | 0.04 | 0.88 | 0.50 | 0.23 | 0.04 | 0.04 | 0.08 | 0.83 | 0.04 |
-| natasha+regex | 0.00 | 1.00 | 1.00 | 0.83 | 0.95 | 0.04 | 0.86 | 0.93 | 0.83 | 0.02 |
-| natasha+ollama | 0.25 | 0.04 | 0.88 | 0.50 | 0.95 | 0.08 | 0.86 | 0.93 | 0.83 | 0.06 |
-| regex+ollama | 0.25 | 1.00 | 1.00 | 0.83 | 0.23 | 0.04 | 0.04 | 0.08 | 0.83 | 0.04 |
-| natasha+regex+ollama ★ | 0.25 | 1.00 | 1.00 | 0.83 | 0.95 | 0.08 | 0.86 | 0.93 | 0.83 | 0.06 |
-
-> **Bigger LLM layer (R9) and run-variance (R5).** The default LLM layer is the
-> fully-local `qwen2.5:3b`, which collapses on these long (~32 K-char) RU
-> transcripts — LLM-only entity recall **0.157** and the LLM-only types
-> (MEDICATION / DATE / PROFESSION ≈ 0.04, AGE 0.25). Swapping in a cloud big
-> model (**Groq `qwen/qwen3-32b`**, synthetic data only) recovers exactly those
-> types — MEDICATION 0.04→0.73, AGE 0.25→0.96, DATE 0.04→0.91, PROFESSION
-> 0.04→0.60 — lifting LLM-only entity recall to **0.565** and the full stack from
-> **0.676 → 0.815** (harm-weighted 0.632 → 0.788), at ~5× the speed and 0 JSON
-> errors. The LLM layer's N=5 run-variance (temp 0.3) is small: LLM-only entity
-> recall **0.526 ± 0.022**, full stack **0.796 ± 0.017**; the local 3b is both
-> lower and ~4× more *unstable* run-to-run (subset estimate 0.132 ± 0.081). The
-> committed default stays local `qwen2.5:3b` (no data egress); cloud inference is
-> opt-in, synthetic-only. See [`CLOUD-MODEL-RESULTS.md`](CLOUD-MODEL-RESULTS.md)
-> and [`CLOUD-INFERENCE.md`](CLOUD-INFERENCE.md).
+| regex | 0.00 | 1.00 | 1.00 | 0.97 | 0.00 | 0.00 | 0.00 | 0.01 | 0.83 | 0.00 |
+| natasha | 0.00 | 0.00 | 0.00 | 0.00 | 0.95 | 0.04 | 0.86 | 0.94 | 0.00 | 0.02 |
+| ollama | 0.25 | 0.04 | 0.88 | 0.14 | 0.23 | 0.04 | 0.04 | 0.08 | 0.83 | 0.04 |
+| natasha+regex | 0.00 | 1.00 | 1.00 | 0.97 | 0.95 | 0.04 | 0.86 | 0.94 | 0.83 | 0.02 |
+| natasha+ollama | 0.25 | 0.04 | 0.88 | 0.14 | 0.95 | 0.08 | 0.86 | 0.94 | 0.83 | 0.06 |
+| regex+ollama | 0.25 | 1.00 | 1.00 | 0.97 | 0.23 | 0.04 | 0.04 | 0.08 | 0.83 | 0.04 |
+| natasha+regex+ollama ★ | 0.25 | 1.00 | 1.00 | 0.97 | 0.95 | 0.08 | 0.86 | 0.95 | 0.83 | 0.06 |
 
 ## EN-synth — English curated therapy-style snippets
 
@@ -228,14 +213,12 @@ The OPF RU cache is not scored for the current gold because its detector cache d
 | a | 0 | 0 | 5 | **MEDIUM** | 100% |
 | b | 1 | 1 | 5 | **MEDIUM** | 82% |
 
-**Quasi-identifier combination (k-anonymity-style) — ILLUSTRATIVE:** direct identifiers can be fully masked yet a person singled out by surviving quasi-identifiers *together*. The expected-match counts below are an **ILLUSTRATIVE / methodological demonstration** (GDPR Art-29 / k-anonymity style), **not a re-identification probability** for these fabricated personas. Both eval scripts (`confide_red.py`, `privacy_utility_eval.py`) now call ONE shared estimator (`kanon.py`) over ONE sourced prior table, so they report the same number per client (audit bug B1: they previously disagreed, 104.3 vs 3504 for client a). City priors are Rosstat census populations; profession/medication/age fractions are order-of-magnitude author estimates. The naive product **assumes independent quasi-identifiers, which OVERSTATES uniqueness** (correlated identifiers ⇒ a larger true matching population). The load-bearing signal is the **relative ranking** + the **sensitivity verdict**, not the point value.
+**Quasi-identifier combination (k-anonymity-style):** direct identifiers can be fully masked yet a person singled out by surviving quasi-identifiers *together*. Using declared, illustrative RU population fractions (method demo, not census):
 
-| Client | surviving quasi | expected matches (illustrative) | singles out? | verdict robust to ±0.5x–2x priors? |
-|---|---|--:|---|---|
-| a | AGE, MEDICATION, PROFESSION | 50.1 | no (k>1) | yes |
-| b | AGE, LOCATION, MEDICATION, PROFESSION | 1.7 | no (k>1) | **no — flips to singled-out under 2x prior tightening** |
-
-A ±0.5x–2x sweep of every prior (one-at-a-time and all-together) leaves the "not singled out" verdict unchanged for clients a/c/d/e/f but **flips for client b** (baseline k≈1.7 is close to the k=1 threshold), so b's non-singling result is **not** robust — exactly the kind of fragility the illustrative label exists to flag.
+| Client | surviving quasi | expected matches | singles out? |
+|---|---|--:|---|
+| a | AGE, MEDICATION, PROFESSION | 50.1 | no (k>1) |
+| b | AGE, LOCATION, MEDICATION, PROFESSION | 1.7 | no (k>1) |
 
 **Downstream utility (Tau-Eval style):** the de-identified transcript still supports its clinical purpose — re-running cognitive-distortion extraction on redacted vs. original text preserves ~91% of distortion types, and **99.5%** of non-PII characters survive redaction. Privacy and utility are in tension; the default stack is tuned for recall.
 
@@ -249,7 +232,7 @@ The pattern-derived gold (A1) was checked against an **independent** from-scratc
 
 ## Stricter headline check (containment)
 
-Beyond relaxed (≥1-char) overlap, a **containment** metric requires ≥80% of an identifier to be masked. For the RU default, containment recall is **0.836** vs relaxed **0.838**; strict exact-span recall is **0.718**. The small relaxed/containment gap means the headline is not driven by 1-character touches, while the strict gap mostly reflects boundary differences.
+Beyond relaxed (≥1-char) overlap, a **containment** metric requires ≥80% of an identifier to be masked. For the RU default, containment recall is **0.853** vs relaxed **0.854**; strict exact-span recall is **0.736**. The small relaxed/containment gap means the headline is not driven by 1-character touches, while the strict gap mostly reflects boundary differences.
 
 ## Known limitations
 

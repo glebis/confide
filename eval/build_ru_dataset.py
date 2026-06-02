@@ -52,7 +52,8 @@ WE = r"(?![\w])"    # right boundary
 CLIENTS = {
     "a": [
         # entity_id, type, class, llm_required, [patterns]
-        ("a-marina",     "PERSON",     "direct", False, [rf"{WB}Марин\w*{WE}", rf"{WB}Волков\w*{WE}", rf"{WB}Сергеевн\w*{WE}", r"(?<=client_id: )marina"]),
+        ("a-marina",     "PERSON",     "direct", False, [rf"{WB}Марин\w*{WE}", rf"{WB}Волков\w*{WE}", rf"{WB}Сергеевн\w*{WE}"]),
+        ("a-clientid",   "ID",         "direct", False, [r"(?<=client_id: )marina"]),
         ("a-andrey",     "PERSON",     "direct", False, [rf"{WB}Андре[йяюе]\w*{WE}"]),
         ("a-petrova",    "PERSON",     "direct", False, [rf"{WB}Петров[аойуе]\w*{WE}"]),
         ("a-boss",       "PERSON",     "direct", False, [rf"{WB}Дмитри[йяюе]\w*\s+Олегович\w*{WE}"]),
@@ -101,11 +102,12 @@ CLIENTS = {
         # --- v2 adjudicated additions (IAA blind spots, client-b) ---
         ("b-ekaterinburg", "LOCATION",  "quasi", False, [rf"Екатеринбург\w*", rf"екатеринбург\w*"]),
         ("b-role",         "PROFESSION","quasi", True,  [rf"{WB}тимлид\w*{WE}", rf"{WB}[Бб]экенд\w*{WE}"]),
-        ("b-igor-latin",   "PERSON",    "direct", False, [r"(?<=client_id: )igor"]),
+        ("b-clientid",     "ID",        "direct", False, [r"(?<=client_id: )igor"]),
     ],
     # --- new clients (longer corpus); PII planted by the generation agents ---
     "c": [  # Алина, UX-дизайнер, СПб
         ("c-alina",       "PERSON",     "direct", False, [rf"{WB}Алин[аыуе]\w*{WE}", rf"{WB}Кузнецов[а-я]+{WE}", rf"{WB}Сергеевн[а-я]+{WE}"]),
+        ("c-clientid",    "ID",         "direct", False, [r"(?<=client_id: )alina"]),
         ("c-maksim",      "PERSON",     "direct", False, [rf"{WB}Максим[а-я]*{WE}"]),
         ("c-zaytseva",    "PERSON",     "direct", False, [rf"{WB}Зайцев[а-я]+{WE}"]),
         ("c-boss",        "PERSON",     "direct", False, [rf"{WB}Ольг[а-я]+\s+Викторовн[а-я]+{WE}"]),
@@ -122,6 +124,7 @@ CLIENTS = {
     ],
     "d": [  # Роман, предприниматель, Новосибирск
         ("d-roman",       "PERSON",     "direct", False, [rf"{WB}Роман[а-я]*{WE}", rf"{WB}Лебедев[а-я]*{WE}", rf"{WB}Андреевич[а-я]*{WE}"]),
+        ("d-clientid",    "ID",         "direct", False, [r"(?<=client_id: )roman"]),
         ("d-natalya",     "PERSON",     "direct", False, [rf"{WB}Наталь[а-я]+{WE}", rf"{WB}Наталь[а-я]+{WE}"]),
         ("d-morozov",     "PERSON",     "direct", False, [rf"{WB}Морозов[а-я]*{WE}"]),
         ("d-artem",       "PERSON",     "direct", False, [rf"{WB}Артём[а-я]*{WE}", rf"{WB}Артем[а-я]*{WE}"]),
@@ -138,6 +141,7 @@ CLIENTS = {
     ],
     "e": [  # Вера, учитель, Екатеринбург (grief)
         ("e-vera",        "PERSON",     "direct", False, [rf"{WB}Вер[аыуе]\w*{WE}", rf"{WB}Орлов[а-я]+{WE}", rf"{WB}Павловн[а-я]+{WE}"]),
+        ("e-clientid",    "ID",         "direct", False, [r"(?<=client_id: )vera"]),
         ("e-dmitry",      "PERSON",     "direct", False, [rf"{WB}Дмитри[йяюе]\w*{WE}"]),
         ("e-sonya",       "PERSON",     "direct", False, [rf"{WB}Сон[яюи]\w*{WE}"]),
         ("e-sokolova",    "PERSON",     "direct", False, [rf"{WB}Соколов[а-я]+{WE}"]),
@@ -155,6 +159,7 @@ CLIENTS = {
     "f": [  # Тимур, студент-программист, Казань (ADHD)
         ("f-timur",       "PERSON",     "direct", False, [rf"{WB}Тимур[а-я]*{WE}", rf"{WB}Хайруллин[а-я]*{WE}", rf"{WB}Маратович[а-я]*{WE}"]),
         ("f-timur-latin", "PERSON",     "direct", False, [rf"{WB}Timur{WE}"]),
+        ("f-clientid",    "ID",         "direct", False, [r"(?<=client_id: )timur"]),
         ("f-gulnara",     "PERSON",     "direct", False, [rf"{WB}Гульнар[а-я]+{WE}"]),
         ("f-vasilyev",    "PERSON",     "direct", False, [rf"{WB}Васильев[а-я]*{WE}"]),
         ("f-denis",       "PERSON",     "direct", False, [rf"{WB}Денис[а-я]*{WE}"]),
@@ -172,7 +177,7 @@ CLIENTS = {
 
 # Entity ids added during IAA adjudication (so they can be filtered/counted as v2).
 ADJUDICATED = {"a-policy-spelled", "a-phone-spelled", "a-careerlevel",
-               "b-ekaterinburg", "b-role", "b-igor-latin"}
+               "b-ekaterinburg", "b-role", "b-clientid"}
 
 
 def find_spans(text, entities):
@@ -229,7 +234,7 @@ ROLE = {
     "a-boss": "third_party", "a-neuromed": "institution", "a-yandex": "institution",
     "b-igor": "client", "b-svetlana": "partner", "b-alexey": "relative",
     "b-pavel": "third_party", "b-kontur": "institution", "b-sber": "institution",
-    "b-igor-latin": "client", "b-ekaterinburg": "institution",
+    "b-ekaterinburg": "institution",
     "c-alina": "client", "c-maksim": "partner", "c-zaytseva": "clinician",
     "c-boss": "third_party", "c-alliance": "institution", "c-avito": "institution",
     "d-roman": "client", "d-natalya": "partner", "d-morozov": "clinician",
