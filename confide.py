@@ -16,8 +16,8 @@ Subcommands:
   confide redact <red> --out <green>    batch anonymize → GREEN .md + manifest.json
   confide stats  <folder>               local stats-only (counts/rates), no PII out
   confide verify <green>                residual re-id risk gate (pass/fail) [stub→bench]
-  confide bench  [...]                  run CONFIDE-Bench (delegates to eval/)
-  confide red    <folder> [...]         run CONFIDE-Red attacks (delegates to eval/)
+  confide bench  [...]                  run CONFIDE-Bench (delegates to run-benchmark.sh)
+  confide red    <folder> [...]         run CONFIDE-Red attacks (delegates to confide_eval.redteam)
 
 Zero third-party deps (argparse + the session-anonymizer). The LLM layer is engine-
 agnostic (LLM_API/LLM_BASE_URL → ollama or llama.cpp).
@@ -135,7 +135,7 @@ def cmd_stats(args):
 
 # Curated registry of PUBLIC, easily-downloadable de-id / PII datasets to extend the
 # benchmark. `source`: hf (HuggingFace datasets), git (clone), url (file). See
-# eval/DATASETS.md for the full annotated list + licenses/caveats.
+# docs/DATASETS.md for the full annotated list + licenses/caveats.
 DATASETS = {
     "ai4privacy-300k":   {"source": "hf", "id": "ai4privacy/pii-masking-300k",
                           "license": "CC-BY-4.0 (OpenPII core)", "langs": "en,fr,de,it,nl,es",
@@ -225,10 +225,10 @@ def main():
     s.add_argument("input"); s.add_argument("--layers", default="natasha,regex,ollama")
     s.add_argument("--model", default="qwen2.5:3b"); s.set_defaults(func=cmd_stats)
 
-    b = sub.add_parser("bench", help="run CONFIDE-Bench (eval/)")
+    b = sub.add_parser("bench", help="run CONFIDE-Bench (run-benchmark.sh)")
     b.add_argument("rest", nargs=argparse.REMAINDER); b.set_defaults(func=cmd_bench)
 
-    rd = sub.add_parser("red", help="run CONFIDE-Red attacks (eval/)")
+    rd = sub.add_parser("red", help="run CONFIDE-Red attacks (confide_eval.redteam)")
     rd.add_argument("rest", nargs=argparse.REMAINDER); rd.set_defaults(func=cmd_red)
 
     ds = sub.add_parser("datasets", help="list / fetch public de-id datasets")

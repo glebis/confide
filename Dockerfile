@@ -1,4 +1,4 @@
-# PsychoPII benchmark runner — reproducible env (see REPRODUCIBILITY.md §6).
+# CONFIDE benchmark runner — reproducible env (see REPRODUCIBILITY.md §6).
 # The local LLM runs in a sibling service (llama.cpp, primary) via the
 # OpenAI-compatible endpoint; this image holds the detectors + scorer.
 FROM python:3.10-slim

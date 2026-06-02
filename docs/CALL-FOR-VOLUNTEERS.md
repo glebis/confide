@@ -1,6 +1,6 @@
 # Call for volunteers — annotate a therapy de-identification benchmark
 
-*(EN below, RU further down — copy/post either; replace `<CONTACT>` with your channel.)*
+*(EN below, RU further down — copy/post either; contact: t.me/glebkalinin.)*
 
 ---
 
@@ -42,7 +42,7 @@ by **several independent people**, not just one — that's where you come in.
   ones handled under a strict local-only protocol. **No real client data is ever exposed.**
 - Nothing you see may be copied or re-shared; only your labels are collected.
 
-**Interested?** Reach out at `<CONTACT>` with one line about your background (clinical /
+**Interested?** Reach out at t.me/glebkalinin with one line about your background (clinical /
 linguistic / technical / careful-reader) and which language(s) you can annotate. No experience
 required — we train you.
 
@@ -88,7 +88,7 @@ required — we train you.
   клиентов не раскрываются.**
 - Ничего из увиденного нельзя копировать или пересылать; собираются только ваши метки.
 
-**Интересно?** Напишите на `<CONTACT>` одну строку о вашем бэкграунде (клинический /
+**Интересно?** Напишите на t.me/glebkalinin одну строку о вашем бэкграунде (клинический /
 лингвистический / технический / внимательный читатель) и на каком языке(ах) можете размечать.
 Опыт не требуется — мы обучаем.
 

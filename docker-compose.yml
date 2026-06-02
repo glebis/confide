@@ -1,6 +1,6 @@
-# Reproducible PsychoPII run: llama.cpp (primary, memory-efficient) serves Qwen
-# via the OpenAI-compatible API; the psychopii container runs the benchmark and
-# writes results + a provenance record to runs/. Usage:  docker compose up --build
+# Reproducible CONFIDE run: llama.cpp (primary, memory-efficient) serves Qwen
+# via the OpenAI-compatible API; the confide container runs the benchmark and
+# writes results + a provenance record to caches/runs/. Usage:  docker compose up --build
 #
 # Swap the LLM engine by replacing the `llm` service (e.g. ollama/ollama) — the
 # detector code only needs an OpenAI-compatible /v1/chat/completions endpoint.
@@ -19,7 +19,7 @@ services:
       timeout: 5s
       retries: 30
 
-  psychopii:
+  confide:
     build:
       context: .
       dockerfile: Dockerfile

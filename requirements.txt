@@ -1,4 +1,4 @@
-# Dependencies for the PsychoPII benchmark (eval/).
+# Dependencies for the CONFIDE benchmark (src/confide_eval/).
 #
 # The benchmark has two dependency tiers:
 #
@@ -11,9 +11,9 @@
 #    AND torch>=2.4, which conflicts with the system torch (2.2.x). Run it in an
 #    ISOLATED venv so it cannot disturb the rest of the environment:
 #
-#        python3 -m venv --system-site-packages eval/.opf-venv
-#        eval/.opf-venv/bin/pip install "transformers>=5" "torch>=2.4,<2.6" "torchvision==0.20.1"
-#        eval/.opf-venv/bin/python eval/run_detectors.py --dataset ru --detectors opf
+#        python3 -m venv --system-site-packages .opf-venv
+#        .opf-venv/bin/pip install "transformers>=5" "torch>=2.4,<2.6" "torchvision==0.20.1"
+#        PYTHONPATH=src .opf-venv/bin/python -m confide_eval.detectors.run_detectors --dataset ru --detectors opf
 #
 #    torchvision must match torch (0.20.1 ↔ torch 2.5.x): transformers 5.x eagerly
 #    imports torchvision, and a mismatched build fails with
