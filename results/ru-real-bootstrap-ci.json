@@ -1,0 +1,16 @@
+{
+  "dataset": "ru-real",
+  "combo": "natasha+regex+ollama \u2605",
+  "n_docs": 60,
+  "iters": 2000,
+  "coverage_recall": {
+    "mean": 0.792,
+    "lo95": 0.693,
+    "hi95": 0.885
+  },
+  "entity_recall": {
+    "mean": 0.792,
+    "lo95": 0.693,
+    "hi95": 0.885
+  }
+}

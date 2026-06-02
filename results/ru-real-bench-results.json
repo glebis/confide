@@ -1,0 +1,1358 @@
+{
+  "dataset": "ru-real",
+  "n_docs": 60,
+  "n_gold_mentions": 77,
+  "combos": {
+    "regex": {
+      "members": [
+        "regex"
+      ],
+      "n_pred": 13,
+      "coverage_strict": {
+        "support": 77,
+        "c": 0,
+        "fp": 13,
+        "fn": 77,
+        "p": 0.0,
+        "r": 0.0,
+        "f1": 0.0,
+        "f2": 0.0,
+        "macro_f1": 0.0,
+        "macro_r": 0.0
+      },
+      "coverage_relaxed": {
+        "support": 77,
+        "c": 0,
+        "fp": 13,
+        "fn": 77,
+        "p": 0.0,
+        "r": 0.0,
+        "f1": 0.0,
+        "f2": 0.0,
+        "macro_f1": 0.0,
+        "macro_r": 0.0
+      },
+      "coverage_containment": {
+        "support": 77,
+        "c": 0,
+        "fp": 13,
+        "fn": 77,
+        "p": 0.0,
+        "r": 0.0,
+        "f1": 0.0,
+        "f2": 0.0,
+        "macro_f1": 0.0,
+        "macro_r": 0.0
+      },
+      "type_strict": {
+        "support": 77,
+        "c": 0,
+        "fp": 13,
+        "fn": 77,
+        "p": 0.0,
+        "r": 0.0,
+        "f1": 0.0,
+        "f2": 0.0,
+        "macro_f1": 0.0,
+        "macro_r": 0.0
+      },
+      "type_relaxed": {
+        "support": 77,
+        "c": 0,
+        "fp": 13,
+        "fn": 77,
+        "p": 0.0,
+        "r": 0.0,
+        "f1": 0.0,
+        "f2": 0.0,
+        "macro_f1": 0.0,
+        "macro_r": 0.0
+      },
+      "coverage_relaxed_per_type": {
+        "DATE": {
+          "support": 0,
+          "c": 0,
+          "fp": 13,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "LOCATION": {
+          "support": 65,
+          "c": 0,
+          "fp": 0,
+          "fn": 65,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 12,
+          "c": 0,
+          "fp": 0,
+          "fn": 12,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 0,
+        "total": 77,
+        "entity_recall": 0.0,
+        "harm_weighted_recall": 0.0,
+        "by_class": {
+          "quasi": {
+            "protected": 0,
+            "total": 10,
+            "recall": 0.0
+          },
+          "direct": {
+            "protected": 0,
+            "total": 67,
+            "recall": 0.0
+          }
+        },
+        "by_type": {
+          "LOCATION": {
+            "protected": 0,
+            "total": 65,
+            "recall": 0.0
+          },
+          "PERSON": {
+            "protected": 0,
+            "total": 12,
+            "recall": 0.0
+          }
+        }
+      }
+    },
+    "natasha": {
+      "members": [
+        "natasha"
+      ],
+      "n_pred": 63,
+      "coverage_strict": {
+        "support": 77,
+        "c": 13,
+        "fp": 50,
+        "fn": 64,
+        "p": 0.206,
+        "r": 0.169,
+        "f1": 0.186,
+        "f2": 0.175,
+        "macro_f1": 0.208,
+        "macro_r": 0.236
+      },
+      "coverage_relaxed": {
+        "support": 77,
+        "c": 31,
+        "fp": 32,
+        "fn": 46,
+        "p": 0.492,
+        "r": 0.403,
+        "f1": 0.443,
+        "f2": 0.418,
+        "macro_f1": 0.448,
+        "macro_r": 0.443
+      },
+      "coverage_containment": {
+        "support": 77,
+        "c": 17,
+        "fp": 32,
+        "fn": 60,
+        "p": 0.492,
+        "r": 0.221,
+        "f1": 0.305,
+        "f2": 0.248,
+        "macro_f1": 0.345,
+        "macro_r": 0.335
+      },
+      "type_strict": {
+        "support": 77,
+        "c": 10,
+        "fp": 53,
+        "fn": 67,
+        "p": 0.159,
+        "r": 0.13,
+        "f1": 0.143,
+        "f2": 0.135,
+        "macro_f1": 0.19,
+        "macro_r": 0.213
+      },
+      "type_relaxed": {
+        "support": 77,
+        "c": 26,
+        "fp": 37,
+        "fn": 51,
+        "p": 0.413,
+        "r": 0.338,
+        "f1": 0.371,
+        "f2": 0.35,
+        "macro_f1": 0.397,
+        "macro_r": 0.404
+      },
+      "coverage_relaxed_per_type": {
+        "LOCATION": {
+          "support": 65,
+          "c": 25,
+          "fp": 13,
+          "fn": 40,
+          "p": 0.606,
+          "r": 0.385,
+          "f1": 0.471,
+          "f2": 0.415
+        },
+        "ORG": {
+          "support": 0,
+          "c": 0,
+          "fp": 7,
+          "fn": 0,
+          "p": 0.364,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 12,
+          "c": 6,
+          "fp": 12,
+          "fn": 6,
+          "p": 0.368,
+          "r": 0.5,
+          "f1": 0.424,
+          "f2": 0.467
+        }
+      },
+      "entity_level": {
+        "protected": 31,
+        "total": 77,
+        "entity_recall": 0.403,
+        "harm_weighted_recall": 0.41,
+        "by_class": {
+          "quasi": {
+            "protected": 7,
+            "total": 10,
+            "recall": 0.7
+          },
+          "direct": {
+            "protected": 24,
+            "total": 67,
+            "recall": 0.358
+          }
+        },
+        "by_type": {
+          "LOCATION": {
+            "protected": 25,
+            "total": 65,
+            "recall": 0.385
+          },
+          "PERSON": {
+            "protected": 6,
+            "total": 12,
+            "recall": 0.5
+          }
+        }
+      }
+    },
+    "ollama": {
+      "members": [
+        "ollama"
+      ],
+      "n_pred": 160,
+      "coverage_strict": {
+        "support": 77,
+        "c": 11,
+        "fp": 149,
+        "fn": 66,
+        "p": 0.069,
+        "r": 0.143,
+        "f1": 0.093,
+        "f2": 0.118,
+        "macro_f1": 0.249,
+        "macro_r": 0.323
+      },
+      "coverage_relaxed": {
+        "support": 77,
+        "c": 47,
+        "fp": 98,
+        "fn": 30,
+        "p": 0.388,
+        "r": 0.61,
+        "f1": 0.474,
+        "f2": 0.547,
+        "macro_f1": 0.579,
+        "macro_r": 0.633
+      },
+      "coverage_containment": {
+        "support": 77,
+        "c": 31,
+        "fp": 98,
+        "fn": 46,
+        "p": 0.388,
+        "r": 0.403,
+        "f1": 0.395,
+        "f2": 0.399,
+        "macro_f1": 0.488,
+        "macro_r": 0.51
+      },
+      "type_strict": {
+        "support": 77,
+        "c": 11,
+        "fp": 149,
+        "fn": 66,
+        "p": 0.069,
+        "r": 0.143,
+        "f1": 0.093,
+        "f2": 0.118,
+        "macro_f1": 0.249,
+        "macro_r": 0.323
+      },
+      "type_relaxed": {
+        "support": 77,
+        "c": 45,
+        "fp": 103,
+        "fn": 32,
+        "p": 0.356,
+        "r": 0.584,
+        "f1": 0.443,
+        "f2": 0.518,
+        "macro_f1": 0.57,
+        "macro_r": 0.618
+      },
+      "coverage_relaxed_per_type": {
+        "ACTION": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ADDR": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.5,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "DATE": {
+          "support": 0,
+          "c": 0,
+          "fp": 18,
+          "fn": 0,
+          "p": 0.053,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "GREETING": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ID": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.5,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "LOC": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.5,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "LOCATION": {
+          "support": 65,
+          "c": 39,
+          "fp": 18,
+          "fn": 26,
+          "p": 0.727,
+          "r": 0.6,
+          "f1": 0.658,
+          "f2": 0.622
+        },
+        "MEDICATION": {
+          "support": 0,
+          "c": 0,
+          "fp": 10,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORG": {
+          "support": 0,
+          "c": 0,
+          "fp": 10,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 12,
+          "c": 8,
+          "fp": 12,
+          "fn": 4,
+          "p": 0.4,
+          "r": 0.667,
+          "f1": 0.5,
+          "f2": 0.588
+        },
+        "PHONE": {
+          "support": 0,
+          "c": 0,
+          "fp": 4,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PROFESSION": {
+          "support": 0,
+          "c": 0,
+          "fp": 15,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "STATEMENT": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "TIME": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 47,
+        "total": 77,
+        "entity_recall": 0.61,
+        "harm_weighted_recall": 0.614,
+        "by_class": {
+          "quasi": {
+            "protected": 3,
+            "total": 10,
+            "recall": 0.3
+          },
+          "direct": {
+            "protected": 44,
+            "total": 67,
+            "recall": 0.657
+          }
+        },
+        "by_type": {
+          "LOCATION": {
+            "protected": 39,
+            "total": 65,
+            "recall": 0.6
+          },
+          "PERSON": {
+            "protected": 8,
+            "total": 12,
+            "recall": 0.667
+          }
+        }
+      }
+    },
+    "natasha+regex": {
+      "members": [
+        "natasha",
+        "regex"
+      ],
+      "n_pred": 76,
+      "coverage_strict": {
+        "support": 77,
+        "c": 13,
+        "fp": 63,
+        "fn": 64,
+        "p": 0.171,
+        "r": 0.169,
+        "f1": 0.17,
+        "f2": 0.169,
+        "macro_f1": 0.208,
+        "macro_r": 0.236
+      },
+      "coverage_relaxed": {
+        "support": 77,
+        "c": 31,
+        "fp": 45,
+        "fn": 46,
+        "p": 0.408,
+        "r": 0.403,
+        "f1": 0.405,
+        "f2": 0.404,
+        "macro_f1": 0.448,
+        "macro_r": 0.443
+      },
+      "coverage_containment": {
+        "support": 77,
+        "c": 17,
+        "fp": 45,
+        "fn": 60,
+        "p": 0.408,
+        "r": 0.221,
+        "f1": 0.286,
+        "f2": 0.243,
+        "macro_f1": 0.345,
+        "macro_r": 0.335
+      },
+      "type_strict": {
+        "support": 77,
+        "c": 10,
+        "fp": 66,
+        "fn": 67,
+        "p": 0.132,
+        "r": 0.13,
+        "f1": 0.131,
+        "f2": 0.13,
+        "macro_f1": 0.19,
+        "macro_r": 0.213
+      },
+      "type_relaxed": {
+        "support": 77,
+        "c": 26,
+        "fp": 50,
+        "fn": 51,
+        "p": 0.342,
+        "r": 0.338,
+        "f1": 0.34,
+        "f2": 0.339,
+        "macro_f1": 0.397,
+        "macro_r": 0.404
+      },
+      "coverage_relaxed_per_type": {
+        "DATE": {
+          "support": 0,
+          "c": 0,
+          "fp": 13,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "LOCATION": {
+          "support": 65,
+          "c": 25,
+          "fp": 13,
+          "fn": 40,
+          "p": 0.606,
+          "r": 0.385,
+          "f1": 0.471,
+          "f2": 0.415
+        },
+        "ORG": {
+          "support": 0,
+          "c": 0,
+          "fp": 7,
+          "fn": 0,
+          "p": 0.364,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 12,
+          "c": 6,
+          "fp": 12,
+          "fn": 6,
+          "p": 0.368,
+          "r": 0.5,
+          "f1": 0.424,
+          "f2": 0.467
+        }
+      },
+      "entity_level": {
+        "protected": 31,
+        "total": 77,
+        "entity_recall": 0.403,
+        "harm_weighted_recall": 0.41,
+        "by_class": {
+          "quasi": {
+            "protected": 7,
+            "total": 10,
+            "recall": 0.7
+          },
+          "direct": {
+            "protected": 24,
+            "total": 67,
+            "recall": 0.358
+          }
+        },
+        "by_type": {
+          "LOCATION": {
+            "protected": 25,
+            "total": 65,
+            "recall": 0.385
+          },
+          "PERSON": {
+            "protected": 6,
+            "total": 12,
+            "recall": 0.5
+          }
+        }
+      }
+    },
+    "natasha+ollama": {
+      "members": [
+        "natasha",
+        "ollama"
+      ],
+      "n_pred": 180,
+      "coverage_strict": {
+        "support": 77,
+        "c": 20,
+        "fp": 160,
+        "fn": 57,
+        "p": 0.111,
+        "r": 0.26,
+        "f1": 0.156,
+        "f2": 0.205,
+        "macro_f1": 0.287,
+        "macro_r": 0.426
+      },
+      "coverage_relaxed": {
+        "support": 77,
+        "c": 61,
+        "fp": 104,
+        "fn": 16,
+        "p": 0.422,
+        "r": 0.792,
+        "f1": 0.551,
+        "f2": 0.674,
+        "macro_f1": 0.645,
+        "macro_r": 0.809
+      },
+      "coverage_containment": {
+        "support": 77,
+        "c": 40,
+        "fp": 104,
+        "fn": 37,
+        "p": 0.422,
+        "r": 0.519,
+        "f1": 0.466,
+        "f2": 0.497,
+        "macro_f1": 0.552,
+        "macro_r": 0.647
+      },
+      "type_strict": {
+        "support": 77,
+        "c": 17,
+        "fp": 163,
+        "fn": 60,
+        "p": 0.094,
+        "r": 0.221,
+        "f1": 0.132,
+        "f2": 0.174,
+        "macro_f1": 0.279,
+        "macro_r": 0.403
+      },
+      "type_relaxed": {
+        "support": 77,
+        "c": 56,
+        "fp": 112,
+        "fn": 21,
+        "p": 0.378,
+        "r": 0.727,
+        "f1": 0.497,
+        "f2": 0.614,
+        "macro_f1": 0.627,
+        "macro_r": 0.77
+      },
+      "coverage_relaxed_per_type": {
+        "ACTION": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ADDR": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.5,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "DATE": {
+          "support": 0,
+          "c": 0,
+          "fp": 18,
+          "fn": 0,
+          "p": 0.053,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "GREETING": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ID": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.5,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "LOC": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.5,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "LOCATION": {
+          "support": 65,
+          "c": 51,
+          "fp": 22,
+          "fn": 14,
+          "p": 0.718,
+          "r": 0.785,
+          "f1": 0.75,
+          "f2": 0.77
+        },
+        "MEDICATION": {
+          "support": 0,
+          "c": 0,
+          "fp": 9,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORG": {
+          "support": 0,
+          "c": 0,
+          "fp": 10,
+          "fn": 0,
+          "p": 0.286,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 12,
+          "c": 10,
+          "fp": 15,
+          "fn": 2,
+          "p": 0.4,
+          "r": 0.833,
+          "f1": 0.541,
+          "f2": 0.685
+        },
+        "PHONE": {
+          "support": 0,
+          "c": 0,
+          "fp": 4,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PROFESSION": {
+          "support": 0,
+          "c": 0,
+          "fp": 15,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "STATEMENT": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "TIME": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 61,
+        "total": 77,
+        "entity_recall": 0.792,
+        "harm_weighted_recall": 0.795,
+        "by_class": {
+          "quasi": {
+            "protected": 8,
+            "total": 10,
+            "recall": 0.8
+          },
+          "direct": {
+            "protected": 53,
+            "total": 67,
+            "recall": 0.791
+          }
+        },
+        "by_type": {
+          "LOCATION": {
+            "protected": 51,
+            "total": 65,
+            "recall": 0.785
+          },
+          "PERSON": {
+            "protected": 10,
+            "total": 12,
+            "recall": 0.833
+          }
+        }
+      }
+    },
+    "regex+ollama": {
+      "members": [
+        "regex",
+        "ollama"
+      ],
+      "n_pred": 160,
+      "coverage_strict": {
+        "support": 77,
+        "c": 11,
+        "fp": 149,
+        "fn": 66,
+        "p": 0.069,
+        "r": 0.143,
+        "f1": 0.093,
+        "f2": 0.118,
+        "macro_f1": 0.249,
+        "macro_r": 0.323
+      },
+      "coverage_relaxed": {
+        "support": 77,
+        "c": 47,
+        "fp": 98,
+        "fn": 30,
+        "p": 0.388,
+        "r": 0.61,
+        "f1": 0.474,
+        "f2": 0.547,
+        "macro_f1": 0.579,
+        "macro_r": 0.633
+      },
+      "coverage_containment": {
+        "support": 77,
+        "c": 31,
+        "fp": 98,
+        "fn": 46,
+        "p": 0.388,
+        "r": 0.403,
+        "f1": 0.395,
+        "f2": 0.399,
+        "macro_f1": 0.488,
+        "macro_r": 0.51
+      },
+      "type_strict": {
+        "support": 77,
+        "c": 11,
+        "fp": 149,
+        "fn": 66,
+        "p": 0.069,
+        "r": 0.143,
+        "f1": 0.093,
+        "f2": 0.118,
+        "macro_f1": 0.249,
+        "macro_r": 0.323
+      },
+      "type_relaxed": {
+        "support": 77,
+        "c": 45,
+        "fp": 103,
+        "fn": 32,
+        "p": 0.356,
+        "r": 0.584,
+        "f1": 0.443,
+        "f2": 0.518,
+        "macro_f1": 0.57,
+        "macro_r": 0.618
+      },
+      "coverage_relaxed_per_type": {
+        "ACTION": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ADDR": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.5,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "DATE": {
+          "support": 0,
+          "c": 0,
+          "fp": 18,
+          "fn": 0,
+          "p": 0.053,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "GREETING": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ID": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.5,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "LOC": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.5,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "LOCATION": {
+          "support": 65,
+          "c": 39,
+          "fp": 18,
+          "fn": 26,
+          "p": 0.727,
+          "r": 0.6,
+          "f1": 0.658,
+          "f2": 0.622
+        },
+        "MEDICATION": {
+          "support": 0,
+          "c": 0,
+          "fp": 10,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORG": {
+          "support": 0,
+          "c": 0,
+          "fp": 10,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 12,
+          "c": 8,
+          "fp": 12,
+          "fn": 4,
+          "p": 0.4,
+          "r": 0.667,
+          "f1": 0.5,
+          "f2": 0.588
+        },
+        "PHONE": {
+          "support": 0,
+          "c": 0,
+          "fp": 4,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PROFESSION": {
+          "support": 0,
+          "c": 0,
+          "fp": 15,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "STATEMENT": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "TIME": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 47,
+        "total": 77,
+        "entity_recall": 0.61,
+        "harm_weighted_recall": 0.614,
+        "by_class": {
+          "quasi": {
+            "protected": 3,
+            "total": 10,
+            "recall": 0.3
+          },
+          "direct": {
+            "protected": 44,
+            "total": 67,
+            "recall": 0.657
+          }
+        },
+        "by_type": {
+          "LOCATION": {
+            "protected": 39,
+            "total": 65,
+            "recall": 0.6
+          },
+          "PERSON": {
+            "protected": 8,
+            "total": 12,
+            "recall": 0.667
+          }
+        }
+      }
+    },
+    "natasha+regex+ollama ★": {
+      "members": [
+        "natasha",
+        "regex",
+        "ollama"
+      ],
+      "n_pred": 180,
+      "coverage_strict": {
+        "support": 77,
+        "c": 20,
+        "fp": 160,
+        "fn": 57,
+        "p": 0.111,
+        "r": 0.26,
+        "f1": 0.156,
+        "f2": 0.205,
+        "macro_f1": 0.287,
+        "macro_r": 0.426
+      },
+      "coverage_relaxed": {
+        "support": 77,
+        "c": 61,
+        "fp": 104,
+        "fn": 16,
+        "p": 0.422,
+        "r": 0.792,
+        "f1": 0.551,
+        "f2": 0.674,
+        "macro_f1": 0.645,
+        "macro_r": 0.809
+      },
+      "coverage_containment": {
+        "support": 77,
+        "c": 40,
+        "fp": 104,
+        "fn": 37,
+        "p": 0.422,
+        "r": 0.519,
+        "f1": 0.466,
+        "f2": 0.497,
+        "macro_f1": 0.552,
+        "macro_r": 0.647
+      },
+      "type_strict": {
+        "support": 77,
+        "c": 17,
+        "fp": 163,
+        "fn": 60,
+        "p": 0.094,
+        "r": 0.221,
+        "f1": 0.132,
+        "f2": 0.174,
+        "macro_f1": 0.279,
+        "macro_r": 0.403
+      },
+      "type_relaxed": {
+        "support": 77,
+        "c": 56,
+        "fp": 112,
+        "fn": 21,
+        "p": 0.378,
+        "r": 0.727,
+        "f1": 0.497,
+        "f2": 0.614,
+        "macro_f1": 0.627,
+        "macro_r": 0.77
+      },
+      "coverage_relaxed_per_type": {
+        "ACTION": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ADDR": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.5,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "DATE": {
+          "support": 0,
+          "c": 0,
+          "fp": 18,
+          "fn": 0,
+          "p": 0.053,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "GREETING": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ID": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.5,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "LOC": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.5,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "LOCATION": {
+          "support": 65,
+          "c": 51,
+          "fp": 22,
+          "fn": 14,
+          "p": 0.718,
+          "r": 0.785,
+          "f1": 0.75,
+          "f2": 0.77
+        },
+        "MEDICATION": {
+          "support": 0,
+          "c": 0,
+          "fp": 9,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORG": {
+          "support": 0,
+          "c": 0,
+          "fp": 10,
+          "fn": 0,
+          "p": 0.286,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 12,
+          "c": 10,
+          "fp": 15,
+          "fn": 2,
+          "p": 0.4,
+          "r": 0.833,
+          "f1": 0.541,
+          "f2": 0.685
+        },
+        "PHONE": {
+          "support": 0,
+          "c": 0,
+          "fp": 4,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PROFESSION": {
+          "support": 0,
+          "c": 0,
+          "fp": 15,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "STATEMENT": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "TIME": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 61,
+        "total": 77,
+        "entity_recall": 0.792,
+        "harm_weighted_recall": 0.795,
+        "by_class": {
+          "quasi": {
+            "protected": 8,
+            "total": 10,
+            "recall": 0.8
+          },
+          "direct": {
+            "protected": 53,
+            "total": 67,
+            "recall": 0.791
+          }
+        },
+        "by_type": {
+          "LOCATION": {
+            "protected": 51,
+            "total": 65,
+            "recall": 0.785
+          },
+          "PERSON": {
+            "protected": 10,
+            "total": 12,
+            "recall": 0.833
+          }
+        }
+      }
+    }
+  }
+}
