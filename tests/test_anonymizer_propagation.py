@@ -52,6 +52,33 @@ def test_short_names_require_exact_to_avoid_overmatch():
     assert _masked("он Ян и она Яна", {"Ян"}) <= {"Ян"}
 
 
+# --------------------------------------------------- #8 propagation gaps
+def test_possessive_adjective_from_detected_name():
+    # "Натальин" (Natalya's) derives from the detected name Наталья.
+    assert "Натальин" in _masked("Это Натальин кабинет", {"Наталья"})
+
+
+def test_lowercase_exact_surname_is_masked():
+    # A surname dictated lowercase in an email ("эр точка лебедев собака").
+    got = _masked("моя почта эр точка лебедев собака пример точка ру", {"Лебедев"})
+    assert "лебедев" in got
+
+
+def test_lowercase_name_commonword_collision_still_blocked():
+    # "вера" the noun (faith) must NOT be masked even though Вера is a detected name.
+    assert "вера" not in _masked("крепкая вера помогает людям", {"Вера"})
+
+
+def test_find_patronymics_male_and_female():
+    got = {s.text for s in az.find_patronymics("Тимур Маратович и Анна Сергеевна пришли")}
+    assert "Маратович" in got
+    assert "Сергеевна" in got
+
+
+def test_find_patronymics_no_false_positives_on_common_words():
+    assert az.find_patronymics("обычно человек думает совсем иначе") == []
+
+
 def test_anonymize_propagates_from_a_detected_mention(monkeypatch):
     """End-to-end: a base layer detects 'Артём' once; the inflected 'Артёмом'
     elsewhere must be redacted via the propagation pass."""
