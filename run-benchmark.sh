@@ -48,6 +48,9 @@ for ds in ru ru-adv en en-real; do
   $PY.scoring.score_bench --dataset "$ds" --out-prefix "$ds-"
 done
 
+echo "==> computing regulatory residual-risk metrics"
+$PY.scoring.regulatory
+
 echo "==> generating benchmark report"
 $PY.report.make_benchmark
 
