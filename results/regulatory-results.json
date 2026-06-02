@@ -180,8 +180,8 @@
           },
           "PERSON": {
             "hipaa": "A: names",
-            "support": 842,
-            "fn": 45,
+            "support": 840,
+            "fn": 43,
             "passed": false
           },
           "PHONE": {
@@ -208,7 +208,24 @@
       },
       "tier": {
         "tier": "RED",
-        "direct_residual": 13,
+        "direct_residual": 10,
+        "direct_residual_out_of_scope": 2,
+        "out_of_scope_ids": [
+          "a-policy-spelled",
+          "a-phone-spelled"
+        ],
+        "in_scope_ids": [
+          "a-marina",
+          "d-roman",
+          "d-insight",
+          "d-natalya",
+          "d-artem",
+          "e-vera",
+          "e-sonya",
+          "f-timur-latin",
+          "f-timur",
+          "f-denis"
+        ],
         "special_residual": 6,
         "inference_rate": 0.2,
         "linkability_above_base": false
@@ -216,11 +233,11 @@
       "worst_case": {
         "min_recall": 0.6667,
         "p10_recall": 0.7214,
-        "mean_recall": 0.8613,
-        "total_leaked": 159,
-        "total_gold": 1078,
+        "mean_recall": 0.8643,
+        "total_leaked": 157,
+        "total_gold": 1076,
         "total_chars": 961703,
-        "leaked_per_10k_chars": 1.653,
+        "leaked_per_10k_chars": 1.633,
         "worst_doc": "ru-d-s02",
         "n_docs": 30
       }
@@ -305,6 +322,9 @@
       "tier": {
         "tier": "AMBER",
         "direct_residual": 0,
+        "direct_residual_out_of_scope": 0,
+        "out_of_scope_ids": [],
+        "in_scope_ids": [],
         "special_residual": 0,
         "inference_rate": 0.2,
         "linkability_above_base": false
@@ -395,6 +415,9 @@
       "tier": {
         "tier": "AMBER",
         "direct_residual": 0,
+        "direct_residual_out_of_scope": 0,
+        "out_of_scope_ids": [],
+        "in_scope_ids": [],
         "special_residual": 0,
         "inference_rate": 0.2,
         "linkability_above_base": false
