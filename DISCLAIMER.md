@@ -35,7 +35,7 @@ work — useful, honestly-scoped, and improvable by anyone.
 ## Data & ethics
 
 - All shipped transcripts are **synthetic and fictional** — no real patients. See
-  `eval/DATASHEET.md` (provenance) and `eval/ETHICS.md` (ethics statement, dual-use, and
+  `docs/DATASHEET.md` (provenance) and `docs/ETHICS.md` (ethics statement, dual-use, and
   the strict conditions for any future use of real session data).
 
 ## How to cite (if you must)

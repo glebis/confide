@@ -166,7 +166,7 @@ def cmd_datasets(args):
     d = DATASETS.get(args.name)
     if not d:
         print(json.dumps({"error": "unknown dataset", "available": list(DATASETS)})); sys.exit(1)
-    out = args.out or os.path.join(HERE, "eval", "external", args.name)
+    out = args.out or os.path.join(HERE, "data", "external", args.name)
     os.makedirs(out, exist_ok=True)
     import subprocess
     if d["source"] == "hf":
@@ -187,17 +187,29 @@ def cmd_datasets(args):
         print(json.dumps({"fetched": args.name, "out": dest}))
 
 
-def _delegate(script, rest):
+def _delegate_script(script, rest):
+    """Run a top-level helper script (e.g. run-benchmark.sh) from the repo root."""
     import subprocess
-    sys.exit(subprocess.call([sys.executable, os.path.join(HERE, "eval", script), *rest]))
+    path = os.path.join(HERE, script)
+    cmd = ["bash", path] if script.endswith(".sh") else [sys.executable, path]
+    sys.exit(subprocess.call([*cmd, *rest], cwd=HERE))
+
+
+def _delegate_module(module, rest):
+    """Run a confide_eval package module (`python -m`) with src/ on PYTHONPATH."""
+    import subprocess
+    env = dict(os.environ)
+    src = os.path.join(HERE, "src")
+    env["PYTHONPATH"] = src + (os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
+    sys.exit(subprocess.call([sys.executable, "-m", module, *rest], cwd=HERE, env=env))
 
 
 def cmd_bench(args):
-    _delegate("run-benchmark.sh" if False else "make_benchmark.py", args.rest)
+    _delegate_script("run-benchmark.sh", args.rest)
 
 
 def cmd_red(args):
-    _delegate("cross_session_attack.py", args.rest)
+    _delegate_module("confide_eval.redteam.confide_red", args.rest)
 
 
 def main():

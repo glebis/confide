@@ -24,9 +24,16 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install pytest
+        run: pip install pytest
+
+      - name: Run unit tests
+        # Deterministic, LLM-free unit tests (relative_dates, kanon, linkability,
+        # frontmatter). `make test` sets PYTHONPATH=src and runs `pytest tests/`.
+        run: make test
+
       - name: Run artifact drift check
-        # check_artifacts.py imports score_bench from its own directory, so the
-        # `make check` target is invoked from within eval/. No pip install is
-        # required — both modules are pure standard library.
-        working-directory: eval
+        # check_artifacts is part of the confide_eval package; `make check` sets
+        # PYTHONPATH=src and runs it via `python -m`. No pip install is required —
+        # the drift check is pure standard library against committed gold + caches.
         run: make check
