@@ -1,7 +1,7 @@
 {
   "dataset": "ru",
   "n_docs": 30,
-  "n_gold_mentions": 1078,
+  "n_gold_mentions": 1076,
   "combos": {
     "regex": {
       "members": [
@@ -9,10 +9,10 @@
       ],
       "n_pred": 85,
       "coverage_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 76,
         "fp": 14,
-        "fn": 1002,
+        "fn": 1000,
         "p": 0.835,
         "r": 0.071,
         "f1": 0.13,
@@ -21,10 +21,10 @@
         "macro_r": 0.381
       },
       "coverage_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 76,
         "fp": 14,
-        "fn": 1002,
+        "fn": 1000,
         "p": 0.835,
         "r": 0.071,
         "f1": 0.13,
@@ -33,10 +33,10 @@
         "macro_r": 0.381
       },
       "coverage_containment": {
-        "support": 1078,
+        "support": 1076,
         "c": 76,
         "fp": 14,
-        "fn": 1002,
+        "fn": 1000,
         "p": 0.835,
         "r": 0.071,
         "f1": 0.13,
@@ -45,10 +45,10 @@
         "macro_r": 0.381
       },
       "type_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 71,
         "fp": 14,
-        "fn": 1007,
+        "fn": 1005,
         "p": 0.835,
         "r": 0.066,
         "f1": 0.122,
@@ -57,10 +57,10 @@
         "macro_r": 0.38
       },
       "type_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 71,
         "fp": 14,
-        "fn": 1007,
+        "fn": 1005,
         "p": 0.835,
         "r": 0.066,
         "f1": 0.122,
@@ -140,10 +140,10 @@
           "f2": 0.0
         },
         "PERSON": {
-          "support": 842,
+          "support": 840,
           "c": 5,
           "fp": 0,
-          "fn": 837,
+          "fn": 835,
           "p": 0.0,
           "r": 0.006,
           "f1": 0.0,
@@ -247,62 +247,62 @@
       ],
       "n_pred": 1146,
       "coverage_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 720,
         "fp": 426,
-        "fn": 358,
+        "fn": 356,
         "p": 0.628,
-        "r": 0.668,
-        "f1": 0.647,
-        "f2": 0.66,
+        "r": 0.669,
+        "f1": 0.648,
+        "f2": 0.661,
         "macro_f1": 0.202,
         "macro_r": 0.269
       },
       "coverage_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 834,
         "fp": 374,
-        "fn": 244,
+        "fn": 242,
         "p": 0.674,
-        "r": 0.774,
-        "f1": 0.72,
-        "f2": 0.751,
+        "r": 0.775,
+        "f1": 0.721,
+        "f2": 0.752,
         "macro_f1": 0.21,
         "macro_r": 0.282
       },
       "coverage_containment": {
-        "support": 1078,
+        "support": 1076,
         "c": 834,
         "fp": 374,
-        "fn": 244,
+        "fn": 242,
         "p": 0.674,
-        "r": 0.774,
-        "f1": 0.72,
-        "f2": 0.751,
+        "r": 0.775,
+        "f1": 0.721,
+        "f2": 0.752,
         "macro_f1": 0.21,
         "macro_r": 0.282
       },
       "type_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 714,
         "fp": 432,
-        "fn": 364,
+        "fn": 362,
         "p": 0.623,
-        "r": 0.662,
-        "f1": 0.642,
-        "f2": 0.654,
+        "r": 0.664,
+        "f1": 0.643,
+        "f2": 0.655,
         "macro_f1": 0.192,
         "macro_r": 0.253
       },
       "type_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 828,
         "fp": 380,
-        "fn": 250,
+        "fn": 248,
         "p": 0.668,
-        "r": 0.768,
+        "r": 0.77,
         "f1": 0.715,
-        "f2": 0.746,
+        "f2": 0.747,
         "macro_f1": 0.2,
         "macro_r": 0.267
       },
@@ -378,14 +378,14 @@
           "f2": 0.724
         },
         "PERSON": {
-          "support": 842,
+          "support": 840,
           "c": 791,
           "fp": 334,
-          "fn": 51,
+          "fn": 49,
           "p": 0.686,
-          "r": 0.939,
-          "f1": 0.793,
-          "f2": 0.875
+          "r": 0.942,
+          "f1": 0.794,
+          "f2": 0.876
         },
         "PHONE": {
           "support": 6,
@@ -409,15 +409,15 @@
         }
       },
       "entity_level": {
-        "protected": 33,
+        "protected": 34,
         "total": 113,
-        "entity_recall": 0.292,
-        "harm_weighted_recall": 0.35,
+        "entity_recall": 0.301,
+        "harm_weighted_recall": 0.363,
         "by_class": {
           "direct": {
-            "protected": 19,
+            "protected": 20,
             "total": 54,
-            "recall": 0.352
+            "recall": 0.37
           },
           "quasi": {
             "protected": 14,
@@ -437,9 +437,9 @@
             "recall": 0.0
           },
           "PERSON": {
-            "protected": 16,
+            "protected": 17,
             "total": 26,
-            "recall": 0.615
+            "recall": 0.654
           },
           "PHONE": {
             "protected": 0,
@@ -485,10 +485,10 @@
       ],
       "n_pred": 360,
       "coverage_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 62,
         "fp": 298,
-        "fn": 1016,
+        "fn": 1014,
         "p": 0.172,
         "r": 0.058,
         "f1": 0.086,
@@ -497,10 +497,10 @@
         "macro_r": 0.218
       },
       "coverage_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 100,
         "fp": 274,
-        "fn": 978,
+        "fn": 976,
         "p": 0.239,
         "r": 0.093,
         "f1": 0.134,
@@ -509,10 +509,10 @@
         "macro_r": 0.258
       },
       "coverage_containment": {
-        "support": 1078,
+        "support": 1076,
         "c": 94,
         "fp": 274,
-        "fn": 984,
+        "fn": 982,
         "p": 0.239,
         "r": 0.087,
         "f1": 0.128,
@@ -521,10 +521,10 @@
         "macro_r": 0.234
       },
       "type_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 58,
         "fp": 302,
-        "fn": 1020,
+        "fn": 1018,
         "p": 0.161,
         "r": 0.054,
         "f1": 0.081,
@@ -533,10 +533,10 @@
         "macro_r": 0.202
       },
       "type_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 88,
         "fp": 285,
-        "fn": 990,
+        "fn": 988,
         "p": 0.208,
         "r": 0.082,
         "f1": 0.117,
@@ -636,12 +636,12 @@
           "f2": 0.054
         },
         "PERSON": {
-          "support": 842,
+          "support": 840,
           "c": 66,
           "fp": 172,
-          "fn": 776,
+          "fn": 774,
           "p": 0.215,
-          "r": 0.078,
+          "r": 0.079,
           "f1": 0.115,
           "f2": 0.09
         },
@@ -744,62 +744,62 @@
       ],
       "n_pred": 1231,
       "coverage_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 796,
         "fp": 440,
-        "fn": 282,
+        "fn": 280,
         "p": 0.643,
-        "r": 0.738,
-        "f1": 0.687,
-        "f2": 0.717,
+        "r": 0.74,
+        "f1": 0.688,
+        "f2": 0.718,
         "macro_f1": 0.568,
         "macro_r": 0.65
       },
       "coverage_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 910,
         "fp": 388,
-        "fn": 168,
+        "fn": 166,
         "p": 0.685,
-        "r": 0.844,
-        "f1": 0.756,
-        "f2": 0.807,
+        "r": 0.846,
+        "f1": 0.757,
+        "f2": 0.808,
         "macro_f1": 0.577,
         "macro_r": 0.663
       },
       "coverage_containment": {
-        "support": 1078,
+        "support": 1076,
         "c": 910,
         "fp": 388,
-        "fn": 168,
+        "fn": 166,
         "p": 0.685,
-        "r": 0.844,
-        "f1": 0.756,
-        "f2": 0.807,
+        "r": 0.846,
+        "f1": 0.757,
+        "f2": 0.808,
         "macro_f1": 0.577,
         "macro_r": 0.663
       },
       "type_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 785,
         "fp": 446,
-        "fn": 293,
+        "fn": 291,
         "p": 0.638,
-        "r": 0.728,
-        "f1": 0.68,
-        "f2": 0.708,
+        "r": 0.73,
+        "f1": 0.681,
+        "f2": 0.709,
         "macro_f1": 0.558,
         "macro_r": 0.634
       },
       "type_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 899,
         "fp": 394,
-        "fn": 179,
+        "fn": 177,
         "p": 0.68,
-        "r": 0.834,
-        "f1": 0.749,
-        "f2": 0.798,
+        "r": 0.836,
+        "f1": 0.75,
+        "f2": 0.799,
         "macro_f1": 0.566,
         "macro_r": 0.647
       },
@@ -875,14 +875,14 @@
           "f2": 0.724
         },
         "PERSON": {
-          "support": 842,
+          "support": 840,
           "c": 796,
           "fp": 334,
-          "fn": 46,
+          "fn": 44,
           "p": 0.686,
-          "r": 0.945,
-          "f1": 0.795,
-          "f2": 0.879
+          "r": 0.948,
+          "f1": 0.796,
+          "f2": 0.88
         },
         "PHONE": {
           "support": 6,
@@ -906,15 +906,15 @@
         }
       },
       "entity_level": {
-        "protected": 78,
+        "protected": 79,
         "total": 113,
-        "entity_recall": 0.69,
-        "harm_weighted_recall": 0.641,
+        "entity_recall": 0.699,
+        "harm_weighted_recall": 0.654,
         "by_class": {
           "direct": {
-            "protected": 41,
+            "protected": 42,
             "total": 54,
-            "recall": 0.759
+            "recall": 0.778
           },
           "quasi": {
             "protected": 37,
@@ -934,9 +934,9 @@
             "recall": 1.0
           },
           "PERSON": {
-            "protected": 16,
+            "protected": 17,
             "total": 26,
-            "recall": 0.615
+            "recall": 0.654
           },
           "PHONE": {
             "protected": 5,
@@ -983,62 +983,62 @@
       ],
       "n_pred": 1447,
       "coverage_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 736,
         "fp": 711,
-        "fn": 342,
+        "fn": 340,
         "p": 0.509,
-        "r": 0.683,
+        "r": 0.684,
         "f1": 0.583,
-        "f2": 0.639,
+        "f2": 0.64,
         "macro_f1": 0.385,
-        "macro_r": 0.454
+        "macro_r": 0.455
       },
       "coverage_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 864,
         "fp": 646,
-        "fn": 214,
+        "fn": 212,
         "p": 0.554,
-        "r": 0.801,
+        "r": 0.803,
         "f1": 0.655,
-        "f2": 0.736,
+        "f2": 0.737,
         "macro_f1": 0.445,
         "macro_r": 0.505
       },
       "coverage_containment": {
-        "support": 1078,
+        "support": 1076,
         "c": 861,
         "fp": 646,
-        "fn": 217,
+        "fn": 215,
         "p": 0.554,
-        "r": 0.799,
+        "r": 0.8,
         "f1": 0.654,
-        "f2": 0.734,
+        "f2": 0.735,
         "macro_f1": 0.43,
         "macro_r": 0.482
       },
       "type_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 728,
         "fp": 719,
-        "fn": 350,
+        "fn": 348,
         "p": 0.503,
-        "r": 0.675,
+        "r": 0.677,
         "f1": 0.577,
-        "f2": 0.632,
+        "f2": 0.633,
         "macro_f1": 0.353,
         "macro_r": 0.424
       },
       "type_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 852,
         "fp": 657,
-        "fn": 226,
+        "fn": 224,
         "p": 0.546,
-        "r": 0.79,
+        "r": 0.792,
         "f1": 0.646,
-        "f2": 0.725,
+        "f2": 0.726,
         "macro_f1": 0.391,
         "macro_r": 0.451
       },
@@ -1134,14 +1134,14 @@
           "f2": 0.701
         },
         "PERSON": {
-          "support": 842,
+          "support": 840,
           "c": 793,
           "fp": 504,
-          "fn": 49,
+          "fn": 47,
           "p": 0.591,
-          "r": 0.942,
-          "f1": 0.726,
-          "f2": 0.842
+          "r": 0.944,
+          "f1": 0.727,
+          "f2": 0.843
         },
         "PHONE": {
           "support": 6,
@@ -1165,15 +1165,15 @@
         }
       },
       "entity_level": {
-        "protected": 48,
+        "protected": 49,
         "total": 113,
-        "entity_recall": 0.425,
-        "harm_weighted_recall": 0.423,
+        "entity_recall": 0.434,
+        "harm_weighted_recall": 0.436,
         "by_class": {
           "direct": {
-            "protected": 32,
+            "protected": 33,
             "total": 54,
-            "recall": 0.593
+            "recall": 0.611
           },
           "quasi": {
             "protected": 16,
@@ -1193,9 +1193,9 @@
             "recall": 0.043
           },
           "PERSON": {
-            "protected": 16,
+            "protected": 17,
             "total": 26,
-            "recall": 0.615
+            "recall": 0.654
           },
           "PHONE": {
             "protected": 5,
@@ -1242,22 +1242,22 @@
       ],
       "n_pred": 425,
       "coverage_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 119,
         "fp": 310,
-        "fn": 959,
+        "fn": 957,
         "p": 0.271,
-        "r": 0.11,
+        "r": 0.111,
         "f1": 0.157,
         "f2": 0.125,
         "macro_f1": 0.384,
         "macro_r": 0.41
       },
       "coverage_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 157,
         "fp": 286,
-        "fn": 921,
+        "fn": 919,
         "p": 0.327,
         "r": 0.146,
         "f1": 0.202,
@@ -1266,10 +1266,10 @@
         "macro_r": 0.45
       },
       "coverage_containment": {
-        "support": 1078,
+        "support": 1076,
         "c": 152,
         "fp": 286,
-        "fn": 926,
+        "fn": 924,
         "p": 0.327,
         "r": 0.141,
         "f1": 0.197,
@@ -1278,25 +1278,25 @@
         "macro_r": 0.443
       },
       "type_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 113,
         "fp": 312,
-        "fn": 965,
+        "fn": 963,
         "p": 0.266,
         "r": 0.105,
-        "f1": 0.15,
+        "f1": 0.151,
         "f2": 0.119,
         "macro_f1": 0.382,
         "macro_r": 0.409
       },
       "type_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 144,
         "fp": 294,
-        "fn": 934,
+        "fn": 932,
         "p": 0.308,
         "r": 0.134,
-        "f1": 0.186,
+        "f1": 0.187,
         "f2": 0.151,
         "macro_f1": 0.416,
         "macro_r": 0.442
@@ -1393,10 +1393,10 @@
           "f2": 0.054
         },
         "PERSON": {
-          "support": 842,
+          "support": 840,
           "c": 70,
           "fp": 172,
-          "fn": 772,
+          "fn": 770,
           "p": 0.215,
           "r": 0.083,
           "f1": 0.12,
@@ -1502,64 +1502,64 @@
       ],
       "n_pred": 1512,
       "coverage_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 793,
         "fp": 723,
-        "fn": 285,
+        "fn": 283,
         "p": 0.522,
-        "r": 0.736,
+        "r": 0.737,
         "f1": 0.611,
-        "f2": 0.68,
+        "f2": 0.681,
         "macro_f1": 0.525,
         "macro_r": 0.646
       },
       "coverage_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 921,
+        "fp": 658,
+        "fn": 155,
+        "p": 0.565,
+        "r": 0.856,
+        "f1": 0.681,
+        "f2": 0.776,
+        "macro_f1": 0.587,
+        "macro_r": 0.697
+      },
+      "coverage_containment": {
+        "support": 1076,
+        "c": 919,
         "fp": 658,
         "fn": 157,
         "p": 0.565,
         "r": 0.854,
         "f1": 0.68,
         "f2": 0.775,
-        "macro_f1": 0.587,
-        "macro_r": 0.697
-      },
-      "coverage_containment": {
-        "support": 1078,
-        "c": 919,
-        "fp": 658,
-        "fn": 159,
-        "p": 0.565,
-        "r": 0.853,
-        "f1": 0.679,
-        "f2": 0.774,
         "macro_f1": 0.583,
         "macro_r": 0.691
       },
       "type_strict": {
-        "support": 1078,
+        "support": 1076,
         "c": 783,
         "fp": 729,
-        "fn": 295,
+        "fn": 293,
         "p": 0.518,
-        "r": 0.726,
+        "r": 0.728,
         "f1": 0.605,
-        "f2": 0.672,
+        "f2": 0.673,
         "macro_f1": 0.514,
         "macro_r": 0.63
       },
       "type_relaxed": {
-        "support": 1078,
+        "support": 1076,
         "c": 908,
         "fp": 666,
-        "fn": 170,
+        "fn": 168,
         "p": 0.56,
-        "r": 0.842,
-        "f1": 0.672,
-        "f2": 0.765,
+        "r": 0.844,
+        "f1": 0.673,
+        "f2": 0.766,
         "macro_f1": 0.563,
-        "macro_r": 0.674
+        "macro_r": 0.675
       },
       "coverage_relaxed_per_type": {
         "AGE": {
@@ -1653,14 +1653,14 @@
           "f2": 0.701
         },
         "PERSON": {
-          "support": 842,
+          "support": 840,
           "c": 797,
           "fp": 504,
-          "fn": 45,
+          "fn": 43,
           "p": 0.591,
-          "r": 0.947,
+          "r": 0.949,
           "f1": 0.728,
-          "f2": 0.845
+          "f2": 0.846
         },
         "PHONE": {
           "support": 6,
@@ -1684,15 +1684,15 @@
         }
       },
       "entity_level": {
-        "protected": 79,
+        "protected": 80,
         "total": 113,
-        "entity_recall": 0.699,
-        "harm_weighted_recall": 0.65,
+        "entity_recall": 0.708,
+        "harm_weighted_recall": 0.662,
         "by_class": {
           "direct": {
-            "protected": 41,
+            "protected": 42,
             "total": 54,
-            "recall": 0.759
+            "recall": 0.778
           },
           "quasi": {
             "protected": 38,
@@ -1712,9 +1712,9 @@
             "recall": 1.0
           },
           "PERSON": {
-            "protected": 16,
+            "protected": 17,
             "total": 26,
-            "recall": 0.615
+            "recall": 0.654
           },
           "PHONE": {
             "protected": 5,
@@ -1756,11 +1756,11 @@
       "by_split": {
         "dev": {
           "n_docs": 15,
-          "n_gold_mentions": 536,
-          "mask_coverage_recall": 0.881,
-          "mask_coverage_f2": 0.777,
-          "entity_recall": 0.719,
-          "harm_weighted_recall": 0.681
+          "n_gold_mentions": 534,
+          "mask_coverage_recall": 0.884,
+          "mask_coverage_f2": 0.779,
+          "entity_recall": 0.737,
+          "harm_weighted_recall": 0.707
         },
         "test": {
           "n_docs": 15,
