@@ -5,14 +5,20 @@ const GH = 'https://github.com/glebis/confide';
 ---
 <Base page="contribute" title="Contribute" description="Help build CONFIDE — annotate transcripts, add a language, or run the benchmark. Russian annotators especially needed.">
   <section class="hero">
-    <div class="wrap prose">
-      <p class="eyebrow">Contribute</p>
-      <h1>Help build a safer mental-health AI</h1>
-      <p class="sub">CONFIDE is open. The single most valuable thing you can do is help label its gold standard — and <strong>Russian speakers are especially needed</strong>.</p>
-      <div class="cta">
-        <a class="btn btn-primary" href={TG}>Volunteer to annotate</a>
-        <a class="btn" href={GH}>Contribute code</a>
+    <div class="wrap fig-grid">
+      <div class="prose">
+        <p class="eyebrow">Contribute</p>
+        <h1>Help build a safer mental-health AI</h1>
+        <p class="sub">CONFIDE is open. The single most valuable thing you can do is help label its gold standard — and <strong>Russian speakers are especially needed</strong>.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href={TG}>Volunteer to annotate</a>
+          <a class="btn" href={GH}>Contribute code</a>
+        </div>
       </div>
+      <figure class="fig">
+        <img src="/images/contribute.png" alt="Several hands, each with a different coloured highlighter, independently marking the same transcript — collaborative annotation." width="600" height="600" loading="lazy" />
+        <figcaption>Independent annotators, one shared gold standard.</figcaption>
+      </figure>
     </div>
   </section>
 
@@ -45,7 +51,8 @@ const GH = 'https://github.com/glebis/confide';
 
       <div class="flyout">
         <div class="t">privacy &amp; ethics</div>
-        <p>You only ever see <strong>synthetic</strong> (AI-generated, fictional) transcripts, or <strong>consented</strong> real ones handled under a strict local-only protocol. <strong>No real client data is ever exposed.</strong> Nothing you see may be copied or re-shared; only your labels are collected.</p>
+        <p>You only ever see <strong>synthetic</strong> (AI-generated, fictional) transcripts, or real ones used <strong>only with the client's explicit, informed consent</strong> under a strict local-only protocol. <strong>No real client data is ever exposed</strong> — and no real recording is ever made or processed without that consent. Nothing you see may be copied or re-shared; only your labels are collected.</p>
+        <p class="note">CONFIDE is honest that de-identification is harm-reduction, not anonymization — the default stack still lands at the <span class="pill red">RED</span> residual-risk tier. That honesty is the point. See our full position on <a href="/about#ethics">ethics &amp; consent</a>.</p>
       </div>
 
       <p><strong>Interested?</strong> Reach out at <a href={TG}>t.me/glebkalinin</a> with one line about your background (clinical / linguistic / technical / careful-reader) and which language(s) you can annotate. No experience required — we train you.</p>

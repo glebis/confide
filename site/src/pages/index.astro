@@ -81,6 +81,10 @@ import Base from '../layouts/Base.astro';
         </div>
       </div>
       <p class="prose note">Three PII types — age, medication, profession — sit near zero under the deterministic layers. The local LLM raises their mention-recall, but medication and profession stay low at the strict <em>entity</em> level, because every mention must be masked. Redaction of direct identifiers is necessary but not sufficient.</p>
+      <div class="flyout prose" style="border-left-color:var(--red)">
+        <div class="t" style="color:var(--red)">our position</div>
+        <p>We report the <span class="pill red">RED</span> residual-risk tier on purpose. De-identification is <strong>harm-reduction, not anonymization</strong> — it never replaces <strong>explicit, informed client consent</strong> and local-only handling for any real recording. A tool that promised "safe to upload" would be the dangerous one. <a href="/about#ethics">Read our ethics &amp; consent stance →</a></p>
+      </div>
       <p class="prose"><a href="/report/benchmark-report.html">See the full interactive report →</a> &nbsp;·&nbsp; <a href="/report/benchmark-report.ru.html">русская версия →</a></p>
     </div>
   </section>

@@ -22,11 +22,17 @@ const layers = [
 ---
 <Base page="benchmark" title="The Benchmark" description="How CONFIDE-Bench works: datasets, detector layers, recall-first metrics, and the residual-risk view.">
   <section class="hero">
-    <div class="wrap prose">
-      <p class="eyebrow">The benchmark</p>
-      <h1>How it works</h1>
-      <p class="sub">A reproducible, layered-detector ablation: each detector runs once per dataset, combinations are span-unions merged to the deployed redaction mask, then scored recall-first.</p>
-      <p><a class="btn btn-primary" href="/report/benchmark-report.html">Open the interactive report</a> <a class="btn" href="/report/benchmark-report.ru.html">Русская версия</a></p>
+    <div class="wrap fig-grid">
+      <div class="prose">
+        <p class="eyebrow">The benchmark</p>
+        <h1>How it works</h1>
+        <p class="sub">A reproducible, layered-detector ablation: each detector runs once per dataset, combinations are span-unions merged to the deployed redaction mask, then scored recall-first.</p>
+        <p><a class="btn btn-primary" href="/report/benchmark-report.html">Open the interactive report</a> <a class="btn" href="/report/benchmark-report.ru.html">Русская версия</a></p>
+      </div>
+      <figure class="fig">
+        <img src="/images/how.png" alt="A stack of translucent detector layers over a page of text; each layer catches different kinds of marks as they pass through." width="600" height="600" loading="lazy" />
+        <figcaption>Layers compose by span-union; each catches what the others miss.</figcaption>
+      </figure>
     </div>
   </section>
 
@@ -98,6 +104,7 @@ const layers = [
       <div class="flyout">
         <div class="t">the takeaway</div>
         <p>Redacting direct identifiers is necessary but not sufficient. Quasi-identifier survival is the gate worth checking before any session goes to cloud analysis — and the reason the gold needs human, multi-annotator labelling.</p>
+        <p>We surface the <span class="pill red">RED</span> tier deliberately: de-identification is <strong>harm-reduction, not anonymization</strong>. It never replaces <strong>explicit client consent</strong> and local-only handling for real recordings. See <a href="/about#ethics">Ethics &amp; consent</a> for our full position.</p>
       </div>
       <p><a href="/report/benchmark-report.html">Full numbers, charts, and citations in the interactive report →</a></p>
     </div>
