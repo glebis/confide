@@ -333,6 +333,20 @@ def build_html(lang):
   else:
       ru_opf_note = t("The OPF-on-RU row is omitted until its detector cache is regenerated "
                       "for the current 30-document corpus.")
+  # EN-real is optional (built locally from ai4privacy; absent in the public repo).
+  # Render every EN-real-specific block ONLY when its data is present, so the report
+  # never shows a blank chart, an empty legend series, or a dangling header.
+  if ENR:
+      enr_table_block = (f'<p class="sub-h">{t("EN-real (ai4privacy slice) — {docs} docs, {gold} gold mentions", docs=enr_docs, gold=enr_gold)}</p>\n'
+                         + leaderboard_table(ENR, "EN-real"))
+      enr_bullet = f'<p>{t("<strong>EN-real:</strong> on generic ai4privacy text the LLM is strongest; <code>opf+ollama</code> and the default <em>tie</em> on recall.")}</p>'
+      enr_base_block = (f'<div class="chart-box" style="margin-top:1.2rem"><canvas id="baseENR"></canvas></div>\n'
+                        f'  <p class="caption">{t("EN-real (ai4privacy): same two metrics. Presidio\'s coverage drops sharply on real-world markup/ID formats.")}</p>')
+      enr_aside = f'<p>{t("On <strong>EN-real</strong>, Presidio <em>collapses</em> on coverage — generic NER + structured recognizers miss the bespoke ID/markup formats the stack catches.")}</p>'
+      baselines_stateline = t("Off-the-shelf de-identifiers can match the stack on <strong>coverage</strong> but fall far behind on <strong>type-aware micro-F1</strong> — and Presidio <em>collapses</em> on the real ai4privacy slice.")
+  else:
+      enr_table_block = enr_bullet = enr_base_block = enr_aside = ""
+      baselines_stateline = t("Off-the-shelf de-identifiers can match the stack on <strong>coverage</strong> but fall far behind on <strong>type-aware micro-F1</strong>.")
   return f"""<!DOCTYPE html>
 <html lang="{lang}"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -408,8 +422,8 @@ footer a {{ color:var(--ink-light); }}
 <h1>{t("CONFIDE-Bench — Which Layer Earns Its Compute?")}</h1>
 <p class="sub">{t("A bilingual de-identification benchmark for psychotherapy transcripts.")}</p>
 <p class="credit">{t('<strong>CONFIDE</strong> · {repo} · by {author} &amp; CONFIDE contributors · released for research &amp; teaching under the repository license. All transcripts are synthetic/fictional — no real patient data.', repo='<a href="https://github.com/glebis/confide">github.com/glebis/confide</a>', author='<a href="https://github.com/glebis">Gleb Kalinin</a>')}</p>
-<p class="tags">sources: ru/ru-adv/en/en-real-bench-results.json · reconstruction-results.json · regulatory-results.json &nbsp;|&nbsp; metrics: TAB · i2b2 · Presidio-F2 · datasheets-for-datasets</p>
-<p class="provenance">{t('LLM detector layer (<code>ollama</code>) &amp; local attacker: <strong>Qwen2.5-3B-Instruct</strong> (<code>{model}</code>) via local Ollama, temperature&nbsp;0. Deterministic layers: <strong>Natasha</strong> (RU NER), a bilingual <strong>regex</strong> layer, and the <strong>OpenAI Privacy&nbsp;Filter</strong> (EN). The <code>qwen3-32b</code>/Groq runs elsewhere in the repo are separate cloud experiments, not these tables.', model=OLLAMA_MODEL)}</p>
+<p class="tags">TAB · i2b2/n2c2 · Presidio-F2 · Datasheets&nbsp;for&nbsp;Datasets</p>
+<p class="provenance">{t('LLM detector layer (<code>ollama</code>) &amp; local attacker: <strong>Qwen2.5-3B-Instruct</strong> (<code>{model}</code>) via Ollama, temperature&nbsp;0. Deterministic layers: <strong>Natasha</strong> (Russian NER), a bilingual <strong>regex</strong> layer, and the <strong>OpenAI Privacy&nbsp;Filter</strong> (English).', model=OLLAMA_MODEL)}</p>
 
 <div class="status-strip">
   <div class="status-cell b"><div class="status-label">{t("datasets")}</div><div class="status-value">4</div><div class="status-note">RU · RU-adv · EN · EN-real</div></div>
@@ -446,15 +460,14 @@ footer a {{ color:var(--ink-light); }}
   <div class="t">{t("why they differ")}</div>
   <p>{t("<strong>RU:</strong> the proposed default <code>{star}</code> reaches {r} coverage recall. {opf_note}", star=RU_STAR, r=f"{ru_default_r:.0%}", opf_note=ru_opf_note)}</p>
   <p>{t("<strong>EN-synth:</strong> OPF is the name/address backbone (English&rsquo;s Natasha). Default <code>{star}</code>; <code>opf+regex</code> edges it on F2.", star=EN_STAR)}</p>
-  <p>{t("<strong>EN-real:</strong> on generic ai4privacy text the LLM is strongest; <code>opf+ollama</code> and the default <em>tie</em> on recall.")}</p></div>
+  {enr_bullet}</div>
 </div>
 {leaderboard_table(RU, "RU") if RU else ""}
 
 <p class="sub-h">{t("EN-synth — {docs} docs, {gold} gold mentions", docs=en_docs, gold=en_gold)} <span class="note-inline">{t("(no entity-level / direct-quasi: the EN sets carry no per-entity <code>entity_id</code> annotation, so only mention-level coverage is scored)")}</span></p>
 {leaderboard_table(EN, "EN") if EN else ""}
 
-<p class="sub-h">{t("EN-real (ai4privacy slice) — {docs} docs, {gold} gold mentions", docs=enr_docs, gold=enr_gold)}</p>
-{leaderboard_table(ENR, "EN-real") if ENR else ""}
+{enr_table_block}
 
 <div class="ornament">:::</div>
 
@@ -518,16 +531,15 @@ footer a {{ color:var(--ink-light); }}
 <div class="ornament">:::</div>
 
 <h2>6. {t("CONFIDE stack vs established baselines (Presidio, Philter)")}</h2>
-<p class="state-line">{t("Off-the-shelf de-identifiers can match the stack on <strong>coverage</strong> but fall far behind on <strong>type-aware micro-F1</strong> — and Presidio <em>collapses</em> on the real ai4privacy slice.")}</p>
+<p class="state-line">{baselines_stateline}</p>
 <div class="aside-container">
   <div><div class="chart-box"><canvas id="baseEN"></canvas></div>
   <p class="caption">{t("EN-synth: coverage F2 (recall-weighted, headline) vs type-aware micro-F1 for the CONFIDE ★ stack and the established baselines.")}</p>
-  <div class="chart-box" style="margin-top:1.2rem"><canvas id="baseENR"></canvas></div>
-  <p class="caption">{t("EN-real (ai4privacy): same two metrics. Presidio's coverage drops sharply on real-world markup/ID formats.")}</p></div>
+  {enr_base_block}</div>
   <div class="aside"><div class="t">{t("reading it")}</div>
   <p>{t("<strong>Coverage F2</strong> (orange) asks only &ldquo;did we mask the span at all&rdquo;. <strong>Type micro-F1</strong> (green) demands the right label too — what a redaction policy actually needs.")}</p>
   <p>{t("On <strong>EN-synth</strong>, Presidio edges the stack on coverage F2 (a broad <code>DATE_TIME</code> recognizer) but its type-F1 is far lower; <strong>Philter</strong> is high-coverage yet emits almost everything as untyped <code>OTHER</code>, so its type-F1 is unusable.")}</p>
-  <p>{t("On <strong>EN-real</strong>, Presidio <em>collapses</em> on coverage — generic NER + structured recognizers miss the bespoke ID/markup formats the stack catches.")}</p>
+  {enr_aside}
   <p>{t("<strong>Takeaway:</strong> a generic system is not a therapy-tuned one; the only coverage a baseline adds is relative/colloquial dates.")}</p></div>
 </div>
 
@@ -550,7 +562,7 @@ footer a {{ color:var(--ink-light); }}
   <div class="aside"><div class="t">{t("reading the tier")}</div>
   <p>{t("<strong>RED</strong> = any in-scope direct identifier leaks at entity level (one unmasked mention is a key). <strong>AMBER</strong> = special-category residual, nonzero inference, or linkability above chance. <strong>GREEN</strong> = all clear.")}</p>
   <p>{t("<strong>What leaks:</strong> not whole names but specific <em>variants</em> — inflected/possessive/patronymic forms (Артёмом, Натальин, Денису), lowercase surnames, vocatives, Latin transliteration (Timur), and name/common-word collisions (Вера, Роман). Mention-level recall hides this; the strict TAB entity bar (one miss ⇒ unprotected) surfaces it.")}</p>
-  <p>{t("Source: <code>results/regulatory-results.json</code> (<code>confide_eval.scoring.regulatory</code>, unit-tested). Singling-out is illustrative — see its independence caveat in the JSON.")}</p></div>
+  <p>{t("The singling-out estimate is illustrative (a caveated population-fraction method, not corpus k-anonymity) — it is not a guarantee of non-identifiability.")}</p></div>
 </div>
 
 <div class="flyout"><div class="t">{t("methodology")}</div>
@@ -558,7 +570,7 @@ footer a {{ color:var(--ink-light); }}
 
 <h2 id="references">{t("References &amp; credits")}</h2>
 <div class="refs prose">
-<p>{t("CONFIDE-Bench builds on the de-identification, re-identification, and documentation literature listed below. Every work named or relied on in this report is credited here with a link to its canonical page (DOI / arXiv / HuggingFace / GitHub). We credit only what the report actually uses; inclusion does not imply endorsement by those authors. URLs verified against <code>docs/CITATION-AUDIT.md</code>.")}</p>
+<p>{t("CONFIDE-Bench builds on the de-identification, re-identification, and documentation literature listed below. Every work named or relied on in this report is credited here with a link to its canonical page (DOI / arXiv / HuggingFace / GitHub). We credit only what the report actually uses; inclusion does not imply endorsement by those authors.")}</p>
 
 <h3>{t("Benchmarks &amp; metrics")}</h3>
 <ul>
@@ -600,7 +612,7 @@ footer a {{ color:var(--ink-light); }}
 </ul>
 </div>
 
-<footer>{t('Generated by <code>make_tufte_report.py</code> from <code>results/*-bench-results.json</code>. <strong>CONFIDE-Bench</strong>, part of <a href="https://github.com/glebis/confide">CONFIDE</a> — by Gleb Kalinin &amp; CONFIDE contributors, Psychodemia 2026. Metrics &amp; methods credit: TAB (Pilán et al. 2022), i2b2/n2c2 2014/2016, Microsoft Presidio-research, Datasheets for Datasets — see References above for full links. All data is synthetic/fictional — not real patient data.')}</footer>
+<footer>{t('<strong>CONFIDE-Bench</strong>, part of <a href="https://github.com/glebis/confide">CONFIDE</a> — by Gleb Kalinin &amp; CONFIDE contributors, Psychodemia 2026. Metrics &amp; methods credit: TAB (Pilán et al. 2022), i2b2/n2c2 2014/2016, Microsoft Presidio-research, Datasheets for Datasets — see References above for full links. All data is synthetic/fictional — not real patient data.')}</footer>
 
 <script>
 const DATA = {json.dumps(DATA, ensure_ascii=False)};
@@ -624,7 +636,8 @@ Chart.defaults.responsiveAnimationDuration=0;
 
 // 2. leaderboards (horizontal bars, plotted datasets overlaid by combo recall)
 (function(){{
- const sets=[['RU',DATA.ru_leaderboard,C2],['EN',DATA.en_leaderboard,C1],['EN-real',DATA.enr_leaderboard,C3]];
+ // only plot datasets that actually have data (e.g. EN-real is omitted when not built)
+ const sets=[['RU',DATA.ru_leaderboard,C2],['EN',DATA.en_leaderboard,C1],['EN-real',DATA.enr_leaderboard,C3]].filter(s=>s[1] && s[1].length);
  const labels=[]; sets.forEach(([_,rows])=>rows.forEach(r=>{{if(!labels.includes(r.combo))labels.push(r.combo);}}));
  const datasets=sets.map(([name,rows,col])=>({{label:name,
    data:labels.map(l=>{{const r=rows.find(x=>x.combo===l);return r?+r.recall.toFixed(3):null}}),
@@ -649,8 +662,9 @@ Chart.defaults.responsiveAnimationDuration=0;
 // 6. stack vs established baselines (coverage F2 vs type micro-F1) — EN + EN-real
 (function(){{
  function draw(id, d){{
-   if(!d||!d.combos||!d.combos.length) return;
-   new Chart(document.getElementById(id),{{type:'bar',data:{{labels:d.combos,datasets:[
+   const el=document.getElementById(id);
+   if(!el||!d||!d.combos||!d.combos.length) return;
+   new Chart(el,{{type:'bar',data:{{labels:d.combos,datasets:[
      {{label:'{t("coverage F2 (headline)")}',data:d.covf2,backgroundColor:C1}},
      {{label:'{t("type micro-F1")}',data:d.microf1,backgroundColor:C2}}]}},
     options:{{responsive:true,maintainAspectRatio:false,
