@@ -14,14 +14,14 @@ const GH = 'https://github.com/glebis/confide';
   <section id="skill">
     <div class="wrap prose">
       <p class="eyebrow">The skill</p>
-      <h2>session-anonymizer — local PII redaction for your agent</h2>
+      <h2>session-anonymizer — local <abbr title="Personally Identifiable Information">PII</abbr> redaction for your agent</h2>
       <p>A three-layer, <strong>fully-local</strong> de-identifier for therapy / coaching session transcripts (Russian &amp; English). It installs straight into your coding agent as a skill, so you can say <em>"anonymize this transcript"</em> and it runs on your own machine — no raw client data leaves it.</p>
       <table>
         <thead><tr><th>layer</th><th>tool</th><th style="text-align:left">catches</th></tr></thead>
         <tbody>
           <tr><td>1</td><td>Natasha</td><td style="text-align:left;font-family:'EB Garamond',serif">Russian names, locations, organizations</td></tr>
           <tr><td>2</td><td>regex</td><td style="text-align:left;font-family:'EB Garamond',serif">emails, URLs, phones, structured IDs (policy / account / card)</td></tr>
-          <tr><td>3</td><td>Ollama LLM</td><td style="text-align:left;font-family:'EB Garamond',serif">medications, dates, contextual IDs</td></tr>
+          <tr><td>3</td><td>Ollama <abbr title="Large Language Model">LLM</abbr></td><td style="text-align:left;font-family:'EB Garamond',serif">medications, dates, contextual IDs</td></tr>
         </tbody>
       </table>
       <p class="note">Plus a Russian entity-propagation pass that masks every <em>variant</em> of a detected name (inflected, possessive, vocative, transliterated) — closing the strict entity-level leaks the benchmark surfaced.</p>
@@ -59,7 +59,7 @@ cd ~/.claude/skills/session-anonymizer &amp;&amp; ./setup.sh</code></pre>
     <div class="wrap prose">
       <p class="eyebrow">The red-team</p>
       <h2>CONFIDE-Red — try to re-identify what survived</h2>
-      <p>Removing names is routinely mistaken for "safe." CONFIDE-Red is the adversary that checks: it runs the three GDPR Article-29 attacks against the <em>redacted</em> output and reports what a motivated reader could still recover.</p>
+      <p>Removing names is routinely mistaken for "safe." CONFIDE-Red is the adversary that checks: it runs the three <abbr title="General Data Protection Regulation — the EU data-protection law">GDPR</abbr> Article-29 attacks against the <em>redacted</em> output and reports what a motivated reader could still recover.</p>
       <div class="cards" style="margin:1.4rem 0">
         <div class="card risk">
           <h3>Inference</h3>
@@ -71,7 +71,7 @@ cd ~/.claude/skills/session-anonymizer &amp;&amp; ./setup.sh</code></pre>
         </div>
         <div class="card risk">
           <h3>Linkability</h3>
-          <p>Can two redacted sessions be matched as the same person? Reported as a pairwise ROC&nbsp;AUC — at or below chance (0.50) is the safe direction.</p>
+          <p>Can two redacted sessions be matched as the same person? Reported as a pairwise <abbr title="Receiver Operating Characteristic — Area Under the Curve">ROC&nbsp;AUC</abbr>: a 0–1 score for how reliably an attacker can tell the two apart, where <strong>1.0</strong> = perfectly linkable and <strong>0.50</strong> = no better than a coin-flip. At or below 0.50 is the safe direction.</p>
         </div>
       </div>
       <p>This is the same attack suite behind the report's <a href="/report/benchmark-report.html#regulatory">residual-risk (RED) tier</a>. It's why we say the honest part out loud: even the best stack leaves a re-identification surface, and CONFIDE-Red is how you measure it before a session ever leaves the room.</p>
