@@ -1,4 +1,4 @@
-# CONFIDE — Making Therapy Transcripts Safe to Share, and Measuring When They Aren't
+# CONFIDE — Making Therapy Transcripts Safer to Share, and Measuring When They Aren't
 
 **A white paper for therapists, coaches, and the people who build tools for them.**
 
@@ -10,20 +10,24 @@
 
 A therapy transcript is one of the most sensitive documents a person ever creates. To get
 AI to help review a session, you usually have to *share that transcript with a model* — so
-first it has to be made safe to share. CONFIDE is a free, open-source toolkit that does
+first it has to be made safer to share. CONFIDE is a free, open-source toolkit that does
 this on your own computer (nothing is uploaded), and — just as importantly — it *measures,
 out loud,* how safe the result actually is, including by attacking its own output to see
 what can still be recovered. The headline finding is simple and uncomfortable: **removing
-the names is necessary but not enough.** Structured details (emails, phone numbers, ID
-numbers) are scrubbed almost perfectly; but the quiet, dangerous details — a medication, an
-age, a profession — survive far more often, and those are exactly what can re-identify
-someone after every name is gone. This paper explains how CONFIDE works, what it found, and
+the names is necessary but not enough.** In our tests, structured details were scrubbed
+essentially perfectly (emails, dates, ID numbers at 100%; phone numbers at 83%); but the
+quiet, dangerous details — a medication, an age, a profession — survive far more often, and
+those are exactly what can re-identify someone after every name is gone. This paper explains how CONFIDE works, what it found, and
 what a clinician should and should not trust it for.
 
 > **A word on terms.** This paper is written to be readable by someone in their final year
 > of school. Every technical word is explained the first time it appears, in plain language
 > and in terms that matter to psychotherapy and to data privacy. There is a glossary at the
 > end.
+
+> **The clinician rule, up front.** CONFIDE is *pre-review*, not a release button. Its
+> output is a safer draft for **your** eyes — a human review is mandatory before any
+> transcript, however redacted, goes to a cloud service. Nothing in this paper changes that.
 
 ---
 
@@ -39,14 +43,26 @@ their life.
 Now imagine you'd like AI to help: to spot a pattern across many sessions, to prepare for
 supervision, to check whether you actually did in the room what you think you did. Useful —
 but to do it, the transcript has to leave your head and enter a model. If that model lives
-in the cloud (ChatGPT, Claude.ai, and so on), **sending the transcript there is a
-cross-border transfer of special-category personal data** — the most heavily protected kind
-under Russia's 152-ФЗ, the EU's GDPR, and the US HIPAA rules. The penalties are real:
+in the cloud (ChatGPT, Claude.ai, and so on), the transcript leaves your machine — and the
+law treats this kind of data as **special-category personal data**, the most heavily
+protected kind. The rules differ by jurisdiction, and the differences matter:
 
-| | 152-ФЗ (Russia) | GDPR (EU) | HIPAA (US) |
+- **EU clients:** sending an identifiable transcript to a non-EU cloud provider may trigger
+  the GDPR's special-category rules (Article 9 — its list of extra-protected data types:
+  health, sex life, and more) *and* its cross-border-transfer rules (extra conditions when
+  personal data leaves the EU's legal reach).
+- **Russian data subjects:** Russia's 152-ФЗ governs the data; the fines sit in its
+  companion administrative code (КоАП, Art. 13.11).
+- **US:** HIPAA applies only to *covered entities* (clinics, insurers, providers who bill
+  electronically) and their business associates — many coaches fall outside HIPAA entirely,
+  but state privacy law and professional-confidentiality duties still reach them.
+
+The penalties are real:
+
+| | 152-ФЗ / КоАП (Russia) | GDPR (EU) | HIPAA (US) |
 |---|---|---|---|
-| Data status | Special category | Art. 9 special category | Psychotherapy notes |
-| Leak of special category | **10–15 million ₽** | up to **€20 M / 4% of turnover** | Tier-4 cap ≈ **$2.19 M/yr** |
+| Data status | Special category | Art. 9 special category | **PHI** (protected health information) when a covered entity handles it; *psychotherapy notes* — a therapist's separately-kept process notes, a deliberately narrow category — get extra protection on top |
+| Leak of special category | **10–15 million ₽** (КоАП 13.11) | up to **€20 M / 4% of worldwide turnover** | top-tier annual cap ≈ **$2.19 M** |
 
 But here is the more important point, and the one this whole project is built around:
 
@@ -67,9 +83,13 @@ Let's define the basic vocabulary first.
 
 - **PII** — *Personally Identifiable Information* (in Russian law, **ПДн**, «персональные
   данные»). Any information that points to a specific person.
-- **De-identification** (or **anonymization**) — removing or masking PII from a document so
-  it no longer points to a specific person. To **mask** a piece of text is to replace it
-  with a placeholder, e.g. turning *"Marina"* into *`[PERSON]`*.
+- **De-identification** — the *process* of removing or masking PII from a document. To
+  **mask** a piece of text is to replace it with a placeholder, e.g. turning *"Marina"*
+  into *`[PERSON]`*.
+- **Anonymization** — the stronger *claim*: that after the processing, re-identifying the
+  person is no longer reasonably possible. The two words are often used interchangeably,
+  but the law treats them differently — and CONFIDE performs and measures
+  *de-identification*; it never certifies *anonymization*.
 
 PII comes in two flavours, and the difference is the heart of this paper.
 
@@ -90,6 +110,8 @@ makes it click — a real-feeling description with **every name already removed*
 "has twin children"     → probably exactly one person
 ```
 
+*(Illustrative toy numbers, chosen to show the mechanism — not census estimates.)*
+
 Stack those five facts and you have **de-anonymized** someone — identified them — without
 ever using their name. *"A 43-year-old music teacher in Kostroma, mother of twins"* — the
 name is gone, and a motivated stranger finds her in five minutes.
@@ -101,10 +123,10 @@ to this; it is the limit no algorithm fully removes.
 
 > **Field note (therapy-specific PII).** Beyond the standard list (names, dates, addresses,
 > phones, emails, document numbers), therapy transcripts carry *therapeutic* identifiers
-> that ordinary privacy tools never look for: **clinic and doctor names, medications with
-> doses, unique life events, court details.** A medication is special — it doesn't just
-> identify, it *implies a diagnosis.* "Lithium" tells you something a phone number never
-> could.
+> that generic privacy tools usually miss unless configured for therapy: **clinic and
+> doctor names, medications with doses, unique life events, court details.** A medication
+> is special — it doesn't just identify, it *narrows the possible diagnoses.* "Lithium"
+> suggests things a phone number never could.
 
 ---
 
@@ -139,7 +161,10 @@ the project states loudly:
 
 In practice this is run as a **red folder / green folder** discipline: raw transcripts live
 in a `red_raw_local_only/` folder that no AI agent is ever allowed to open; only reviewed,
-anonymized text moves to a `green_anon_reviewed/` folder that an agent may see.
+anonymized text moves to a `green_anon_reviewed/` folder that an agent may see. To be
+precise about what enforces this: the agent's permission system is configured never to
+grant access to the red folder, and the human never points it there — it is a working
+procedure backed by access rules, not a magical property of folder names.
 
 **2. Built in the open, by volunteers.** CONFIDE is a **citizen-science** project — built
 and scrutinized by volunteers rather than a funded lab — so the people whose privacy is at
@@ -189,10 +214,12 @@ itself one of the findings.
 
 Now the scoring. To measure de-identification you need a **gold standard**: a version of
 each transcript where humans have marked every piece of PII, so you can check what the tool
-caught and what it missed. CONFIDE-Bench is, to our knowledge, the **first benchmark built
-specifically on therapy *dialogue*** — existing privacy datasets are clinical notes, court
-records, or generic text, not the messy back-and-forth of a real session. It covers both
-**Russian and English**.
+caught and what it missed. CONFIDE-Bench is, as far as we could find (search current as
+of June 2026), the **first benchmark built specifically on therapy *dialogue*** — the
+nearest public resources are court-record and clinical-note de-identification corpora (the
+Text Anonymization Benchmark (TAB), the i2b2/n2c2 clinical sets) or counseling dialogue
+*without* PII labels, not the
+messy, disclosive back-and-forth of a real session. It covers both **Russian and English**.
 
 ### 5.1 Why "recall" is the safety metric
 
@@ -205,12 +232,14 @@ Two words you'll see in any measurement like this:
 
 For ordinary tasks people balance the two. **For privacy, they are not equal:**
 
-> A **missed** entity is **leaked PII** — a real person exposed. A **false alarm** is merely
-> a word that got masked when it didn't need to be — mildly annoying, harmless.
+> A **missed** entity is **leaked PII** — a real person exposed. A **false alarm** — a word
+> masked when it didn't need to be — is usually far less harmful, but it is not free: over-
+> masking can erase clinically useful context. That is why precision is still reported.
 
-So CONFIDE leads with **recall**, and reports an **F2 score** — a combined score that
-deliberately weights recall twice as heavily as precision. (Plain "F1" weights them equally;
-for safety, that's the wrong dial.) When we say a number is the "headline," it's a
+So CONFIDE leads with **recall**, and reports an **F2 score** — a recall-heavy combined
+score: its setting (β = 2) declares recall twice as *important* as precision, which in the
+formula gives recall four times the weight. (The plain "F1" score weights them equally; for
+safety, that's the wrong dial.) When we say a number is the "headline," it's a
 recall-style number, because a miss is the failure that hurts someone.
 
 We also report two stricter, more honest views:
@@ -225,14 +254,24 @@ We also report two stricter, more honest views:
 
 ### 5.2 The results, and the one table that tells the story
 
-On the Russian synthetic corpus (30 sessions, 1,076 marked PII items), the recommended
-stack reaches **coverage recall ≈ 0.88** and **entity-level recall ≈ 0.73** (95% confidence
-interval 0.85–0.90 for coverage; the corpus is small, so treat these as directional, not
-precise). It held up on a held-out **test** split it was never tuned on (entity recall 0.71
-vs 0.74 on the development split — close, which is what honesty looks like). Against a
-deliberately nasty **adversarial** set — transliterated names, social-media handles,
+On the Russian synthetic *corpus* (the collection of texts used for testing — here 30
+sessions with 1,076 marked PII items), the recommended stack reaches **coverage recall
+≈ 0.88** (did the mask touch the item at all) and **entity-level recall ≈ 0.73** overall.
+Splitting the data: 0.74 on the *development split* (the part used while tuning) and 0.71
+on the *held-out test split* (a part set aside and never used during development) — close
+to each other, which is what honesty looks like. The 95% **confidence interval** — the
+range the true value plausibly falls in, estimated here by re-sampling the corpus 2,000
+times — is 0.85–0.90 for coverage recall; the corpus is small, so treat all of these as
+directional, not precise. Against a deliberately nasty **adversarial** set (inputs designed
+to fool the tool) — transliterated names, social-media handles,
 structured IDs — the full stack caught **19 of 20**; the one escape was a *Latin-spelled
 Russian name* ("Sergey Volkov"), which the Russian-only NER can't see.
+
+*(Methods in brief: a fully synthetic six-client corpus; person-disjoint dev/test split —
+no client appears in both; gold spans located programmatically from curated patterns and
+hand-verified; pinned tool versions and a one-command Docker re-run. The full protocol —
+annotation codebook, taxonomy, versioning, re-run policy — lives in the repository's
+BENCHMARK, DATASHEET, and REPRODUCIBILITY documents.)*
 
 But the single most important result is *which categories survive*, because it proves the
 whole thesis of §2. Recall by category, recommended stack:
@@ -253,8 +292,9 @@ whole thesis of §2. Recall by category, recommended stack:
 *(A note on these numbers: with a corpus this size, each category has only a handful of
 items, so each row is directional — one missed item moves a row by several points.)*
 
-Look at the shape of that. The **direct identifiers and structured fields are essentially
-solved** — names, emails, IDs, dates, locations are caught ~85–100% of the time. The
+Look at the shape of that. In this corpus, the **direct identifiers and structured fields
+come close to a closed problem** — emails, IDs, dates and locations at 1.00, names at 0.96,
+phones at 0.83. Promising, not "solved": the counts are small. But the
 **quasi-identifiers that re-identify people — age, profession, medication — are exactly the
 weakest**, caught only 8–17% of the time even by the full stack with a local LLM helping.
 Counting at the entity level across the *whole* quasi-identifier class (which also includes
@@ -264,9 +304,10 @@ survivors are concentrated in exactly the categories above.
 
 That is the headline of the entire project, stated as a number:
 
-> Software reliably removes the parts that look dangerous (names, emails) and reliably leaves
-> the parts that *are* dangerous in combination (age + profession + medication). The Kostroma
-> music teacher from §2 would survive automatic redaction almost intact.
+> In our tests, software consistently removes the parts that *look* dangerous (names,
+> emails) and consistently leaves the parts that *are* dangerous in combination (age +
+> profession + medication). The Kostroma music teacher from §2 could plausibly survive
+> automatic redaction nearly intact.
 
 (English numbers tell a consistent story; on the curated English set the recommended stack
 reaches coverage recall ≈ 0.98, and the OPF measurement we kept as a lesson scored recall
@@ -280,7 +321,9 @@ can match — and short numeric secrets that matter most for safety.)
 
 Measuring what you *masked* isn't enough; you have to check what an attacker could *recover*
 from the masked text. CONFIDE-Red runs an AI attacker against the redacted output, using the
-three attack types named in EU privacy guidance (GDPR's Article-29 taxonomy):
+three failure types named in EU privacy guidance (the Article 29 Working Party's Opinion
+05/2014 — guidance from the pre-GDPR era that is still the standard yardstick for judging
+anonymisation):
 
 - **Singling-out** — can you isolate *one* person out of a crowd from the surviving details,
   even without a name? (The Kostroma cascade is singling-out.)
@@ -291,14 +334,18 @@ three attack types named in EU privacy guidance (GDPR's Article-29 taxonomy):
 
 Two findings stand out.
 
-**Linkability: redaction works — once a hidden leak was fixed.** We tested whether the
+**Linkability: redaction held up — once a hidden leak was fixed.** We tested whether the
 attacker, shown two redacted sessions, could tell if they belonged to the same client.
-Result: **it cannot beat chance** — accuracy 0.50, and an **ROC-AUC of 0.46** (AUC is a
-score from 0 to 1 where 0.5 means "no better than a coin flip"; 0.46 sits right at chance).
+Result: **the attacker did not perform above chance in this setup** — over 100 session
+pairs, accuracy 0.50 (95% confidence interval 0.41–0.60) and an **AUC of 0.46** (CI
+0.38–0.54). AUC — *area under the ROC curve* — is a score from 0 to 1 where 0.5 means "no
+better than a coin flip"; both intervals straddle chance, so we observed no evidence of
+linkability — which is weaker than proving none exists.
 The honest part: *before* a fix, this score was a perfect **1.00** — but that was an
-**artifact**, not real safety. 28 of 30 redacted files were silently leaking a clarifying
-piece of metadata (a per-client name buried in the file's header that none of the three
-layers ever looked at), so "linking" was a trivial exact-match, not inference. We caught it,
+**artifact**, not real safety. 28 of 30 redacted files were silently leaking a piece of
+**metadata** — data *about* the file rather than in its visible text: a per-client name
+buried in the file's header that none of the three layers ever looked at — so "linking" was
+a trivial exact-match, not inference. We caught it,
 masked the header, and the score collapsed to chance. We're telling you this because *that
 is what trustworthy measurement looks like* — the embarrassing artifact is part of the
 report, not edited out.
@@ -306,8 +353,12 @@ report, not edited out.
 **Singling-out and inference: partly survives, and we say so carefully.** Using a
 **k-anonymity** estimate (a standard way to ask "how many people in the population share
 this exact combination of traits?" — if the answer is 1, the person is singled out), the
-surviving quasi-identifiers usually leave a person in a *crowd* of dozens at this scale —
-but the estimate is fragile, and for one synthetic client it flips to "singled out" under
+surviving quasi-identifiers usually leave a person in a *crowd* of dozens at this scale.
+Three honesty notes on that number: it is computed from published population fractions
+under an *independence assumption* that overstates uniqueness (professions, cities, and
+ages correlate, so the real crowd is larger); it is run on fabricated personas, so it is an
+**illustrative risk reading, not a privacy guarantee**; and the estimate is fragile — for
+one synthetic client it flips to "singled out" under
 slightly different population assumptions. The attacker can still sometimes guess attributes.
 The three ways therapy de-identification fails *after the names are gone* — surviving
 inference, surviving singling-out, surviving cross-session linkage — are exactly the three
@@ -367,10 +418,14 @@ This is also where the practical rule lives — a checklist worth printing:
 CONFIDE is a privacy tool about vulnerable people, so its ethics are load-bearing, not an
 afterthought. The commitments:
 
-- **No real data in public, ever.** Every public therapy transcript is synthetic, so this is
-  *not* human-subjects research and exposes no one. Real sessions are processed **only
-  locally**, behind device + encrypted-store + per-file isolation, and only aggregate
-  statistics — never transcript text — ever leave the machine.
+- **No real data in public, ever.** Every public therapy transcript is synthetic —
+  fictional people — so the *public benchmark* involves no human subjects and exposes no
+  one. **Any real-session use is a separate matter:** it happens **only locally**, behind
+  three independent layers of storage protection (the device, an encrypted store, and
+  per-file isolation), it requires the client's explicit consent, and — where it becomes a
+  formal study or happens inside a regulated clinic — its own ethics or legal review. Only
+  aggregate statistics (totals and averages) — never transcript text — ever leave the
+  machine.
 - **Consent is ongoing, not a one-time checkbox.** Real-data use needs explicit,
   AI-specific consent (a separate document, not fine print), revocable at any time, updated
   when tools change.
@@ -380,11 +435,15 @@ afterthought. The commitments:
   safety, not as recipes), reporting residual risk only on fabricated personas, and
   publishing **no re-identification recipe for real people.**
 
-We had this audited against established norms — the **Ten Principles of Citizen Science**
-of the European Citizen Science Association (ECSA), the **Belmont Report** and **Menlo Report** (the foundational ethics frameworks
-for human-subjects and for computing research), and dual-use research guidance. The verdict:
-CONFIDE *broadly complies*, and is unusually careful precisely because it keeps no real
-people in the open. The review surfaced two genuine gaps, which we have now closed:
+We ran a structured **self-assessment** against established norms — the **Ten Principles of
+Citizen Science** of the European Citizen Science Association (ECSA), the **Belmont Report**
+and **Menlo Report** (the foundational ethics frameworks
+for human-subjects and for computing research), and dual-use research guidance. To be plain
+about its standing: this was a cited research survey conducted by the project itself (June
+2026), not an external certification or an independent ethics board. Our reading of the
+result: CONFIDE *broadly complies*, and is unusually careful precisely because it keeps no
+real people in the open. The assessment surfaced two genuine gaps, which we have since
+closed:
 
 1. **A responsible-disclosure channel.** We discussed dual-use in principle but offered no
    way to *report* a discovered de-identification leak or re-identification technique.
@@ -417,8 +476,10 @@ explicit — including the parts that were, until recently, missing.
 
 ## 10. Using and contributing
 
-CONFIDE is free and open (code MIT; data & docs CC-BY-4.0). You can run the whole benchmark
-with one command (see the repository's `run-benchmark.sh` and `Dockerfile`), extend it with
+CONFIDE is free and open (code under the MIT license, data & docs under CC-BY-4.0 — open
+licenses that ask only for attribution). You can run the whole benchmark
+with one command (the repository's `run-benchmark.sh`, with a `Dockerfile` — a recipe that
+rebuilds the identical software environment anywhere), extend it with
 public datasets via `python3 confide.py datasets list`, and read the deep-dive docs from the
 documentation map in the README.
 
@@ -429,10 +490,9 @@ issue here — report it privately via `SECURITY.md`, never in a public issue.
 
 Until a peer-reviewed paper exists, cite the repository: *Gleb Kalinin and CONFIDE
 contributors, "CONFIDE: a therapy-transcript de-identification benchmark and red team,"
-2026, https://github.com/glebis/confide.* It is research-grade, **not** peer-reviewed; cite
-it as a tool and a measurement, not as a compliance guarantee.
-
-CONFIDE grew out of the *Psychodemia · AI & Mental Health* masterclass (31 May 2026).
+2026, https://github.com/glebis/confide.* It is a reproducible benchmark artifact and tool
+report, **not** peer-reviewed; cite
+it as a measurement, not as a compliance guarantee.
 
 > The whole tool, in one breath: **Anonymize locally. Review by hand. Ask narrow questions.
 > Demand quotes. Treat every output as a hypothesis for supervision — never a conclusion
@@ -445,7 +505,10 @@ CONFIDE grew out of the *Psychodemia · AI & Mental Health* masterclass (31 May 
 | Term | Plain meaning |
 |---|---|
 | **PII / ПДн** | *Personally Identifiable Information* — any data pointing to a specific person. |
-| **De-identification / anonymization** | Removing or masking PII so a document no longer points to a person. |
+| **De-identification** | The *process* of removing or masking PII from a document — what CONFIDE does and measures. |
+| **Anonymization** | The stronger *claim* that re-identification is no longer reasonably possible — a legal/statistical state CONFIDE never certifies. |
+| **Special-category personal data** | The legal term (GDPR Art. 9; 152-ФЗ) for extra-protected data: health, sex life, beliefs, and similar. |
+| **PHI / psychotherapy notes** | US HIPAA terms: PHI is protected health information handled by covered entities; *psychotherapy notes* are a narrow, separately-kept subset with extra protection. |
 | **Mask** | Replace a piece of text with a placeholder, e.g. *Marina* → `[PERSON]`. |
 | **Direct identifier** | Names a person almost alone: full name, email, phone, passport number. |
 | **Quasi-identifier** | Harmless alone, identifying in combination: age + profession + city + a rare detail. |
@@ -455,7 +518,11 @@ CONFIDE grew out of the *Psychodemia · AI & Mental Health* masterclass (31 May 
 | **Red team** | A group (here, an AI) that attacks a system on purpose to find its weaknesses. |
 | **Recall** | Of all the PII really present, the fraction the tool caught. The safety metric. |
 | **Precision** | Of everything the tool flagged, the fraction that was really PII. |
-| **F2 score** | A combined score weighting recall twice as heavily as precision. |
+| **F2 score** | A recall-heavy combined score (β = 2: recall declared twice as important, giving it four times the weight in the formula). |
+| **Corpus** | The collection of texts a tool is tested on. |
+| **Confidence interval (CI)** | The range the true value plausibly falls in, given the data's size and noise. |
+| **AUC** | Area under the ROC curve — 0 to 1; 0.5 means no better than a coin flip. |
+| **Metadata** | Data *about* a file (headers, IDs, timestamps) rather than in its visible text. |
 | **Entity-level recall** | An entity counts as safe only if *every* mention is masked. |
 | **Harm-weighted recall** | Recall that counts each miss by how much harm it could do. |
 | **Regex** | A precise text-matching rule (good for fixed shapes like emails). |
