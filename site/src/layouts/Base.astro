@@ -2,10 +2,15 @@
 import '../styles/tufte.css';
 const { title, description, page } = Astro.props;
 const desc = description ?? 'A bilingual, recall-first benchmark for de-identifying psychotherapy transcripts in Russian and English.';
+const SITE = 'https://confide.salient.community';
+const pageTitle = title ? `${title} · CONFIDE-Bench` : 'CONFIDE-Bench — Which Layer Earns Its Compute?';
+const canonical = new URL(Astro.url.pathname, SITE).href;
+const ogImage = new URL('/images/social.png', SITE).href;
 const nav = [
   { href: '/', label: 'Home', id: 'home' },
   { href: '/about', label: 'About', id: 'about' },
   { href: '/benchmark', label: 'The Benchmark', id: 'benchmark' },
+  { href: '/toolkit', label: 'Toolkit', id: 'toolkit' },
   { href: '/contribute', label: 'Contribute', id: 'contribute' },
 ];
 ---
@@ -14,11 +19,22 @@ const nav = [
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{title ? `${title} · CONFIDE-Bench` : 'CONFIDE-Bench'}</title>
+  <title>{pageTitle}</title>
   <meta name="description" content={desc} />
-  <meta property="og:title" content={title ?? 'CONFIDE-Bench'} />
+  <link rel="canonical" href={canonical} />
+  <meta property="og:site_name" content="CONFIDE-Bench" />
+  <meta property="og:title" content={pageTitle} />
   <meta property="og:description" content={desc} />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="CONFIDE-Bench — redaction bars over a therapy transcript, with a padlock." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={desc} />
+  <meta name="twitter:image" content={ogImage} />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>" />
 </head>
 <body>

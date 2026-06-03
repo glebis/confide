@@ -89,6 +89,13 @@ blockquote { border-left: 3px solid var(--accent); margin: 1.4rem 0; padding: .2
 .card.layered { border-top-color: var(--c2); } .card.layered h3 { color: var(--c2); }
 .card.risk { border-top-color: var(--red); } .card.risk h3 { color: var(--red); }
 
+/* ---- code blocks -------------------------------------------------------- */
+pre { background:#f4efe3; border:1px solid var(--rule); border-left:3px solid var(--c2);
+  padding:.75rem 1rem; overflow-x:auto; font-family:'Monaspace Argon',monospace;
+  font-size:.82rem; line-height:1.55; margin:.5rem 0 1rem; border-radius:2px; }
+pre code { background:none; padding:0; font-size:1em; }
+.cmd-label { font-variant:small-caps; letter-spacing:.04em; font-size:.82rem; color:var(--ink-muted); margin:1.1rem 0 .15rem; }
+
 /* ---- figures ------------------------------------------------------------ */
 figure.fig { margin: 0; }
 figure.fig img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 3px; background: var(--bg); }
