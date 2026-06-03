@@ -1,7 +1,7 @@
 # Deep-Research Findings — De-identification Benchmarks, Methods & Datasets
 
-> **Provenance:** external deep-research agent (pasted 2026-06-01), produced from
-> `docs/RESEARCH-PROMPT.md`. Citations in the original were footnote markers (￼)
+> **Provenance:** external deep-research agent (pasted 2026-06-01), produced from an
+> internal research prompt. Citations in the original were footnote markers (￼)
 > without resolved URLs — **treat every claim as needs-verification** before it
 > goes into a paper. This file is the working record; checked sources for the
 > publishable methodology claims are tracked separately in `SOURCES.md`.
