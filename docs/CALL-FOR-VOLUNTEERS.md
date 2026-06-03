@@ -4,7 +4,7 @@
 
 ---
 
-## 🇬🇧 English
+## English
 
 **Help build CONFIDE — an open benchmark for safely removing personal data from therapy transcripts.**
 
@@ -48,7 +48,7 @@ required — we train you.
 
 ---
 
-## 🇷🇺 Русский
+## Русский
 
 **Помогите собрать CONFIDE — открытый бенчмарк для безопасного удаления персональных данных из расшифровок психотерапии.**
 

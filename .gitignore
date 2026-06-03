@@ -13,3 +13,9 @@ data/sessions-en/pii-eval-ai4privacy.local.jsonl
 .enzyme-embeddings/
 eval/
 __pycache__/
+
+# internal/process docs (not for public repo)
+/internal/
+# stray agent scratch scripts must never be committed
+/_*.py
+*.tmp
