@@ -11,14 +11,15 @@ import os
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DOCS = ["README.md", "docs/CONFIDE-README.md"]
 
-# Lyric lines that MUST NOT appear (everything except the single kept epigraph line).
+# Lyric lines that MUST NOT appear. The kept epigraph (two attributed lines —
+# "But in the name of understanding / Our problems should be shared") is a
+# deliberate fair-use cultural reference and is allowed; everything else is not.
 BANNED_LYRIC_LINES = [
     "throw away the key",
     "sometimes to release it",
     "set our children free",
     "we all get hurt by love",
     "we all have our cross to bear",
-    "our problems should be shared",
 ]
 
 

@@ -10,7 +10,8 @@
 
 **Conf**idential **F**iltering of **I**dentifying **De**tails (Locked) — the CON·F·I·DE spelling.
 
-> …in the name of understanding now.
+> But in the name of understanding
+> Our problems should be shared
 >
 > — Kylie Minogue, [*Confide In Me*](https://www.youtube.com/watch?v=PxZkjq9z5wg) — the song this project's name plays on.
 
