@@ -407,6 +407,13 @@ code {{ font-family:'Monaspace Argon',monospace; font-size:.82em; background:#f0
 .credit a {{ color:var(--accent); text-decoration:none; border-bottom:1px solid #e5cccc; }}
 .credit a:hover {{ border-bottom-color:var(--accent); }}
 .provenance {{ font-size:.85rem; color:var(--ink-light); margin:.1rem 0 1rem; line-height:1.5; }}
+.intro {{ border:1px solid var(--rule); background:var(--bg-aside); padding:1.1rem 1.3rem; margin:1.6rem 0; }}
+.intro .tldr {{ font-size:1.18rem; margin:0 0 .85rem; line-height:1.45; }}
+.wwn {{ display:grid; grid-template-columns:max-content 1fr; gap:.4rem 1.1rem; margin:0; font-size:.96rem; }}
+.wwn dt {{ font-variant:small-caps; letter-spacing:.04em; color:var(--accent); white-space:nowrap; }}
+.wwn dd {{ margin:0; color:var(--ink-light); }} .wwn dd strong {{ color:var(--ink); }}
+.howto {{ font-size:.88rem; color:var(--ink-light); margin:.95rem 0 0; border-top:1px solid var(--rule); padding-top:.7rem; }}
+@media(max-width:800px){{ .wwn {{ grid-template-columns:1fr; gap:.05rem .5rem; }} .wwn dt {{ margin-top:.45rem; }} }}
 .refs {{ font-size:.9rem; line-height:1.5; }}
 .refs h3 {{ font-size:1rem; font-variant:small-caps; letter-spacing:.04em; color:var(--ink); margin:1.4rem 0 .5rem; border-bottom:1px solid #eee; padding-bottom:.2rem; }}
 .refs ul {{ list-style:none; margin:.2rem 0 1rem; padding:0; }}
@@ -424,6 +431,17 @@ footer a {{ color:var(--ink-light); }}
 <p class="credit">{t('<strong>CONFIDE</strong> · {repo} · by {author} &amp; CONFIDE contributors · released for research &amp; teaching under the repository license. All transcripts are synthetic/fictional — no real patient data.', repo='<a href="https://github.com/glebis/confide">github.com/glebis/confide</a>', author='<a href="https://github.com/glebis">Gleb Kalinin</a>')}</p>
 <p class="tags">TAB · i2b2/n2c2 · Presidio-F2 · Datasheets&nbsp;for&nbsp;Datasets</p>
 <p class="provenance">{t('LLM detector layer (<code>ollama</code>) &amp; local attacker: <strong>Qwen2.5-3B-Instruct</strong> (<code>{model}</code>) via Ollama, temperature&nbsp;0. Deterministic layers: <strong>Natasha</strong> (Russian NER), a bilingual <strong>regex</strong> layer, and the <strong>OpenAI Privacy&nbsp;Filter</strong> (English).', model=OLLAMA_MODEL)}</p>
+
+<div class="intro">
+<p class="tldr"><strong>TL;DR —</strong> {t("we test how well automatic privacy tools hide personal details in psychotherapy session transcripts (Russian &amp; English), and which combination of tools earns its compute.")}</p>
+<dl class="wwn">
+  <dt>{t("What we measure")}</dt><dd>{t("Did the redaction mask actually cover each piece of personal information? — recall-first, because a miss is leaked data.")}</dd>
+  <dt>{t("Why it matters")}</dt><dd>{t("Therapy text is deeply sensitive; one un-hidden name, phone, or medication can re-identify a client.")}</dd>
+  <dt>{t("What it is NOT")}</dt><dd>{t("<strong>Not a HIPAA/GDPR compliance certificate.</strong> All transcripts are synthetic/fictional and samples are small — treat results as directional.")}</dd>
+  <dt>{t("Who it is for")}</dt><dd>{t("Anyone choosing or building a de-identification pipeline for clinical or therapy text.")}</dd>
+</dl>
+<p class="howto"><strong>{t("How to read this")}:</strong> {t("★ marks the recommended default stack · bars show coverage (higher is better) · a blank bar means that combination was not run for that language · every table has a column key explaining its abbreviations.")}</p>
+</div>
 
 <div class="status-strip">
   <div class="status-cell b"><div class="status-label">{t("datasets")}</div><div class="status-value">4</div><div class="status-note">RU · RU-adv · EN · EN-real</div></div>
