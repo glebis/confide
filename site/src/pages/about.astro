@@ -11,13 +11,25 @@ import Base from '../layouts/Base.astro';
   </section>
 
   <section>
+    <div class="wrap">
+      <div class="fig-grid left">
+        <figure class="fig">
+          <img src="/images/about.png" alt="A single figure pinpointed by four ordinary attributes — age, workplace, city, medication — each harmless alone but together identifying one person." width="600" height="600" loading="lazy" />
+          <figcaption>Quasi-identifiers: ordinary alone, identifying together.</figcaption>
+        </figure>
+        <div class="prose">
+          <h2>The two kinds of clues</h2>
+          <p>De-identification means removing the clues that reveal <em>who</em> someone is. There are two kinds:</p>
+          <ul class="ticks">
+            <li><strong>Direct identifiers</strong> — a name, phone, email, ID number. One of these alone points to you.</li>
+            <li><strong>Quasi-identifiers</strong> — your age, your job, your city, your employer, a medication. Each is shared by many people, but stack three or four together and only one person matches.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section style="border-top:none; padding-top:0">
     <div class="wrap prose">
-      <h2>The two kinds of clues</h2>
-      <p>De-identification means removing the clues that reveal <em>who</em> someone is. There are two kinds:</p>
-      <ul class="ticks">
-        <li><strong>Direct identifiers</strong> — a name, phone, email, ID number. One of these alone points to you.</li>
-        <li><strong>Quasi-identifiers</strong> — your age, your job, your city, your employer, a medication. Each is shared by many people, but stack three or four together and only one person matches.</li>
-      </ul>
       <p>CONFIDE-Bench tests a <strong>team of tools working together</strong>: a rule-checker for patterns (phones, emails), a name-finder for Russian (Natasha), the OpenAI Privacy Filter for English, and a small <strong>local</strong> language model (Qwen2.5-3B via Ollama) for the trickier, world-knowledge clues. The scorecard answers three questions:</p>
       <dl class="wwn">
         <dt>Did we catch it?</dt><dd>We count misses — <strong>a miss is a leak</strong>.</dd>
@@ -40,15 +52,30 @@ import Base from '../layouts/Base.astro';
     </div>
   </section>
 
-  <section>
+  <section id="ethics">
     <div class="wrap prose">
-      <p class="eyebrow">Ethics &amp; honesty</p>
-      <h2>What this is — and is NOT</h2>
-      <div class="flyout">
-        <div class="t">read this first</div>
-        <p><strong>Not a HIPAA/GDPR compliance certificate.</strong> Types map loosely to Safe-Harbor / GDPR identifier concepts, but the mapping is illustrative, not legal certification. Any real session data must go through consent + ethics review and must not be re-identified.</p>
-        <p>The therapy transcripts are <strong>synthetic and fictional</strong> — no real patients. The one real-text exception is the external <strong>RU-real (JayGuard)</strong> slice: anonymized, non-clinical, public Russian text used under its Apache-2.0 licence as a real-text anchor. Samples are small, so per-type numbers are directional.</p>
+      <p class="eyebrow">Ethics, consent &amp; our stance</p>
+      <h2>Consent first — and honesty about what survives</h2>
+
+      <h3>Explicit consent for every recording</h3>
+      <p>The benchmark is built on <strong>synthetic, fictional</strong> transcripts — no real patients. But the tools it measures are meant, eventually, for <em>real</em> therapy sessions, and there our position is unambiguous: <strong>any real recording or transcript must have the client's explicit, informed consent</strong> before it is recorded, stored, or processed — including being run through these de-identification tools. Consent is specific (this purpose), revocable, and documented; processing is <strong>local-only</strong> by default, so nothing identifiable leaves the therapist's machine. No real session data should ever be re-identified, and none is exposed to annotators.</p>
+
+      <h3>Our stance</h3>
+      <ul class="ticks">
+        <li><strong>Privacy-first, local-first.</strong> The default stack runs on the therapist's own machine; the cloud is opt-in, after redaction, and only with consent.</li>
+        <li><strong>Recall-first &amp; honest.</strong> We weight catching a leak over tidy precision, and we publish our misses, our confidence intervals, and our limitations rather than a single flattering number.</li>
+        <li><strong>Harm-reduction, not a guarantee.</strong> De-identification lowers risk; it does not make a transcript safe to share freely. We say so plainly.</li>
+      </ul>
+
+      <h3>The red part — what we don't hide</h3>
+      <div class="flyout" style="border-left-color:var(--red)">
+        <div class="t" style="color:var(--red)">residual risk: RED</div>
+        <p>Under named regulatory risks (the WP29 singling-out / linkability / inference triad, plus a HIPAA-inspired checklist), the default Russian stack lands at the <strong style="color:var(--red)">RED</strong> tier: a direct identifier can still leak at the strict entity bar, and <strong>~31% of quasi-identifiers survive</strong> the redaction. A local inference attack recovers attributes from the <em>masked</em> text — a lower bound, since a frontier model would recover more.</p>
+        <p>We report this prominently <em>by design</em>. A tool that claimed "anonymized — safe to upload" would be the dangerous one. CONFIDE's value is the opposite: it shows exactly how much re-identification surface remains, so a clinician can decide — with the client — whether a given session may leave the room at all.</p>
       </div>
+
+      <h3>What this is — and is NOT</h3>
+      <p><strong>Not a HIPAA/GDPR compliance certificate.</strong> Types map loosely to Safe-Harbor / GDPR identifier concepts, but the mapping is illustrative, not legal certification. The one real-text exception in the data is the external <strong>RU-real (JayGuard)</strong> slice — anonymized, non-clinical, public Russian text under an Apache-2.0 licence. Samples are small, so per-type numbers are directional.</p>
       <p>Gold labels are currently located from curated answer-keys and hand-verified — a planted-signal recovery eval, not yet independently annotated. That is exactly why <a href="/contribute">multi-annotator labelling</a> is the project's most-wanted contribution.</p>
     </div>
   </section>

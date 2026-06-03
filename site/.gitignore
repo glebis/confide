@@ -13,3 +13,4 @@ public/images/*.json
 
 # os
 .DS_Store
+.vercel
