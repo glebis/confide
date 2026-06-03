@@ -1,0 +1,105 @@
+---
+import Base from '../layouts/Base.astro';
+const datasets = [
+  { name: 'RU-synth', docs: 30, gold: 1076, what: 'Synthetic Russian therapy series (6 fictional clients, 30 sessions). Entity-level direct/quasi labels.', kind: 'synthetic' },
+  { name: 'RU-adversarial', docs: 16, gold: 20, what: 'Robustness probe: patronymics, transliteration, diminutives, VK/Telegram handles, SNILS/INN/passport IDs, code-switching.', kind: 'synthetic' },
+  { name: 'EN-synth', docs: 32, gold: 46, what: 'Curated English therapy-style snippets. Mention-level coverage (no per-entity ids).', kind: 'synthetic' },
+  { name: 'RU-real (JayGuard)', docs: 60, gold: 77, what: 'External, anonymized, real-but-non-clinical Russian text (Apache-2.0). PERSON/LOCATION only, machine-derived gold.', kind: 'real' },
+];
+const metrics = [
+  ['cov R', 'Mask-coverage recall (relaxed, ≥1-char overlap): did the mask touch the PII span at all? A miss = leaked PII.', '↑ higher is better'],
+  ['cov F2', 'Recall-weighted F2 (β=2): recall counts 2× precision, because a miss leaks while a false positive only over-redacts.', '↑ higher is better'],
+  ['ent R', 'Entity-level recall (TAB): protected only if ALL mentions are masked — one recurrence is a leak.', '↑ higher is better'],
+  ['direct', 'Entity recall for direct identifiers (name, phone, email, policy/ID).', '↑ higher is better'],
+  ['quasi', 'Entity recall for quasi-identifiers (age, profession, city, employer, medication, date).', '↑ higher is better'],
+];
+const layers = [
+  ['regex', 'Bilingual pattern rules — phones, emails, URLs, structured IDs, numeric & relative/colloquial dates.', 'deterministic'],
+  ['Natasha', 'Russian NER (Cyrillic-only) — names, locations, orgs.', 'deterministic'],
+  ['OpenAI Privacy Filter', 'English token-classification model — the EN name/address backbone.', 'model'],
+  ['Qwen2.5-3B (Ollama)', 'Local LLM, temp 0 — the only layer that lifts world-knowledge quasi-identifiers (medication, profession, spelled-out age).', 'LLM'],
+];
+---
+<Base page="benchmark" title="The Benchmark" description="How CONFIDE-Bench works: datasets, detector layers, recall-first metrics, and the residual-risk view.">
+  <section class="hero">
+    <div class="wrap prose">
+      <p class="eyebrow">The benchmark</p>
+      <h1>How it works</h1>
+      <p class="sub">A reproducible, layered-detector ablation: each detector runs once per dataset, combinations are span-unions merged to the deployed redaction mask, then scored recall-first.</p>
+      <p><a class="btn btn-primary" href="/report/benchmark-report.html">Open the interactive report</a> <a class="btn" href="/report/benchmark-report.ru.html">Русская версия</a></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="prose">Datasets</h2>
+      <p class="prose note">Four slices. Every therapy transcript is synthetic/fictional; the one real-text anchor (RU-real) is external, anonymized, non-clinical public data.</p>
+      <table>
+        <thead><tr><th>dataset</th><th>docs</th><th>gold spans</th><th>what it is</th></tr></thead>
+        <tbody>
+          {datasets.map(d => (
+            <tr>
+              <td>{d.name} <span class={`pill ${d.kind === 'real' ? 'amber' : 'green'}`}>{d.kind}</span></td>
+              <td>{d.docs}</td>
+              <td>{d.gold}</td>
+              <td style="text-align:left; font-family:'EB Garamond',serif">{d.what}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="prose">The detector layers</h2>
+      <p class="prose note">The benchmark composes these by span-union. The proposed default (★) trades a little recall for large speed/precision gains — and runs entirely locally.</p>
+      <div class="cards">
+        {layers.map(([name, desc, kind]) => (
+          <div class={`card ${kind === 'LLM' ? 'layered' : ''}`}>
+            <h3>{name}</h3>
+            <p>{desc}</p>
+          </div>
+        ))}
+      </div>
+      <p class="prose note" style="margin-top:1.4rem"><strong>Proposed defaults:</strong> <code>natasha + regex + qwen2.5:3b ★</code> for Russian, <code>opf + regex + qwen2.5:3b ★</code> for English. Presidio &amp; Philter are reported as established English-only baselines.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="prose">Reading the metrics</h2>
+      <table>
+        <thead><tr><th>column</th><th>what it means</th><th>direction</th></tr></thead>
+        <tbody>
+          {metrics.map(([k, v, d]) => (
+            <tr>
+              <td><code>{k}</code></td>
+              <td style="text-align:left; font-family:'EB Garamond',serif">{v}</td>
+              <td style="text-align:left; font-family:'EB Garamond',serif" class="note">{d}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="prose note">Type-aware micro/macro-F1 (i2b2) are also reported. Numbers are mention-level unless marked entity-level.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <p class="eyebrow">Beyond detection</p>
+      <h2>Residual risk — what survives</h2>
+      <p>Detection metrics measure what we catch; regulators care what <em>survives</em>. The report maps the default stack onto named risks:</p>
+      <ul class="ticks">
+        <li><strong>Reconstruction.</strong> ~31% of quasi-identifiers survive the default RU stack (both clients); a local 3B attacker recovers attributes from the <em>redacted</em> text — a lower bound, since a frontier model would recover more.</li>
+        <li><strong>Privacy vs. utility.</strong> The same masking keeps the clinical signal usable — the report shows distortion-extraction preserved alongside a char-level non-PII floor.</li>
+        <li><strong>Regulatory tier.</strong> Under the WP29 triad (singling-out / linkability / inference) + a HIPAA-inspired checklist, the RU default lands <span class="pill red">RED</span> (a direct identifier still leaks at entity level), English <span class="pill amber">AMBER</span>.</li>
+      </ul>
+      <div class="flyout">
+        <div class="t">the takeaway</div>
+        <p>Redacting direct identifiers is necessary but not sufficient. Quasi-identifier survival is the gate worth checking before any session goes to cloud analysis — and the reason the gold needs human, multi-annotator labelling.</p>
+      </div>
+      <p><a href="/report/benchmark-report.html">Full numbers, charts, and citations in the interactive report →</a></p>
+    </div>
+  </section>
+</Base>

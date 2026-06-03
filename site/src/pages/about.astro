@@ -1,0 +1,67 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base page="about" title="About" description="Why CONFIDE-Bench exists: a recall-first, bilingual de-identification benchmark for therapy transcripts, built on synthetic data.">
+  <section class="hero">
+    <div class="wrap prose">
+      <p class="eyebrow">About</p>
+      <h1>De-identification, in plain language</h1>
+      <p class="sub">A sticker-checking game for robots: how good are different tools at finding every private detail in a therapy transcript — without erasing the parts a therapist still needs?</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <h2>The two kinds of clues</h2>
+      <p>De-identification means removing the clues that reveal <em>who</em> someone is. There are two kinds:</p>
+      <ul class="ticks">
+        <li><strong>Direct identifiers</strong> — a name, phone, email, ID number. One of these alone points to you.</li>
+        <li><strong>Quasi-identifiers</strong> — your age, your job, your city, your employer, a medication. Each is shared by many people, but stack three or four together and only one person matches.</li>
+      </ul>
+      <p>CONFIDE-Bench tests a <strong>team of tools working together</strong>: a rule-checker for patterns (phones, emails), a name-finder for Russian (Natasha), the OpenAI Privacy Filter for English, and a small <strong>local</strong> language model (Qwen2.5-3B via Ollama) for the trickier, world-knowledge clues. The scorecard answers three questions:</p>
+      <dl class="wwn">
+        <dt>Did we catch it?</dt><dd>We count misses — <strong>a miss is a leak</strong>.</dd>
+        <dt>Did we erase too much?</dt><dd>Covering up real therapy content is its own cost (utility).</dd>
+        <dt>Could someone still guess?</dt><dd>We let a local AI try to re-identify the client from what's left.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <h2>Why this benchmark is different</h2>
+      <ul class="ticks">
+        <li><strong>Bilingual.</strong> Almost every de-id benchmark is English-only; CONFIDE covers <strong>Russian and English</strong>, with Russian as the priority and the harder side.</li>
+        <li><strong>Therapy, not hospital notes.</strong> Existing clinical de-id work targets structured medical records; therapy conversation is messier and more revealing.</li>
+        <li><strong>Recall-first, entity-level.</strong> Scored the way privacy researchers do — a recall-weighted F2, and the strict TAB bar where an entity is "protected" only if <em>all</em> its mentions are masked.</li>
+        <li><strong>Local-first.</strong> The default stack runs on the therapist's own machine — nothing sensitive goes to the cloud to be de-identified.</li>
+        <li><strong>Honest about what survives.</strong> It reports the residual re-identification surface and maps it onto named regulatory risks (WP29 singling-out / linkability / inference; a HIPAA-inspired checklist).</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <p class="eyebrow">Ethics &amp; honesty</p>
+      <h2>What this is — and is NOT</h2>
+      <div class="flyout">
+        <div class="t">read this first</div>
+        <p><strong>Not a HIPAA/GDPR compliance certificate.</strong> Types map loosely to Safe-Harbor / GDPR identifier concepts, but the mapping is illustrative, not legal certification. Any real session data must go through consent + ethics review and must not be re-identified.</p>
+        <p>The therapy transcripts are <strong>synthetic and fictional</strong> — no real patients. The one real-text exception is the external <strong>RU-real (JayGuard)</strong> slice: anonymized, non-clinical, public Russian text used under its Apache-2.0 licence as a real-text anchor. Samples are small, so per-type numbers are directional.</p>
+      </div>
+      <p>Gold labels are currently located from curated answer-keys and hand-verified — a planted-signal recovery eval, not yet independently annotated. That is exactly why <a href="/contribute">multi-annotator labelling</a> is the project's most-wanted contribution.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <h2>Who &amp; where</h2>
+      <p>CONFIDE is built by <a href="https://github.com/glebis">Gleb Kalinin</a> and contributors, for the Psychodemia 2026 masterclass. The tooling, gold, and the full datasheet are released openly so others can build safer mental-health AI.</p>
+      <p>Built on the de-identification and re-identification literature — TAB (Pilán et al. 2022), i2b2/n2c2, Microsoft Presidio-research, Staab et al. on LLM inference attacks, and the Datasheets for Datasets / Data Statements documentation standards. Full credits are in the <a href="/report/benchmark-report.html#references">report references</a>.</p>
+      <div class="cta">
+        <a class="btn" href="https://github.com/glebis/confide">Code &amp; docs on GitHub</a>
+        <a class="btn" href="/benchmark">How the benchmark works</a>
+      </div>
+    </div>
+  </section>
+</Base>

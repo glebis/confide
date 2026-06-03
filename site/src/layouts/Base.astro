@@ -1,0 +1,57 @@
+---
+import '../styles/tufte.css';
+const { title, description, page } = Astro.props;
+const desc = description ?? 'A bilingual, recall-first benchmark for de-identifying psychotherapy transcripts in Russian and English.';
+const nav = [
+  { href: '/', label: 'Home', id: 'home' },
+  { href: '/about', label: 'About', id: 'about' },
+  { href: '/benchmark', label: 'The Benchmark', id: 'benchmark' },
+  { href: '/contribute', label: 'Contribute', id: 'contribute' },
+];
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title ? `${title} · CONFIDE-Bench` : 'CONFIDE-Bench'}</title>
+  <meta name="description" content={desc} />
+  <meta property="og:title" content={title ?? 'CONFIDE-Bench'} />
+  <meta property="og:description" content={desc} />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="wrap">
+      <a class="brand" href="/">CONFIDE-Bench</a>
+      {nav.filter(n => n.id !== 'home').map(n => (
+        <a href={n.href} aria-current={page === n.id ? 'page' : undefined}>{n.label}</a>
+      ))}
+      <a href="https://github.com/glebis/confide">GitHub</a>
+    </div>
+  </nav>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer>
+    <div class="wrap cols">
+      <div>
+        <strong>CONFIDE-Bench</strong><br />
+        <span class="note">A bilingual de-identification benchmark for psychotherapy transcripts.</span><br />
+        <span class="note">By Gleb Kalinin &amp; CONFIDE contributors · Psychodemia 2026.</span>
+      </div>
+      <div>
+        <a href="/about">About</a> · <a href="/benchmark">The Benchmark</a> · <a href="/contribute">Contribute</a><br />
+        <a href="/report/benchmark-report.html">Interactive report (EN)</a> · <a href="/report/benchmark-report.ru.html">отчёт (RU)</a><br />
+        <a href="https://github.com/glebis/confide">github.com/glebis/confide</a>
+      </div>
+      <div>
+        <span class="note">All therapy transcripts are synthetic/fictional — no real patient data. The one real-text slice (RU-real / JayGuard) is external, anonymized, non-clinical public data. Benchmark success is <em>not</em> HIPAA/GDPR compliance.</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
