@@ -184,3 +184,22 @@ footer .cols { display: flex; flex-wrap: wrap; gap: 2rem 3rem; }
   padding: .9rem 1.1rem; overflow-x: auto; font-size: .85rem; }
 .paper-body pre code { background: none; padding: 0; }
 .paper-body input[type="checkbox"] { accent-color: var(--accent); margin-right: .4em; }
+
+/* ---- toolkit skill catalogue --------------------------------------------- */
+.skill-art { float: right; width: min(240px, 38%); margin: 0 0 1rem 1.4rem; }
+.skill-art img { width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 3px; }
+.skill-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; margin: 2rem 0; }
+.skill-card { border: 1px solid var(--rule); border-radius: 3px; background: var(--bg);
+  overflow: hidden; box-shadow: 0 1px 0 #eee; display: flex; flex-direction: column; }
+.skill-card img { display: block; width: 100%; height: auto; border-bottom: 1px solid var(--rule); }
+.skill-card .skill-body { padding: .9rem 1rem 1.1rem; }
+.skill-card h3 { margin: .35rem 0 .4rem; font-size: 1.02rem; }
+.skill-card h3 code { background: none; padding: 0; }
+.skill-card p { font-size: .92rem; line-height: 1.5; color: var(--ink-light); margin: 0; }
+.skill-tag { font-variant: small-caps; letter-spacing: .08em; font-size: .72rem;
+  padding: .1rem .5rem; border: 1px solid var(--rule); border-radius: 99px; color: var(--ink-muted); }
+.tag-analysis { border-color: var(--c2); color: var(--c2); }
+.tag-lens { border-color: var(--c3); color: var(--c3); }
+.tag-intervention { border-color: var(--c1); color: var(--c1); }
+@media (max-width: 900px) { .skill-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .skill-grid { grid-template-columns: 1fr; } .skill-art { float: none; width: 70%; margin: 0 auto 1rem; } }
