@@ -10,15 +10,9 @@
 
 **Conf**idential **F**iltering of **I**dentifying **De**tails (Locked) — the CON·F·I·DE spelling.
 
-> And throw away the key
-> But sometimes to release it
-> Is to set our children free
-> We all get hurt by love
-> And we all have our cross to bear
-> But in the name of understanding now
-> Our problems should be shared
+> …in the name of understanding now.
 >
-> — Kylie Minogue, [*Confide In Me*](https://www.youtube.com/watch?v=PxZkjq9z5wg)
+> — Kylie Minogue, [*Confide In Me*](https://www.youtube.com/watch?v=PxZkjq9z5wg) — the song this project's name plays on.
 
 ---
 
