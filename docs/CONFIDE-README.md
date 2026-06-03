@@ -110,7 +110,7 @@ data must go through consent + ethics review and must never be re-identified.
 
 ## License
 
-Code & prompts: **MIT**. Synthetic data: **CC0**. Use it, fork it, improve it.
+Code & prompts: **MIT**. Synthetic data & answer keys: **CC-BY-4.0**. External datasets (JayGuard, AI4Privacy) remain under their own licenses. Use it, fork it, improve it.
 
 ## Acknowledgements
 
