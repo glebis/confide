@@ -155,3 +155,31 @@ footer .cols { display: flex; flex-wrap: wrap; gap: 2rem 3rem; }
   .wwn { grid-template-columns: 1fr; gap: .1rem .5rem; }
   .wwn dt { margin-top: .4rem; }
 }
+
+/* ---- white paper (scientific-paper layout, centered) -------------------- */
+.paper { padding: 3.5rem 0 4rem; }
+.paper .wrap { max-width: 46rem; }
+.paper-head { text-align: center; margin-bottom: 2.5rem; }
+.paper-head .eyebrow { margin-bottom: 1.4rem; }
+.paper-art { margin: 0 auto 1.6rem; max-width: 480px; }
+.paper-art img { width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 3px; }
+.paper-art figcaption { font-size: .85rem; color: var(--ink-muted); font-style: italic; margin-top: .5rem; }
+.paper-cta { display: flex; justify-content: center; gap: .8rem; flex-wrap: wrap; }
+.paper-body h1 { text-align: center; font-size: clamp(1.9rem, 4vw, 2.6rem); margin-top: 1rem; }
+.paper-body h1 + p, .paper-body h1 + p + p { text-align: center; color: var(--ink-light); }
+.paper-body h2 { font-variant: small-caps; font-weight: 500; font-size: 1.45rem;
+  margin-top: 2.6rem; padding-top: 1.4rem; border-top: 1px solid var(--rule); }
+.paper-body h3 { font-size: 1.1rem; margin-top: 1.8rem; }
+.paper-body p, .paper-body li { line-height: 1.62; }
+.paper-body hr { border: none; border-top: 1px solid var(--rule); margin: 2.4rem auto; width: 38%; }
+.paper-body table { font-size: .88rem; }
+.paper-body th { text-align: left; border-bottom: 1px solid var(--ink); padding: .35rem .6rem .35rem 0; }
+.paper-body td { border-bottom: 1px solid var(--rule); padding: .35rem .6rem .35rem 0; vertical-align: top; }
+.paper-body blockquote { font-style: normal; background: var(--bg-aside); border-left: 3px solid var(--accent);
+  padding: .8rem 1.1rem; border-radius: 0 3px 3px 0; }
+.paper-body code { font-family: 'Monaspace Argon', monospace; font-size: .85em; background: var(--bg-aside);
+  padding: .08em .3em; border-radius: 3px; }
+.paper-body pre { background: var(--bg-aside); border: 1px solid var(--rule); border-radius: 3px;
+  padding: .9rem 1.1rem; overflow-x: auto; font-size: .85rem; }
+.paper-body pre code { background: none; padding: 0; }
+.paper-body input[type="checkbox"] { accent-color: var(--accent); margin-right: .4em; }
