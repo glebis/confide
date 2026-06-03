@@ -1,0 +1,88 @@
+---
+import Base from '../layouts/Base.astro';
+const GH = 'https://github.com/glebis/confide';
+---
+<Base page="toolkit" title="Toolkit" description="The CONFIDE toolkit beyond the benchmark: the local anonymizer skill (install via npx skills add) and CONFIDE-Red, the re-identification red-team.">
+  <section class="hero">
+    <div class="wrap prose">
+      <p class="eyebrow">The toolkit</p>
+      <h1>Two tools, and a benchmark to keep them honest</h1>
+      <p class="sub">CONFIDE isn't only a scorecard. It ships the thing that does the redaction — a local <strong>anonymizer skill</strong> — and the thing that tries to break it — <strong>CONFIDE-Red</strong>, a re-identification red-team.</p>
+    </div>
+  </section>
+
+  <section id="skill">
+    <div class="wrap prose">
+      <p class="eyebrow">The skill</p>
+      <h2>session-anonymizer — local PII redaction for your agent</h2>
+      <p>A three-layer, <strong>fully-local</strong> de-identifier for therapy / coaching session transcripts (Russian &amp; English). It installs straight into your coding agent as a skill, so you can say <em>"anonymize this transcript"</em> and it runs on your own machine — no raw client data leaves it.</p>
+      <table>
+        <thead><tr><th>layer</th><th>tool</th><th style="text-align:left">catches</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Natasha</td><td style="text-align:left;font-family:'EB Garamond',serif">Russian names, locations, organizations</td></tr>
+          <tr><td>2</td><td>regex</td><td style="text-align:left;font-family:'EB Garamond',serif">emails, URLs, phones, structured IDs (policy / account / card)</td></tr>
+          <tr><td>3</td><td>Ollama LLM</td><td style="text-align:left;font-family:'EB Garamond',serif">medications, dates, contextual IDs</td></tr>
+        </tbody>
+      </table>
+      <p class="note">Plus a Russian entity-propagation pass that masks every <em>variant</em> of a detected name (inflected, possessive, vocative, transliterated) — closing the strict entity-level leaks the benchmark surfaced.</p>
+
+      <h3>Install in one command</h3>
+      <p>The skill is distributed with the <a href="https://www.npmjs.com/package/skills"><code>skills</code></a> CLI. From your project (or with <code>--global</code> for all projects):</p>
+      <pre><code>npx skills add glebis/confide</code></pre>
+      <p class="note">This clones the repo, finds the <code>session-anonymizer</code> skill, auto-detects your agent, and installs it. Then run its one-time setup (installs the three local layers, idempotent): <code>./setup.sh</code> inside the skill folder.</p>
+
+      <p class="cmd-label">Target a specific agent</p>
+      <pre><code>npx skills add glebis/confide --agent claude-code   # or: cursor, codex, windsurf, …
+npx skills add glebis/confide --agent '*'           # install to every detected agent</code></pre>
+
+      <p class="cmd-label">Install globally (all your projects)</p>
+      <pre><code>npx skills add glebis/confide --global</code></pre>
+
+      <p class="cmd-label">Just try it once, without installing</p>
+      <pre><code>npx skills use glebis/confide@session-anonymizer</code></pre>
+
+      <p class="cmd-label">Manual install (no npx)</p>
+      <pre><code>git clone https://github.com/glebis/confide
+cp -r confide/skills/session-anonymizer ~/.claude/skills/   # or your agent's skills dir
+cd ~/.claude/skills/session-anonymizer &amp;&amp; ./setup.sh</code></pre>
+
+      <div class="flyout">
+        <div class="t">consent first</div>
+        <p>The skill is local-first by design, but it never replaces <strong>explicit, informed client consent</strong> for recording and processing a real session. De-identification is harm-reduction, not anonymization — see <a href="/about#ethics">our ethics &amp; consent stance</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ornament">:::</div>
+
+  <section id="red">
+    <div class="wrap prose">
+      <p class="eyebrow">The red-team</p>
+      <h2>CONFIDE-Red — try to re-identify what survived</h2>
+      <p>Removing names is routinely mistaken for "safe." CONFIDE-Red is the adversary that checks: it runs the three GDPR Article-29 attacks against the <em>redacted</em> output and reports what a motivated reader could still recover.</p>
+      <div class="cards" style="margin:1.4rem 0">
+        <div class="card risk">
+          <h3>Inference</h3>
+          <p>A local LLM attacker, given only the masked transcript, guesses the client's attributes (top-k). A weak local model is a lower bound — a frontier model recovers more.</p>
+        </div>
+        <div class="card risk">
+          <h3>Singling-out</h3>
+          <p>Do the surviving quasi-identifiers, combined, narrow the population to one person? Estimated against sourced priors (illustrative on synthetic personas, not a probability).</p>
+        </div>
+        <div class="card risk">
+          <h3>Linkability</h3>
+          <p>Can two redacted sessions be matched as the same person? Reported as a pairwise ROC&nbsp;AUC — at or below chance (0.50) is the safe direction.</p>
+        </div>
+      </div>
+      <p>This is the same attack suite behind the report's <a href="/report/benchmark-report.html#regulatory">residual-risk (RED) tier</a>. It's why we say the honest part out loud: even the best stack leaves a re-identification surface, and CONFIDE-Red is how you measure it before a session ever leaves the room.</p>
+      <p class="cmd-label">Run it (from the repo)</p>
+      <pre><code>git clone https://github.com/glebis/confide &amp;&amp; cd confide
+python -m confide_eval.redteam.confide_red --dataset ru</code></pre>
+      <div class="cta">
+        <a class="btn" href={GH}>Code &amp; docs on GitHub</a>
+        <a class="btn" href="/benchmark">How the benchmark works</a>
+        <a class="btn btn-primary" href="/contribute">Contribute</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -449,6 +449,7 @@ footer a {{ color:var(--ink-light); }}
 <h1>{t("CONFIDE-Bench — Which Layer Earns Its Compute?")}</h1>
 <p class="sub">{t("A bilingual de-identification benchmark for psychotherapy transcripts.")}</p>
 <p class="credit">{t('<strong>CONFIDE</strong> · {repo} · by {author} &amp; CONFIDE contributors · released for research &amp; teaching under the repository license. {synth}', repo='<a href="https://github.com/glebis/confide">github.com/glebis/confide</a>', author='<a href="https://github.com/glebis">Gleb Kalinin</a>', synth=synth_note)}</p>
+<p class="credit">{t('Project site, plain-language explainer &amp; how to contribute: {site}.', site='<a href="https://confide.salient.community">confide.salient.community</a>')}</p>
 <p class="tags">TAB · i2b2/n2c2 · Presidio-F2 · Datasheets&nbsp;for&nbsp;Datasets</p>
 <p class="provenance">{t('LLM detector layer (<code>ollama</code>) &amp; local attacker: <strong>Qwen2.5-3B-Instruct</strong> (<code>{model}</code>) via Ollama, temperature&nbsp;0. Deterministic layers: <strong>Natasha</strong> (Russian NER), a bilingual <strong>regex</strong> layer, and the <strong>OpenAI Privacy&nbsp;Filter</strong> (English).', model=OLLAMA_MODEL)}</p>
 
