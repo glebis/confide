@@ -34,9 +34,14 @@ work — useful, honestly-scoped, and improvable by anyone.
 
 ## Data & ethics
 
-- All shipped transcripts are **synthetic and fictional** — no real patients. See
-  `docs/DATASHEET.md` (provenance) and `docs/ETHICS.md` (ethics statement, dual-use, and
-  the strict conditions for any future use of real session data).
+- **Session transcripts** (therapy / coaching / mentoring) are **synthetic and fictional**
+  — no real patients. Two non-session real-text slices are also included for de-id
+  evaluation: the **RU-real / JayGuard** slice (`data/sessions-ru-real/`) is **real-world,
+  anonymized, non-therapy** conversational Russian text (a real-text proxy, not clinical
+  sessions), and the **EN-real / AI4Privacy** slice is **fetched locally, not redistributed
+  here** (see its fetch instructions). See `docs/DATASHEET.md` (provenance) and
+  `docs/ETHICS.md` (ethics statement, dual-use, and the strict conditions for any future
+  use of real session data).
 
 ## How to cite (if you must)
 
