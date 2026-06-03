@@ -114,7 +114,12 @@ lab — scrutiny, corrections, and especially **annotation help** are what make 
 trustworthy. The gold standard needs independent human annotators (see the bilingual
 [`docs/CALL-FOR-VOLUNTEERS.md`](https://github.com/glebis/confide/blob/main/docs/CALL-FOR-VOLUNTEERS.md) and the turnkey tooling:
 `tools/annotator.html` + `docs/ANNOTATION-CODEBOOK.md`). Start at
-[`CONTRIBUTING.md`](https://github.com/glebis/confide/blob/main/CONTRIBUTING.md).
+[`CONTRIBUTING.md`](https://github.com/glebis/confide/blob/main/CONTRIBUTING.md); contributors are
+credited in [`CONTRIBUTORS.md`](https://github.com/glebis/confide/blob/main/CONTRIBUTORS.md).
+
+**Found a leak or a re-identification technique?** That counts as a security issue here —
+report it **privately** (never post real PII or a re-id recipe in a public issue). See
+[`SECURITY.md`](https://github.com/glebis/confide/blob/main/SECURITY.md) for coordinated disclosure.
 
 ## Reproducibility & honest reporting
 
