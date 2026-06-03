@@ -48,7 +48,7 @@ const layers = [
               <td>{d.name} <span class={`pill ${d.kind === 'real' ? 'amber' : 'green'}`}>{d.kind}</span></td>
               <td>{d.docs}</td>
               <td>{d.gold}</td>
-              <td style="text-align:left; font-family:'EB Garamond',serif">{d.what}</td>
+              <td style="text-align:left; font-family:'EB Garamond',serif" set:html={d.what}></td>
             </tr>
           ))}
         </tbody>
@@ -64,7 +64,7 @@ const layers = [
         {layers.map(([name, desc, kind]) => (
           <div class={`card ${kind === 'LLM' ? 'layered' : ''}`}>
             <h3>{name}</h3>
-            <p>{desc}</p>
+            <p set:html={desc}></p>
           </div>
         ))}
       </div>
@@ -81,7 +81,7 @@ const layers = [
           {metrics.map(([k, v, d]) => (
             <tr>
               <td><code>{k}</code></td>
-              <td style="text-align:left; font-family:'EB Garamond',serif">{v}</td>
+              <td style="text-align:left; font-family:'EB Garamond',serif" set:html={v}></td>
               <td style="text-align:left; font-family:'EB Garamond',serif" class="note">{d}</td>
             </tr>
           ))}
