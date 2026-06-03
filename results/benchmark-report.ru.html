@@ -58,6 +58,13 @@ code { font-family:'Monaspace Argon',monospace; font-size:.82em; background:#f0e
 .credit a { color:var(--accent); text-decoration:none; border-bottom:1px solid #e5cccc; }
 .credit a:hover { border-bottom-color:var(--accent); }
 .provenance { font-size:.85rem; color:var(--ink-light); margin:.1rem 0 1rem; line-height:1.5; }
+.intro { border:1px solid var(--rule); background:var(--bg-aside); padding:1.1rem 1.3rem; margin:1.6rem 0; }
+.intro .tldr { font-size:1.18rem; margin:0 0 .85rem; line-height:1.45; }
+.wwn { display:grid; grid-template-columns:max-content 1fr; gap:.4rem 1.1rem; margin:0; font-size:.96rem; }
+.wwn dt { font-variant:small-caps; letter-spacing:.04em; color:var(--accent); white-space:nowrap; }
+.wwn dd { margin:0; color:var(--ink-light); } .wwn dd strong { color:var(--ink); }
+.howto { font-size:.88rem; color:var(--ink-light); margin:.95rem 0 0; border-top:1px solid var(--rule); padding-top:.7rem; }
+@media(max-width:800px){ .wwn { grid-template-columns:1fr; gap:.05rem .5rem; } .wwn dt { margin-top:.45rem; } }
 .refs { font-size:.9rem; line-height:1.5; }
 .refs h3 { font-size:1rem; font-variant:small-caps; letter-spacing:.04em; color:var(--ink); margin:1.4rem 0 .5rem; border-bottom:1px solid #eee; padding-bottom:.2rem; }
 .refs ul { list-style:none; margin:.2rem 0 1rem; padding:0; }
@@ -75,6 +82,17 @@ footer a { color:var(--ink-light); }
 <p class="credit"><strong>CONFIDE</strong> · <a href="https://github.com/glebis/confide">github.com/glebis/confide</a> · автор <a href="https://github.com/glebis">Gleb Kalinin</a> &amp; участники CONFIDE · опубликовано для исследований &amp; обучения под лицензией репозитория. Все транскрипты синтетические/вымышленные — никаких реальных данных пациентов.</p>
 <p class="tags">TAB · i2b2/n2c2 · Presidio-F2 · Datasheets&nbsp;for&nbsp;Datasets</p>
 <p class="provenance">Слой-детектор на базе LLM (<code>ollama</code>) &amp; локальный атакующий: <strong>Qwen2.5-3B-Instruct</strong> (<code>qwen2.5:3b</code>) через Ollama, температура&nbsp;0. Детерминированные слои: <strong>Natasha</strong> (NER для русского), двуязычный <strong>regex</strong>-слой и <strong>OpenAI Privacy&nbsp;Filter</strong> (английский).</p>
+
+<div class="intro">
+<p class="tldr"><strong>TL;DR —</strong> мы проверяем, насколько хорошо автоматические инструменты приватности скрывают личные данные в транскриптах психотерапевтических сессий (на русском и английском) и какая комбинация инструментов оправдывает свои вычисления.</p>
+<dl class="wwn">
+  <dt>Что мы измеряем</dt><dd>Действительно ли маска редактирования покрыла каждый фрагмент личных данных? — приоритет полноты, ведь пропуск означает утечку данных.</dd>
+  <dt>Почему это важно</dt><dd>Текст терапии крайне чувствителен; одно нескрытое имя, телефон или название препарата может реидентифицировать клиента.</dd>
+  <dt>Чем это НЕ является</dt><dd><strong>Это не сертификат соответствия HIPAA/GDPR.</strong> Все транскрипты синтетические/вымышленные, а выборки малы — относитесь к результатам как к ориентировочным.</dd>
+  <dt>Для кого это</dt><dd>Для всех, кто выбирает или создаёт конвейер деидентификации для клинического или терапевтического текста.</dd>
+</dl>
+<p class="howto"><strong>Как это читать:</strong> ★ отмечает рекомендуемый дефолтный стек · столбцы показывают покрытие (больше — лучше) · пустой столбец означает, что эта комбинация не запускалась для данного языка · у каждой таблицы есть ключ с расшифровкой сокращений.</p>
+</div>
 
 <div class="status-strip">
   <div class="status-cell b"><div class="status-label">датасеты</div><div class="status-value">4</div><div class="status-note">RU · RU-adv · EN · EN-real</div></div>
