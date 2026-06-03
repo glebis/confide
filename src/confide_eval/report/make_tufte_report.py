@@ -58,6 +58,7 @@ RU = load("ru-bench-results.json")
 EN = load("en-bench-results.json")
 ENR = load("en-real-bench-results.json")
 RUADV = load("ru-adv-bench-results.json")
+RUREAL = load("ru-real-bench-results.json")   # external real-text RU anchor (JayGuard, Apache-2.0)
 REC = load("reconstruction-results.json")
 PU = load("privacy-utility-results.json")
 REG = load("regulatory-results.json")
@@ -125,6 +126,7 @@ DATA = {
     "ru_leaderboard": leaderboard_data(RU) if RU else [],
     "en_leaderboard": leaderboard_data(EN) if EN else [],
     "enr_leaderboard": leaderboard_data(ENR) if ENR else [],
+    "rureal_leaderboard": leaderboard_data(RUREAL) if RUREAL else [],
     "ru_whocatches": per_type_compare(RU, "natasha+regex", "natasha+regex+ollama ★") if RU else {},
     "en_baselines": baselines_data(EN),
     "enr_baselines": baselines_data(ENR),
@@ -347,6 +349,24 @@ def build_html(lang):
   else:
       enr_table_block = enr_bullet = enr_base_block = enr_aside = ""
       baselines_stateline = t("Off-the-shelf de-identifiers can match the stack on <strong>coverage</strong> but fall far behind on <strong>type-aware micro-F1</strong>.")
+  # RU-real (JayGuard): external, anonymized, real-but-non-clinical RU text — the
+  # Russian counterpart to the (removed) en-real anchor. Rendered only when present.
+  if RUREAL:
+      rr_docs = RUREAL["n_docs"]
+      rr_gold = RUREAL["n_gold_mentions"]
+      rureal_block = (f'<p class="sub-h">{t("RU-real (JayGuard slice) — {docs} docs, {gold} gold mentions", docs=rr_docs, gold=rr_gold)} '
+                      f'<span class="note-inline">{t("(external, anonymized, real-but-non-clinical Russian text — Apache-2.0; PERSON/LOCATION only, machine-derived gold, not human-adjudicated)")}</span></p>\n'
+                      + leaderboard_table(RUREAL, "RU-real"))
+      rureal_bullet = f'<p>{t("<strong>RU-real (JayGuard):</strong> on external real Russian text the local stack reaches strong coverage — a real-text anchor for the otherwise-synthetic RU corpus (PERSON/LOCATION only).")}</p>'
+  else:
+      rureal_block = rureal_bullet = ""
+  # Disclaimer adapts to whether a real-text slice is included.
+  if RUREAL:
+      whatisnot = t("<strong>Not a HIPAA/GDPR compliance certificate.</strong> The therapy transcripts are synthetic/fictional and samples are small — treat results as directional. The one real-text exception is the external RU-real (JayGuard) slice: anonymized, non-clinical public data.")
+      synth_note = t("Therapy transcripts are synthetic/fictional — no real patient data; the one real-text slice (RU-real / JayGuard) is external, anonymized, non-clinical public data.")
+  else:
+      whatisnot = t("<strong>Not a HIPAA/GDPR compliance certificate.</strong> All transcripts are synthetic/fictional and samples are small — treat results as directional.")
+      synth_note = t("All transcripts are synthetic/fictional — no real patient data.")
   return f"""<!DOCTYPE html>
 <html lang="{lang}"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -428,7 +448,7 @@ footer a {{ color:var(--ink-light); }}
 
 <h1>{t("CONFIDE-Bench — Which Layer Earns Its Compute?")}</h1>
 <p class="sub">{t("A bilingual de-identification benchmark for psychotherapy transcripts.")}</p>
-<p class="credit">{t('<strong>CONFIDE</strong> · {repo} · by {author} &amp; CONFIDE contributors · released for research &amp; teaching under the repository license. All transcripts are synthetic/fictional — no real patient data.', repo='<a href="https://github.com/glebis/confide">github.com/glebis/confide</a>', author='<a href="https://github.com/glebis">Gleb Kalinin</a>')}</p>
+<p class="credit">{t('<strong>CONFIDE</strong> · {repo} · by {author} &amp; CONFIDE contributors · released for research &amp; teaching under the repository license. {synth}', repo='<a href="https://github.com/glebis/confide">github.com/glebis/confide</a>', author='<a href="https://github.com/glebis">Gleb Kalinin</a>', synth=synth_note)}</p>
 <p class="tags">TAB · i2b2/n2c2 · Presidio-F2 · Datasheets&nbsp;for&nbsp;Datasets</p>
 <p class="provenance">{t('LLM detector layer (<code>ollama</code>) &amp; local attacker: <strong>Qwen2.5-3B-Instruct</strong> (<code>{model}</code>) via Ollama, temperature&nbsp;0. Deterministic layers: <strong>Natasha</strong> (Russian NER), a bilingual <strong>regex</strong> layer, and the <strong>OpenAI Privacy&nbsp;Filter</strong> (English).', model=OLLAMA_MODEL)}</p>
 
@@ -437,14 +457,14 @@ footer a {{ color:var(--ink-light); }}
 <dl class="wwn">
   <dt>{t("What we measure")}</dt><dd>{t("Did the redaction mask actually cover each piece of personal information? — recall-first, because a miss is leaked data.")}</dd>
   <dt>{t("Why it matters")}</dt><dd>{t("Therapy text is deeply sensitive; one un-hidden name, phone, or medication can re-identify a client.")}</dd>
-  <dt>{t("What it is NOT")}</dt><dd>{t("<strong>Not a HIPAA/GDPR compliance certificate.</strong> All transcripts are synthetic/fictional and samples are small — treat results as directional.")}</dd>
+  <dt>{t("What it is NOT")}</dt><dd>{whatisnot}</dd>
   <dt>{t("Who it is for")}</dt><dd>{t("Anyone choosing or building a de-identification pipeline for clinical or therapy text.")}</dd>
 </dl>
 <p class="howto"><strong>{t("How to read this")}:</strong> {t("★ marks the recommended default stack · bars show coverage (higher is better) · a blank bar means that combination was not run for that language · every table has a column key explaining its abbreviations.")}</p>
 </div>
 
 <div class="status-strip">
-  <div class="status-cell b"><div class="status-label">{t("datasets")}</div><div class="status-value">4</div><div class="status-note">RU · RU-adv · EN · EN-real</div></div>
+  <div class="status-cell b"><div class="status-label">{t("datasets")}</div><div class="status-value">4</div><div class="status-note">RU · RU-adv · EN · RU-real</div></div>
   <div class="status-cell b"><div class="status-label">{t("combos × dataset")}</div><div class="status-value">{n_combos}</div><div class="status-note">{t("union-composed ablation")}</div></div>
   <div class="status-cell g"><div class="status-label">{t("RU default recall")}</div><div class="status-value">{ru_default_r:.0%}</div><div class="status-note">{RU_STAR}</div></div>
   <div class="status-cell r"><div class="status-label">{t("quasi-ID survival")}</div><div class="status-value">{surv_comb:.0%}</div><div class="status-note">{t("both clients · re-id surface")}</div></div>
@@ -478,9 +498,12 @@ footer a {{ color:var(--ink-light); }}
   <div class="t">{t("why they differ")}</div>
   <p>{t("<strong>RU:</strong> the proposed default <code>{star}</code> reaches {r} coverage recall. {opf_note}", star=RU_STAR, r=f"{ru_default_r:.0%}", opf_note=ru_opf_note)}</p>
   <p>{t("<strong>EN-synth:</strong> OPF is the name/address backbone (English&rsquo;s Natasha). Default <code>{star}</code>; <code>opf+regex</code> edges it on F2.", star=EN_STAR)}</p>
-  {enr_bullet}</div>
+  {enr_bullet}
+  {rureal_bullet}</div>
 </div>
 {leaderboard_table(RU, "RU") if RU else ""}
+
+{rureal_block}
 
 <p class="sub-h">{t("EN-synth — {docs} docs, {gold} gold mentions", docs=en_docs, gold=en_gold)} <span class="note-inline">{t("(no entity-level / direct-quasi: the EN sets carry no per-entity <code>entity_id</code> annotation, so only mention-level coverage is scored)")}</span></p>
 {leaderboard_table(EN, "EN") if EN else ""}
@@ -563,11 +586,11 @@ footer a {{ color:var(--ink-light); }}
 
 <div class="ornament">:::</div>
 
-<h2 id="regulatory">7. {t("Regulatory residual-risk (RU · EN · EN-real)")}</h2>
+<h2 id="regulatory">7. {t("Regulatory residual-risk (RU · EN)")}</h2>
 <p class="state-line">{t("Detection metrics measure what we catch; regulators care what <em>survives</em>. Mapped onto named risks, the RU default stack lands at <strong>{tier}</strong> — driven by {direct} in-scope residual direct-identifier {word} (a re-identification key left in the text). A further {oos} are spelled-out digit IDs, out of scope for the regex layer by design and reported separately.", tier=reg_tier, direct=reg_direct, word=reg_entity_word, oos=reg_oos)}</p>
 <p class="sub-h">{t("All datasets, side by side")}</p>
 {regulatory_compare_table()}
-<p class="caption" style="text-align:left">{t("Per-language residual-risk tier under each language's ★ default stack. RU lands <strong>RED</strong> (direct identifiers leak at the strict TAB entity bar); EN/EN-real land <strong>AMBER</strong> (no direct-ID leak, but nonzero inference / incomplete HIPAA coverage). EN's worst-doc recall reads 0% because its tiny gold means one PII-bearing doc can be missed entirely — small-N noise, not a systematic EN failure. The RU detail follows.")}</p>
+<p class="caption" style="text-align:left">{t("Per-language residual-risk tier under each language's ★ default stack. RU lands <strong>RED</strong> (direct identifiers leak at the strict TAB entity bar); EN lands <strong>AMBER</strong> (no direct-ID leak, but nonzero inference / incomplete HIPAA coverage). EN's worst-doc recall reads 0% because its tiny gold means one PII-bearing doc can be missed entirely — small-N noise, not a systematic EN failure. The RU detail follows.")}</p>
 <div class="status-strip">
   <div class="status-cell {reg_tier_class}"><div class="status-label">{t("residual-risk tier")}</div><div class="status-value">{reg_tier}</div><div class="status-note">{t("ordinal R/A/G · RU ★ stack")}</div></div>
   <div class="status-cell b"><div class="status-label">{t("HIPAA-inspired coverage")}</div><div class="status-value">{reg_hip_pass}/{reg_hip_app}</div><div class="status-note">{t("categories fully removed")}</div></div>
@@ -584,7 +607,7 @@ footer a {{ color:var(--ink-light); }}
 </div>
 
 <div class="flyout"><div class="t">{t("methodology")}</div>
-<p>{t("Each detector runs once per dataset; combinations are span-unions of cached spans, interval-merged to the deployed redaction mask before scoring. This report headlines <strong>coverage recall</strong> (relaxed overlap) — the privacy-critical number — and recall-weighted <strong>F2</strong> + precision sit in the leaderboard table. Type-aware micro/macro-F1 (i2b2) and entity-level recall (TAB; all mentions masked) are also reported. Numbers are mention-level unless marked entity-level. Gold for RU is located from the two answer-key PII inventories and hand-verified (a planted-signal recovery eval, not independently annotated gold); English reuses curated + real ai4privacy slices. Synthetic data — no real patients. Small N: treat per-type numbers as directional.")}</p></div>
+<p>{t("Each detector runs once per dataset; combinations are span-unions of cached spans, interval-merged to the deployed redaction mask before scoring. This report headlines <strong>coverage recall</strong> (relaxed overlap) — the privacy-critical number — and recall-weighted <strong>F2</strong> + precision sit in the leaderboard table. Type-aware micro/macro-F1 (i2b2) and entity-level recall (TAB; all mentions masked) are also reported. Numbers are mention-level unless marked entity-level. Gold for RU is located from the two answer-key PII inventories and hand-verified (a planted-signal recovery eval, not independently annotated gold); the EN set is a curated synthetic slice, and the one real-text anchor is the external RU-real (JayGuard) slice. Mostly synthetic data — no real patients. Small N: treat per-type numbers as directional.")}</p></div>
 
 <h2 id="references">{t("References &amp; credits")}</h2>
 <div class="refs prose">
@@ -618,7 +641,7 @@ footer a {{ color:var(--ink-light); }}
 
 <h3>{t("Datasets")}</h3>
 <ul>
-  <li><strong>ai4privacy / pii-masking-300k.</strong> {t("Multilingual synthetic PII dataset; the EN-real validation slice is drawn from it.")} <span class="meta">{t("License is custom/<code>other</code> (see the dataset's <code>license.md</code>) — verify before redistributing.")}</span> <a href="https://huggingface.co/datasets/ai4privacy/pii-masking-300k">huggingface.co/datasets/ai4privacy/pii-masking-300k</a></li>
+  <li><strong>JayGuard NER Benchmark.</strong> Just&nbsp;AI (2025), Hugging&nbsp;Face Datasets. <span class="meta">{t("External, anonymized, real-but-non-clinical conversational Russian PII dataset (Apache-2.0); the RU-real slice is built from it (PERSON/LOCATION). Used with attribution as required by the licence.")}</span> <a href="https://huggingface.co/datasets/just-ai/jayguard-ner-benchmark">huggingface.co/datasets/just-ai/jayguard-ner-benchmark</a></li>
 </ul>
 
 <h3>{t("Documentation &amp; regulatory framing")}</h3>
@@ -634,7 +657,7 @@ footer a {{ color:var(--ink-light); }}
 
 <script>
 const DATA = {json.dumps(DATA, ensure_ascii=False)};
-const C1='#c45a28', C2='#2a7a5a', C3='#5a5aaa', INK='#1a1a1a', MUTE='#888';
+const C1='#c45a28', C2='#2a7a5a', C3='#5a5aaa', C4='#8a3a5a', INK='#1a1a1a', MUTE='#888';
 Chart.defaults.font.family='EB Garamond, serif'; Chart.defaults.font.size=13; Chart.defaults.color=INK;
 Chart.defaults.animation=false;            // Tufte: no gratuitous motion; also stops re-animation cycling
 Chart.defaults.animations.colors=false; Chart.defaults.animations.x=false; Chart.defaults.animations.y=false;
@@ -655,7 +678,7 @@ Chart.defaults.responsiveAnimationDuration=0;
 // 2. leaderboards (horizontal bars, plotted datasets overlaid by combo recall)
 (function(){{
  // only plot datasets that actually have data (e.g. EN-real is omitted when not built)
- const sets=[['RU',DATA.ru_leaderboard,C2],['EN',DATA.en_leaderboard,C1],['EN-real',DATA.enr_leaderboard,C3]].filter(s=>s[1] && s[1].length);
+ const sets=[['RU',DATA.ru_leaderboard,C2],['RU-real',DATA.rureal_leaderboard,C4],['EN',DATA.en_leaderboard,C1],['EN-real',DATA.enr_leaderboard,C3]].filter(s=>s[1] && s[1].length);
  const labels=[]; sets.forEach(([_,rows])=>rows.forEach(r=>{{if(!labels.includes(r.combo))labels.push(r.combo);}}));
  const datasets=sets.map(([name,rows,col])=>({{label:name,
    data:labels.map(l=>{{const r=rows.find(x=>x.combo===l);return r?+r.recall.toFixed(3):null}}),
