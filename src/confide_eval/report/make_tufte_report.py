@@ -1,19 +1,52 @@
 #!/usr/bin/env python3
-"""Generate a standalone Tufte-style HTML report from the benchmark JSONs.
+"""Generate the standalone Tufte-style HTML benchmark report(s) from the JSONs.
 
-Reads ru/en/en-real-bench-results.json + reconstruction-results.json and emits
-results/benchmark-report.html — one file, no build step, Chart.js via CDN.
-Re-run after re-scoring (e.g. once OPF-RU lands) to refresh.
+Reads ru/ru-adv/en/en-real-bench-results.json + reconstruction / privacy-utility
+/ regulatory results and emits one HTML per language under results/
+(benchmark-report.html, benchmark-report.ru.html, ...) — no build step, Chart.js
+via CDN. Re-run after re-scoring to refresh.
 
 Design follows the tufte-report skill design tokens (EB Garamond + Monaspace
 Argon, warm-white bg, 3-color semantic palette, state-lines, asides).
+
+Localisation: all reports are generated from this one source. English is the
+canonical msgid; each ``report/translations.<lang>.json`` adds a language. Prose
+is wrapped in ``t(...)`` (see ``confide_eval.report.i18n``); numbers interpolate
+via ``.format`` AFTER lookup, so they never enter the catalog key. Adding a
+language = dropping a new ``translations.<lang>.json``; the generator emits one
+HTML per language and warns on any English fallback (incomplete catalog).
 """
 import json
 import os
 
 from confide_eval import paths
+from confide_eval.report.i18n import languages, missing, set_lang, t
 
 HERE = os.fspath(paths.RESULTS)
+
+# The local LLM detector layer ("ollama") and the local re-identification
+# attacker are the same model: Qwen2.5-3B-Instruct, run locally via Ollama at
+# temperature 0 (run-benchmark.sh LLM_MODEL default). The separate qwen3-32b /
+# Groq runs are cloud comparison experiments, not part of these published tables.
+OLLAMA_MODEL = "qwen2.5:3b"          # Qwen2.5-3B-Instruct, local Ollama, temp 0
+
+# Column glossary for the leaderboard tables: header -> (tooltip, direction).
+# direction in {"↑" higher-is-better, "↓" lower-is-better, "·" neutral/context}.
+COL_GLOSSARY = {
+    "cov R": ("Mask-coverage recall (relaxed, ≥1-char overlap): fraction of gold "
+              "PII spans the redaction mask touched at all. A miss = leaked PII.", "↑"),
+    "cov F2": ("Mask-coverage F2 (recall-weighted, β=2): recall counts 2× precision, "
+               "because a missed entity leaks PII while a false positive only "
+               "over-redacts.", "↑"),
+    "ent R": ("Entity-level recall (TAB): an entity counts as protected only if ALL "
+              "its mentions are masked — one un-redacted recurrence is a leak.", "↑"),
+    "direct": ("Entity recall for direct identifiers (name, phone, email, policy/ID).", "↑"),
+    "quasi": ("Entity recall for quasi-identifiers (age, profession, city, employer, "
+              "medication, date) — the combinable re-identification surface.", "↑"),
+    "preds": ("Number of predicted spans the stack emitted (redaction volume). "
+              "Context, not a score: more masking trades precision for recall.", "·"),
+}
+DIR_WORD = {"↑": "higher is better", "↓": "lower is better", "·": "context"}
 
 
 def load(name):
@@ -62,18 +95,18 @@ def per_type_compare(res, combo_a, combo_b):
     """recall per type for two combos (for the 'who catches what' chart)."""
     ca = dict(res["combos"][combo_a]["coverage_relaxed_per_type"])
     cb = dict(res["combos"][combo_b]["coverage_relaxed_per_type"])
-    types = sorted({t for t in (ca | cb) if (ca.get(t, {}).get("support") or cb.get(t, {}).get("support"))})
+    types = sorted({k for k in (ca | cb) if (ca.get(k, {}).get("support") or cb.get(k, {}).get("support"))})
     return {"types": types,
-            "a": [round(ca.get(t, {}).get("r", 0.0), 3) for t in types],
-            "b": [round(cb.get(t, {}).get("r", 0.0), 3) for t in types],
+            "a": [round(ca.get(k, {}).get("r", 0.0), 3) for k in types],
+            "b": [round(cb.get(k, {}).get("r", 0.0), 3) for k in types],
             "a_name": combo_a, "b_name": combo_b}
 
 
 def baselines_data(res):
     """Coverage-F2 (headline) + type-aware micro-F1 for the 4 EN comparison combos:
     the CONFIDE ★ stack vs the established off-the-shelf baselines (Presidio, Philter)
-    and the Presidio-in-the-stack ensemble. Drives the 'stack vs baselines' chart
-    (BENCHMARK.md GRAPHICS-TODO). Missing combos are skipped."""
+    and the Presidio-in-the-stack ensemble. Drives the 'stack vs baselines' chart.
+    Missing combos are skipped."""
     if not res:
         return {}
     order = ["opf+regex+ollama ★", "presidio", "philter", "presidio+regex+ollama"]
@@ -98,6 +131,7 @@ DATA = {
     "reconstruction": REC or {},
 }
 
+
 # default combo name per dataset (the ★ one)
 def star_name(res):
     for n in res["combos"]:
@@ -105,9 +139,11 @@ def star_name(res):
             return n
     return ""
 
+
 RU_STAR = star_name(RU) if RU else ""
 EN_STAR = star_name(EN) if EN else ""
 ENR_STAR = star_name(ENR) if ENR else ""
+
 
 # headline numbers
 def star_recall(res):
@@ -116,9 +152,11 @@ def star_recall(res):
             return e["coverage_relaxed"]["r"]
     return 0.0
 
+
 def combo_recall(res, name):
     e = res["combos"].get(name, {})
     return e["coverage_relaxed"]["r"] if "coverage_relaxed" in e else 0.0
+
 
 ru_default_r = star_recall(RU) if RU else 0.0            # the proposed default's recall
 ru_opf_r = combo_recall(RU, "opf+natasha+regex+ollama") if RU else 0.0
@@ -171,30 +209,54 @@ else:
     reg_wc_min = 0.0
 reg_tier_class = {"RED": "r", "AMBER": "a", "GREEN": "g"}.get(reg_tier, "b")
 
+
 # RU default per-type fn list for the flyout
 def llm_required_line():
     if not RU:
         return ""
     nr = RU["combos"]["natasha+regex"]["coverage_relaxed_per_type"]
     bits = []
-    for t in ("AGE", "MEDICATION", "PROFESSION"):
-        if t in nr:
-            bits.append(f"{t.lower()} {nr[t]['r']:.0%}")
+    for ty in ("AGE", "MEDICATION", "PROFESSION"):
+        if ty in nr:
+            bits.append(f"{ty.lower()} {nr[ty]['r']:.0%}")
     return ", ".join(bits)
+
+
+def _th(col):
+    """Column header carrying its glossary tooltip + a higher/lower-is-better
+    arrow, so every abbreviation is self-explaining on hover and at a glance."""
+    tip, direction = COL_GLOSSARY[col]
+    label = col.replace(" ", "&nbsp;")
+    arrow = f"<span class='dir'>{direction}</span>" if direction != "·" else ""
+    full = f"{t(tip)} ({t(DIR_WORD[direction])})"
+    return f"<th title=\"{full}\" aria-label=\"{full}\">{label}{arrow}</th>"
+
+
+def _legend(cols):
+    """Visible (printable) glossary under the table — tooltips alone vanish in
+    print/PDF, and the column key states higher/lower-is-better explicitly."""
+    items = []
+    for c in cols:
+        tip, direction = COL_GLOSSARY[c]
+        items.append(f"<li><b>{c}</b> <span class='dir'>{direction}</span> "
+                     f"<span class='dw'>({t(DIR_WORD[direction])})</span> — {t(tip)}</li>")
+    return (f"<details class='col-legend'><summary>{t('column key — what each '
+            'abbreviation means, and which direction is better')}</summary>"
+            f"<ul>{''.join(items)}</ul></details>")
 
 
 def leaderboard_table(res, title):
     rows = combos_clean(res)
     has_ent = any("entity_level" in e for _, e in rows)
-    head = "<tr><th style='text-align:left'>combo</th><th>cov&nbsp;R</th><th>cov&nbsp;F2</th>"
-    if has_ent:
-        head += "<th>ent&nbsp;R</th><th>direct</th><th>quasi</th>"
-    head += "<th>preds</th></tr>"
+    cols = ["cov R", "cov F2"] + (["ent R", "direct", "quasi"] if has_ent else []) + ["preds"]
+    head = "<tr><th style='text-align:left'>combo</th>" + "".join(_th(c) for c in cols) + "</tr>"
     body = []
     for n, e in rows:
         cls = " class='highlight-row'" if "★" in n else ""
         cr = e["coverage_relaxed"]
-        cells = [f"<td style='text-align:left'>{n}</td>",
+        # name the model behind the "ollama" layer inline.
+        disp = n.replace("ollama", f"ollama·{OLLAMA_MODEL}") if "ollama" in n else n
+        cells = [f"<td style='text-align:left'>{disp}</td>",
                  f"<td>{cr['r']:.3f}</td>", f"<td>{cr['f2']:.3f}</td>"]
         if has_ent and "entity_level" in e:
             el = e["entity_level"]
@@ -206,13 +268,75 @@ def leaderboard_table(res, title):
         cells.append(f"<td>{e['n_pred']}</td>")
         body.append(f"<tr{cls}>" + "".join(cells) + "</tr>")
     return (f"<div class='table-wrapper'><table><thead>{head}</thead>"
-            f"<tbody>{''.join(body)}</tbody></table></div>")
+            f"<tbody>{''.join(body)}</tbody></table></div>{_legend(cols)}")
 
 
-HTML = f"""<!DOCTYPE html>
-<html lang="en"><head>
+def regulatory_compare_table():
+    """All three datasets side by side — the residual-risk tier is a per-language
+    result, but the report previously surfaced only RU. (Audit gap fix.)"""
+    rows = []
+    for ds, label in (("ru", "RU"), ("en", "EN-synth"), ("en-real", "EN-real")):
+        r = (REG or {}).get("datasets", {}).get(ds)
+        if not r:
+            continue
+        tt, hip, wc = r["tier"], r["hipaa"], r["worst_case"]
+        inf = r["wp29"]["inference"]["rate"]
+        roc = r["wp29"]["linkability"].get("roc_auc")
+        tcls = {"RED": "tier-r", "AMBER": "tier-a", "GREEN": "tier-g"}.get(tt["tier"], "")
+        rows.append(
+            f"<tr><td style='text-align:left'>{label}</td>"
+            f"<td><span class='{tcls}'>{tt['tier']}</span></td>"
+            f"<td>{tt['direct_residual']}</td><td>{tt['special_residual']}</td>"
+            f"<td>{hip['passed']}/{hip['applicable']}</td>"
+            f"<td>{wc['min_recall']:.0%}</td>"
+            f"<td>{inf:.0%}</td>"
+            f"<td>{(roc if roc is not None else 0.0):.2f}</td></tr>")
+    if not rows:
+        return ""
+    # tooltips precomputed (translated) so the f-string carries no nested escapes
+    tip_tier = t("Ordinal residual-risk tier: RED=a direct identifier leaks at entity level; AMBER=special-category residual / nonzero inference / linkability above chance; GREEN=all clear (lower is better)")
+    tip_direct = t("Direct-identifier entities still leaking at entity level — each is a re-identification key (lower is better)")
+    tip_special = t("Special-category (sensitive) residual entities still leaking (lower is better)")
+    tip_hipaa = t("HIPAA-inspired Safe-Harbor categories fully removed / applicable — illustrative, not a legal determination (higher is better)")
+    tip_worst = t("Worst single document's containment recall — the weakest doc, not the average (higher is better)")
+    tip_inf = t("Attribute-recovery inference attack success rate on redacted text (lower is better)")
+    tip_link = t("Pairwise session-linking ROC AUC; 0.50 = chance, which is the safe direction (lower/≈0.50 is better)")
+    head = (f"<tr><th style='text-align:left'>{t('dataset')}</th>"
+            f"<th title=\"{tip_tier}\">tier</th>"
+            f"<th title=\"{tip_direct}\">direct&nbsp;res</th>"
+            f"<th title=\"{tip_special}\">special&nbsp;res</th>"
+            f"<th title=\"{tip_hipaa}\">HIPAA</th>"
+            f"<th title=\"{tip_worst}\">worst&nbsp;doc</th>"
+            f"<th title=\"{tip_inf}\">inf&nbsp;rate</th>"
+            f"<th title=\"{tip_link}\">link&nbsp;AUC</th></tr>")
+    return (f"<div class='table-wrapper'><table><thead>{head}</thead>"
+            f"<tbody>{''.join(rows)}</tbody></table></div>")
+
+
+def build_html(lang):
+  set_lang(lang)
+  # values interpolated into translated prose (numbers stay out of the catalog key)
+  en_docs = EN["n_docs"] if EN else 0
+  en_gold = EN["n_gold_mentions"] if EN else 0
+  enr_docs = ENR["n_docs"] if ENR else 0
+  enr_gold = ENR["n_gold_mentions"] if ENR else 0
+  radv_docs = RUADV["n_docs"] if RUADV else 0
+  radv_gold = RUADV["n_gold_mentions"] if RUADV else 0
+  adv_caught = (int(round(RUADV["combos"]["natasha+regex+ollama ★"]["entity_level"]["entity_recall"]
+                          * RUADV["n_gold_mentions"])) if RUADV else 0)
+  rec_a = (REC["A_quasi_survival"]["a"]["survival_rate"] if REC else 0)
+  rec_b = (REC["A_quasi_survival"]["b"]["survival_rate"] if REC else 0)
+  reg_entity_word = t("entity") if reg_direct == 1 else t("entities")
+  if ru_opf_valid:
+      ru_opf_note = t("Adding OPF reaches {r}, but OPF is an optional comparison layer "
+                      "rather than the local-first default.", r=format(ru_opf_r, ".0%"))
+  else:
+      ru_opf_note = t("The OPF-on-RU row is omitted until its detector cache is regenerated "
+                      "for the current 30-document corpus.")
+  return f"""<!DOCTYPE html>
+<html lang="{lang}"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CONFIDE-Bench — De-identification Layer Benchmark</title>
+<title>{t("CONFIDE-Bench — De-identification Layer Benchmark")}</title>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <style>
@@ -247,6 +371,19 @@ td {{ font-family:'Monaspace Argon',monospace; font-variant-numeric:tabular-nums
 td:first-child {{ font-family:'EB Garamond',serif; }}
 .highlight-row td {{ background:#f4efe0; }}
 .table-wrapper {{ overflow-x:auto; }}
+th[title] {{ cursor:help; border-bottom:1px dotted var(--ink-muted); }}
+.dir {{ font-family:'Monaspace Argon',monospace; font-size:.7em; color:var(--c2); padding-left:.15em; }}
+.col-legend {{ font-size:.82rem; color:var(--ink-light); margin:.5rem 0 0; }}
+.col-legend summary {{ font-style:italic; color:var(--ink-muted); cursor:pointer; }}
+.col-legend ul {{ list-style:none; margin:.5rem 0 0; padding:0; columns:2; column-gap:2rem; }}
+.col-legend li {{ margin:.3rem 0; break-inside:avoid; line-height:1.4; }}
+.col-legend b {{ font-family:'Monaspace Argon',monospace; font-size:.85em; color:var(--ink); }}
+.col-legend .dw {{ color:var(--ink-muted); font-style:italic; }}
+.sub-h {{ font-variant:small-caps; letter-spacing:.04em; font-size:1.05rem; color:var(--ink); margin:1.6rem 0 .4rem; }}
+.note-inline {{ font-variant:normal; letter-spacing:0; font-size:.82rem; font-style:italic; color:var(--ink-muted); }}
+.tier-r {{ color:var(--red); font-weight:600; }} .tier-a {{ color:var(--amber); font-weight:600; }} .tier-g {{ color:var(--green); font-weight:600; }}
+@media print {{ .col-legend[open] ul, .col-legend ul {{ display:block; }} .col-legend summary {{ display:none; }} }}
+@media(max-width:800px){{ .col-legend ul {{ columns:1; }} }}
 .flyout {{ background:var(--bg-aside); border:1px solid var(--rule); border-left:3px solid var(--accent); padding:1rem 1.2rem; margin:1.4rem 0; }}
 .flyout .t {{ font-variant:small-caps; letter-spacing:.06em; color:var(--accent); font-size:.85rem; margin-bottom:.3rem; }}
 .ornament {{ text-align:center; color:var(--rule); font-family:'Monaspace Argon',monospace; margin:2rem 0; letter-spacing:.3em; }}
@@ -255,6 +392,7 @@ code {{ font-family:'Monaspace Argon',monospace; font-size:.82em; background:#f0
 .credit {{ font-size:.9rem; color:var(--ink-light); margin:.1rem 0 1.2rem; }}
 .credit a {{ color:var(--accent); text-decoration:none; border-bottom:1px solid #e5cccc; }}
 .credit a:hover {{ border-bottom-color:var(--accent); }}
+.provenance {{ font-size:.85rem; color:var(--ink-light); margin:.1rem 0 1rem; line-height:1.5; }}
 .refs {{ font-size:.9rem; line-height:1.5; }}
 .refs h3 {{ font-size:1rem; font-variant:small-caps; letter-spacing:.04em; color:var(--ink); margin:1.4rem 0 .5rem; border-bottom:1px solid #eee; padding-bottom:.2rem; }}
 .refs ul {{ list-style:none; margin:.2rem 0 1rem; padding:0; }}
@@ -267,179 +405,202 @@ footer a {{ color:var(--ink-light); }}
 @media(max-width:800px){{ .status-strip{{grid-template-columns:repeat(2,1fr)}} .aside-container{{grid-template-columns:1fr}} }}
 </style></head><body>
 
-<h1>CONFIDE-Bench — Which Layer Earns Its Compute?</h1>
-<p class="sub">A bilingual de-identification benchmark for psychotherapy transcripts.</p>
-<p class="credit"><strong>CONFIDE</strong> · <a href="https://github.com/glebis/confide">github.com/glebis/confide</a> · by <a href="https://github.com/glebis">Gleb Kalinin</a> &amp; CONFIDE contributors · released for research &amp; teaching under the repository license. All transcripts are synthetic/fictional — no real patient data.</p>
-<p class="tags">sources: ru/ru-adv/en/en-real-bench-results.json · reconstruction-results.json &nbsp;|&nbsp; metrics: TAB · i2b2 · Presidio-F2 · datasheets-for-datasets</p>
+<h1>{t("CONFIDE-Bench — Which Layer Earns Its Compute?")}</h1>
+<p class="sub">{t("A bilingual de-identification benchmark for psychotherapy transcripts.")}</p>
+<p class="credit">{t('<strong>CONFIDE</strong> · {repo} · by {author} &amp; CONFIDE contributors · released for research &amp; teaching under the repository license. All transcripts are synthetic/fictional — no real patient data.', repo='<a href="https://github.com/glebis/confide">github.com/glebis/confide</a>', author='<a href="https://github.com/glebis">Gleb Kalinin</a>')}</p>
+<p class="tags">sources: ru/ru-adv/en/en-real-bench-results.json · reconstruction-results.json · regulatory-results.json &nbsp;|&nbsp; metrics: TAB · i2b2 · Presidio-F2 · datasheets-for-datasets</p>
+<p class="provenance">{t('LLM detector layer (<code>ollama</code>) &amp; local attacker: <strong>Qwen2.5-3B-Instruct</strong> (<code>{model}</code>) via local Ollama, temperature&nbsp;0. Deterministic layers: <strong>Natasha</strong> (RU NER), a bilingual <strong>regex</strong> layer, and the <strong>OpenAI Privacy&nbsp;Filter</strong> (EN). The <code>qwen3-32b</code>/Groq runs elsewhere in the repo are separate cloud experiments, not these tables.', model=OLLAMA_MODEL)}</p>
 
 <div class="status-strip">
-  <div class="status-cell b"><div class="status-label">datasets</div><div class="status-value">4</div><div class="status-note">RU · RU-adv · EN · EN-real</div></div>
-  <div class="status-cell b"><div class="status-label">combos × dataset</div><div class="status-value">{n_combos}</div><div class="status-note">union-composed ablation</div></div>
-  <div class="status-cell g"><div class="status-label">RU default recall</div><div class="status-value">{ru_default_r:.0%}</div><div class="status-note">{RU_STAR}</div></div>
-  <div class="status-cell r"><div class="status-label">quasi-ID survival</div><div class="status-value">{surv_comb:.0%}</div><div class="status-note">both clients · re-id surface</div></div>
+  <div class="status-cell b"><div class="status-label">{t("datasets")}</div><div class="status-value">4</div><div class="status-note">RU · RU-adv · EN · EN-real</div></div>
+  <div class="status-cell b"><div class="status-label">{t("combos × dataset")}</div><div class="status-value">{n_combos}</div><div class="status-note">{t("union-composed ablation")}</div></div>
+  <div class="status-cell g"><div class="status-label">{t("RU default recall")}</div><div class="status-value">{ru_default_r:.0%}</div><div class="status-note">{RU_STAR}</div></div>
+  <div class="status-cell r"><div class="status-label">{t("quasi-ID survival")}</div><div class="status-value">{surv_comb:.0%}</div><div class="status-note">{t("both clients · re-id surface")}</div></div>
 </div>
 
-<p class="lede">De-identification is not one tool but a stack of detectors, and the honest question is which layer pays for the CPU it burns. This benchmark composes detector layers by span-union over psychotherapy transcripts in Russian and English, scores each combination the way published de-id work does — recall-first, entity-level, direct vs quasi — and asks a sharper question than &ldquo;how good is the tool&rdquo;: <em>what can only an LLM catch, and what still leaks after we redact?</em></p>
+<p class="lede">{t("De-identification is not one tool but a stack of detectors, and the honest question is which layer pays for the CPU it burns. This benchmark composes detector layers by span-union over psychotherapy transcripts in Russian and English, scores each combination the way published de-id work does — recall-first, entity-level, direct vs quasi — and asks a sharper question than &ldquo;how good is the tool&rdquo;: <em>what can only an LLM catch, and what still leaks after we redact?</em>")}</p>
 
-<div class="flyout"><div class="t">headline</div>
-<p>Three PII types — <strong>{llm_required_line()}</strong> — are near-zero under the deterministic layers (Natasha&nbsp;NER + regex). Adding the local qwen layer raises their mention-recall, but medication and profession still have very low <em>entity</em>-recall because every mention must be masked. Meanwhile <strong>{surv_comb:.0%}</strong> of quasi-identifiers still survive the default stack. Redaction of direct identifiers is necessary but not sufficient.</p></div>
+<div class="flyout"><div class="t">{t("headline")}</div>
+<p>{t("Three PII types — <strong>{types}</strong> — are near-zero under the deterministic layers (Natasha&nbsp;NER + regex). Adding the local qwen layer raises their mention-recall, but medication and profession still have very low <em>entity</em>-recall because every mention must be masked. Meanwhile <strong>{surv}</strong> of quasi-identifiers still survive the default stack. Redaction of direct identifiers is necessary but not sufficient.", types=llm_required_line(), surv=f"{surv_comb:.0%}")}</p></div>
 
-<h2>1. Which layer catches what</h2>
-<p class="state-line">The LLM layer is what moves <strong>age</strong>, <strong>medication</strong>, and <strong>profession</strong> above the deterministic baseline.</p>
+<h2>1. {t("Which layer catches what")}</h2>
+<p class="state-line">{t("The LLM layer is what moves <strong>age</strong>, <strong>medication</strong>, and <strong>profession</strong> above the deterministic baseline.")}</p>
 <div class="aside-container">
   <div><div class="chart-box"><canvas id="whoCatches"></canvas></div>
-  <p class="caption">RU per-category <em>mention</em> recall (relaxed overlap), {n_gold} gold mentions: deterministic (Natasha+regex) vs. +qwen.</p></div>
-  <div class="aside"><div class="t">reading it</div>
-  <p><strong>Structured direct IDs</strong> (email, phone, policy ID) and <strong>names/orgs/locations</strong> reach 0.9–1.0 from regex + Natasha. <strong>Dates</strong> are now caught too — a numeric-date regex rule was added after the benchmark exposed the gap.</p>
-  <p><strong>Quasi-identifiers needing world-knowledge</strong> — a drug name, an occupation, a spelled-out age — are invisible to pattern and NER layers; the LLM is the only layer that lifts their mention-recall.</p>
-  <p><strong>Caveat:</strong> this is <em>mention</em> recall. At <em>entity</em> level (all mentions masked), medication and profession stay at 0 even with qwen — a higher bar.</p></div>
+  <p class="caption">{t("RU per-category <em>mention</em> recall (relaxed overlap), {gold} gold mentions: deterministic (Natasha+regex) vs. +qwen.", gold=n_gold)}</p></div>
+  <div class="aside"><div class="t">{t("reading it")}</div>
+  <p>{t("<strong>Structured direct IDs</strong> (email, phone, policy ID) and <strong>names/orgs/locations</strong> reach 0.9–1.0 from regex + Natasha. <strong>Dates</strong> are now caught too — a numeric-date regex rule was added after the benchmark exposed the gap.")}</p>
+  <p>{t("<strong>Quasi-identifiers needing world-knowledge</strong> — a drug name, an occupation, a spelled-out age — are invisible to pattern and NER layers; the LLM is the only layer that lifts their mention-recall.")}</p>
+  <p>{t("<strong>Caveat:</strong> this is <em>mention</em> recall. At <em>entity</em> level (all mentions masked), medication and profession stay at 0 even with qwen — a higher bar.")}</p></div>
 </div>
 
 <div class="ornament">:::</div>
 
-<h2>2. Best sequence per language</h2>
-<p class="state-line">Bars show <strong>coverage recall</strong>; ★ is the <em>proposed default</em>, which trades a little recall for large speed/precision gains — not always the single highest bar.</p>
+<h2>2. {t("Best sequence per language")}</h2>
+<p class="state-line">{t("Bars show <strong>coverage recall</strong>; ★ is the <em>proposed default</em>, which trades a little recall for large speed/precision gains — not always the single highest bar.")}</p>
 <div class="aside-container">
   <div><div class="chart-box"><canvas id="boards"></canvas></div>
-  <p class="caption">Coverage recall by combination across the plotted datasets (blank = combo not run for that dataset). ★ = proposed default; see table for F2/precision.</p></div>
-  <div class="aside"><div class="t">why they differ</div>
-  <p><strong>RU:</strong> the proposed default <code>{RU_STAR}</code> reaches {ru_default_r:.0%} coverage recall. {'Adding OPF reaches ' + format(ru_opf_r, '.0%') + ', but OPF is an optional comparison layer rather than the local-first default.' if ru_opf_valid else 'The OPF-on-RU row is omitted until its detector cache is regenerated for the current 30-document corpus.'}</p>
-  <p><strong>EN-synth:</strong> OPF is the name/address backbone (English&rsquo;s Natasha). Default <code>{EN_STAR}</code>; <code>opf+regex</code> edges it on F2.</p>
-  <p><strong>EN-real:</strong> on generic ai4privacy text the LLM is strongest; <code>opf+ollama</code> and the default <em>tie</em> on recall.</p></div>
+  <p class="caption">{t("Coverage recall by combination across the plotted datasets. A missing bar means that combination was <em>not run</em> on that language (see note), not a zero score. ★ = proposed default; see table for F2/precision.")}</p></div>
+  <div class="aside"><div class="t">{t("why some bars are blank for RU")}</div>
+  <p>{t("Russian runs only the <strong>local-first stack</strong> — Natasha&nbsp;+&nbsp;regex&nbsp;+&nbsp;{model}. Three detectors are <strong>English-only by design</strong>, so any combo containing them has no RU bar: <strong>Presidio</strong> (its RU is spaCy-NER-dependent and weak — left unscored rather than misrepresented), <strong>Philter</strong> (an English clinical-notes rule set), and the <strong>OpenAI Privacy&nbsp;Filter</strong> (an English token-classifier). This is a scope decision, not a measured RU failure.", model=OLLAMA_MODEL)}</p>
+  <div class="t">{t("why they differ")}</div>
+  <p>{t("<strong>RU:</strong> the proposed default <code>{star}</code> reaches {r} coverage recall. {opf_note}", star=RU_STAR, r=f"{ru_default_r:.0%}", opf_note=ru_opf_note)}</p>
+  <p>{t("<strong>EN-synth:</strong> OPF is the name/address backbone (English&rsquo;s Natasha). Default <code>{star}</code>; <code>opf+regex</code> edges it on F2.", star=EN_STAR)}</p>
+  <p>{t("<strong>EN-real:</strong> on generic ai4privacy text the LLM is strongest; <code>opf+ollama</code> and the default <em>tie</em> on recall.")}</p></div>
 </div>
 {leaderboard_table(RU, "RU") if RU else ""}
 
+<p class="sub-h">{t("EN-synth — {docs} docs, {gold} gold mentions", docs=en_docs, gold=en_gold)} <span class="note-inline">{t("(no entity-level / direct-quasi: the EN sets carry no per-entity <code>entity_id</code> annotation, so only mention-level coverage is scored)")}</span></p>
+{leaderboard_table(EN, "EN") if EN else ""}
+
+<p class="sub-h">{t("EN-real (ai4privacy slice) — {docs} docs, {gold} gold mentions", docs=enr_docs, gold=enr_gold)}</p>
+{leaderboard_table(ENR, "EN-real") if ENR else ""}
+
 <div class="ornament">:::</div>
 
-<h2>3. Direct vs quasi-identifiers (TAB)</h2>
-<p class="state-line">Direct identifiers reach <strong>{ru_direct:.2f}</strong> entity recall; quasi-identifiers remain lower at <strong>{ru_quasi:.2f}</strong>.</p>
+<h2>2b. {t("Adversarial robustness (RU)")}</h2>
+<p class="state-line">{t("On the hard-forms probe the full stack catches <strong>{n}/{total}</strong> adversarial identifiers — the lone leak is a Latin-transliterated Russian name.", n=adv_caught, total=radv_gold)}</p>
+<div class="aside-container">
+  <div>{leaderboard_table(RUADV, "RU-adv") if RUADV else f'<em>{t("RU-adversarial set not scored.")}</em>'}</div>
+  <div class="aside"><div class="t">{t("what the probe contains")}</div>
+  <p>{t("<strong>{docs} snippets, {gold} gold forms:</strong> patronymics, transliteration, diminutives, VK/Telegram handles, SNILS/INN/passport IDs, abbreviated addresses, and code-switching.", docs=radv_docs, gold=radv_gold)}</p>
+  <p>{t("Regex catches the structured IDs and handles; Natasha&nbsp;+&nbsp;{model} recover patronymics, diminutives and code-switching. The <strong>one residual leak</strong> is <em>“Sergey Volkov”</em> — a Latin-transliterated Russian name: Natasha is Cyrillic-only, regex has no name rule, and qwen missed it. This is the argument for adding an English/Latin NER (OPF) when transliteration is expected.", model=OLLAMA_MODEL)}</p></div>
+</div>
+
+<div class="ornament">:::</div>
+
+<h2>3. {t("Direct vs quasi-identifiers (TAB)")}</h2>
+<p class="state-line">{t("Direct identifiers reach <strong>{d}</strong> entity recall; quasi-identifiers remain lower at <strong>{q}</strong>.", d=f"{ru_direct:.2f}", q=f"{ru_quasi:.2f}")}</p>
 <div class="aside-container">
   <div><div class="chart-box"><canvas id="directQuasi"></canvas></div>
-  <p class="caption">RU entity-level recall (an entity is protected only if all mentions are masked) by identifier class.</p></div>
-  <div class="aside"><div class="t">the asymmetry</div>
-  <p><strong>Direct</strong> (name, phone, email, policy): masked at {ru_direct:.2f} entity recall in the default stack.</p>
-  <p><strong>Quasi</strong> (age, profession, city, employer, medication, date): the LLM helps but the ceiling stays low — these are the attributes that, combined, re-identify a person.</p></div>
+  <p class="caption">{t("RU entity-level recall (an entity is protected only if all mentions are masked) by identifier class.")}</p></div>
+  <div class="aside"><div class="t">{t("the asymmetry")}</div>
+  <p>{t("<strong>Direct</strong> (name, phone, email, policy): masked at {d} entity recall in the default stack.", d=f"{ru_direct:.2f}")}</p>
+  <p>{t("<strong>Quasi</strong> (age, profession, city, employer, medication, date): the LLM helps but the ceiling stays low — these are the attributes that, combined, re-identify a person.")}</p></div>
 </div>
 
 <div class="ornament">:::</div>
 
-<h2>4. What survives — reconstruction &amp; re-identification</h2>
-<p class="state-line"><strong>{surv_comb:.0%}</strong> of quasi-identifiers survive the default stack (both clients); over-redaction costs <strong>{overred:.0%}</strong> of redactions.</p>
+<h2>4. {t("What survives — reconstruction &amp; re-identification")}</h2>
+<p class="state-line">{t("<strong>{surv}</strong> of quasi-identifiers survive the default stack (both clients); over-redaction costs <strong>{over}</strong> of redactions.", surv=f"{surv_comb:.0%}", over=f"{overred:.0%}")}</p>
 <div class="status-strip">
-  <div class="status-cell r"><div class="status-label">quasi survival (A)</div><div class="status-value">{(REC['A_quasi_survival']['a']['survival_rate'] if REC else 0):.0%}</div><div class="status-note">client A · re-id surface</div></div>
-  <div class="status-cell r"><div class="status-label">quasi survival (B)</div><div class="status-value">{(REC['A_quasi_survival']['b']['survival_rate'] if REC else 0):.0%}</div><div class="status-note">client B</div></div>
-  <div class="status-cell a"><div class="status-label">over-redaction (C)</div><div class="status-value">{overred:.0%}</div><div class="status-note">readability cost</div></div>
-  <div class="status-cell b"><div class="status-label">attacker</div><div class="status-value">qwen-3B</div><div class="status-note">recovers attrs from redacted text</div></div>
+  <div class="status-cell r"><div class="status-label">{t("quasi survival (A)")}</div><div class="status-value">{rec_a:.0%}</div><div class="status-note">{t("client A · re-id surface")}</div></div>
+  <div class="status-cell r"><div class="status-label">{t("quasi survival (B)")}</div><div class="status-value">{rec_b:.0%}</div><div class="status-note">{t("client B")}</div></div>
+  <div class="status-cell a"><div class="status-label">{t("over-redaction (C)")}</div><div class="status-value">{overred:.0%}</div><div class="status-note">{t("readability cost")}</div></div>
+  <div class="status-cell b"><div class="status-label">{t("attacker")}</div><div class="status-value" style="font-size:1.1rem">{OLLAMA_MODEL}</div><div class="status-note">{t("Qwen2.5-3B · recovers attrs from redacted text")}</div></div>
 </div>
 <div class="aside-container">
   <div class="aside" style="border:none">
-  <p style="font-size:.95rem"><strong>Method</strong> — following the re-identification / inference-attack literature (Staab et al.; RAT-Bench; Tau-Eval). An entity <em>survives</em> if any one of its mentions is left unmasked.</p></div>
-  <div class="aside"><div class="t">interpretation</div>
-  <p>A local 3B qwen attacker recovered <strong>{atk_rec} of {atk_tot}</strong> tested attributes from the <em>redacted</em> text (e.g. the medication, because its entity-recall is 0). A weak attacker is a lower bound — the inference-attack literature (Staab et al.) reports much higher re-identification rates for frontier models.</p>
-  <p><strong>Implication:</strong> redacting direct identifiers is table stakes; quasi-identifier survival is a useful gate to check before sending a session to cloud analysis.</p></div>
+  <p style="font-size:.95rem">{t("<strong>Method</strong> — following the re-identification / inference-attack literature (Staab et al.; RAT-Bench; Tau-Eval). An entity <em>survives</em> if any one of its mentions is left unmasked.")}</p></div>
+  <div class="aside"><div class="t">{t("interpretation")}</div>
+  <p>{t("A local 3B qwen attacker recovered <strong>{rec} of {tot}</strong> tested attributes from the <em>redacted</em> text (e.g. the medication, because its entity-recall is 0). A weak attacker is a lower bound — the inference-attack literature (Staab et al.) reports much higher re-identification rates for frontier models.", rec=atk_rec, tot=atk_tot)}</p>
+  <p>{t("<strong>Implication:</strong> redacting direct identifiers is table stakes; quasi-identifier survival is a useful gate to check before sending a session to cloud analysis.")}</p></div>
 </div>
 
 <div class="ornament">:::</div>
 
-<h2>5. Privacy vs utility — can you de-identify and still analyze?</h2>
-<p class="state-line">A weak local attacker recovers <strong>{pu_top3}/{pu_n}</strong> attributes (top-3); yet <strong>{pu_util:.0%}</strong> of the clinical signal survives redaction.</p>
+<h2>5. {t("Privacy vs utility — can you de-identify and still analyze?")}</h2>
+<p class="state-line">{t("A weak local attacker recovers <strong>{top3}/{n}</strong> attributes (top-3); yet <strong>{util}</strong> of the clinical signal survives redaction.", top3=pu_top3, n=pu_n, util=f"{pu_util:.0%}")}</p>
 <div class="status-strip">
-  <div class="status-cell g"><div class="status-label">CBT-signal preserved</div><div class="status-value">{pu_util:.0%}</div><div class="status-note">distortion types, redacted vs orig</div></div>
-  <div class="status-cell g"><div class="status-label">non-PII text kept</div><div class="status-value">{pu_cnp:.1%}</div><div class="status-note">char-level utility floor</div></div>
-  <div class="status-cell b"><div class="status-label">attack top-3</div><div class="status-value">{pu_top3}/{pu_n}</div><div class="status-note">qwen-3B, lower bound</div></div>
-  <div class="status-cell a"><div class="status-label">residual risk</div><div class="status-value" style="font-size:1.1rem">{pu_risk}</div><div class="status-note">client A / B</div></div>
+  <div class="status-cell g"><div class="status-label">{t("CBT-signal preserved")}</div><div class="status-value">{pu_util:.0%}</div><div class="status-note">{t("distortion types, redacted vs orig")}</div></div>
+  <div class="status-cell g"><div class="status-label">{t("non-PII text kept")}</div><div class="status-value">{pu_cnp:.1%}</div><div class="status-note">{t("char-level utility floor")}</div></div>
+  <div class="status-cell b"><div class="status-label">{t("attack top-3")}</div><div class="status-value">{pu_top3}/{pu_n}</div><div class="status-note">{t("{model}, lower bound", model=OLLAMA_MODEL)}</div></div>
+  <div class="status-cell a"><div class="status-label">{t("residual risk")}</div><div class="status-value" style="font-size:1.1rem">{pu_risk}</div><div class="status-note">{t("client A / B")}</div></div>
 </div>
 <div class="aside-container">
   <div class="aside" style="border:none">
-  <p style="font-size:.95rem"><strong>Method</strong> — top-k inference attack with a fixed, declared budget (qwen-3B, temp 0.4, top-3 guesses/attribute, redacted text only) + downstream task preservation (re-run cognitive-distortion extraction on redacted vs. original). Aligned with Staab et al. / RAT-Bench (privacy) and Tau-Eval (task-sensitive utility).</p></div>
-  <div class="aside"><div class="t">the tension, resolved</div>
-  <p>The same masking that lowers attacker success can erase clinical content. Here it does <em>not</em>: the default stack keeps ~{pu_util:.0%} of distortion signal and {pu_cnp:.1%} of non-PII text while a weak attacker recovers nothing top-3.</p>
-  <p><strong>Caveat:</strong> this attacker is a lower bound — quasi-identifiers still survive in text (medication entity-recall is 0), so a frontier attacker would score higher. Residual risk stays MEDIUM for client B.</p></div>
+  <p style="font-size:.95rem">{t("<strong>Method</strong> — top-k inference attack with a fixed, declared budget ({model}, temp 0.4, top-3 guesses/attribute, redacted text only) + downstream task preservation (re-run cognitive-distortion extraction on redacted vs. original). Aligned with Staab et al. / RAT-Bench (privacy) and Tau-Eval (task-sensitive utility).", model=OLLAMA_MODEL)}</p></div>
+  <div class="aside"><div class="t">{t("the tension, resolved")}</div>
+  <p>{t("The same masking that lowers attacker success can erase clinical content. Here it does <em>not</em>: the default stack keeps ~{util} of distortion signal and {cnp} of non-PII text while a weak attacker recovers nothing top-3.", util=f"{pu_util:.0%}", cnp=f"{pu_cnp:.1%}")}</p>
+  <p>{t("<strong>Caveat:</strong> this attacker is a lower bound — quasi-identifiers still survive in text (medication entity-recall is 0), so a frontier attacker would score higher. Residual risk stays MEDIUM for client B.")}</p></div>
 </div>
 
 <div class="ornament">:::</div>
 
-<h2>6. CONFIDE stack vs established baselines (Presidio, Philter)</h2>
-<p class="state-line">Off-the-shelf de-identifiers can match the stack on <strong>coverage</strong> but fall far behind on <strong>type-aware micro-F1</strong> — and Presidio <em>collapses</em> on the real ai4privacy slice.</p>
+<h2>6. {t("CONFIDE stack vs established baselines (Presidio, Philter)")}</h2>
+<p class="state-line">{t("Off-the-shelf de-identifiers can match the stack on <strong>coverage</strong> but fall far behind on <strong>type-aware micro-F1</strong> — and Presidio <em>collapses</em> on the real ai4privacy slice.")}</p>
 <div class="aside-container">
   <div><div class="chart-box"><canvas id="baseEN"></canvas></div>
-  <p class="caption">EN-synth: coverage F2 (recall-weighted, headline) vs type-aware micro-F1 for the CONFIDE ★ stack and the established baselines.</p>
+  <p class="caption">{t("EN-synth: coverage F2 (recall-weighted, headline) vs type-aware micro-F1 for the CONFIDE ★ stack and the established baselines.")}</p>
   <div class="chart-box" style="margin-top:1.2rem"><canvas id="baseENR"></canvas></div>
-  <p class="caption">EN-real (ai4privacy): same two metrics. Presidio's coverage drops sharply on real-world markup/ID formats.</p></div>
-  <div class="aside"><div class="t">reading it</div>
-  <p><strong>Coverage F2</strong> (orange) asks only &ldquo;did we mask the span at all&rdquo;. <strong>Type micro-F1</strong> (green) demands the right label too — what a redaction policy actually needs.</p>
-  <p>On <strong>EN-synth</strong>, Presidio edges the stack on coverage F2 (a broad <code>DATE_TIME</code> recognizer) but its type-F1 is far lower; <strong>Philter</strong> is high-coverage yet emits almost everything as untyped <code>OTHER</code>, so its type-F1 is unusable.</p>
-  <p>On <strong>EN-real</strong>, Presidio <em>collapses</em> on coverage — generic NER + structured recognizers miss the bespoke ID/markup formats the stack catches.</p>
-  <p><strong>Takeaway:</strong> a generic system is not a therapy-tuned one; the only coverage a baseline adds is relative/colloquial dates.</p></div>
+  <p class="caption">{t("EN-real (ai4privacy): same two metrics. Presidio's coverage drops sharply on real-world markup/ID formats.")}</p></div>
+  <div class="aside"><div class="t">{t("reading it")}</div>
+  <p>{t("<strong>Coverage F2</strong> (orange) asks only &ldquo;did we mask the span at all&rdquo;. <strong>Type micro-F1</strong> (green) demands the right label too — what a redaction policy actually needs.")}</p>
+  <p>{t("On <strong>EN-synth</strong>, Presidio edges the stack on coverage F2 (a broad <code>DATE_TIME</code> recognizer) but its type-F1 is far lower; <strong>Philter</strong> is high-coverage yet emits almost everything as untyped <code>OTHER</code>, so its type-F1 is unusable.")}</p>
+  <p>{t("On <strong>EN-real</strong>, Presidio <em>collapses</em> on coverage — generic NER + structured recognizers miss the bespoke ID/markup formats the stack catches.")}</p>
+  <p>{t("<strong>Takeaway:</strong> a generic system is not a therapy-tuned one; the only coverage a baseline adds is relative/colloquial dates.")}</p></div>
 </div>
 
 <div class="ornament">:::</div>
 
-<h2 id="regulatory">7. Regulatory residual-risk (RU)</h2>
-<p class="state-line">Detection metrics measure what we catch; regulators care what <em>survives</em>. Mapped onto named risks, the RU default stack lands at <strong>{reg_tier}</strong> — driven by {reg_direct} in-scope residual direct-identifier {"entity" if reg_direct == 1 else "entities"} (a re-identification key left in the text). A further {reg_oos} are spelled-out digit IDs, out of scope for the regex layer by design and reported separately.</p>
+<h2 id="regulatory">7. {t("Regulatory residual-risk (RU · EN · EN-real)")}</h2>
+<p class="state-line">{t("Detection metrics measure what we catch; regulators care what <em>survives</em>. Mapped onto named risks, the RU default stack lands at <strong>{tier}</strong> — driven by {direct} in-scope residual direct-identifier {word} (a re-identification key left in the text). A further {oos} are spelled-out digit IDs, out of scope for the regex layer by design and reported separately.", tier=reg_tier, direct=reg_direct, word=reg_entity_word, oos=reg_oos)}</p>
+<p class="sub-h">{t("All datasets, side by side")}</p>
+{regulatory_compare_table()}
+<p class="caption" style="text-align:left">{t("Per-language residual-risk tier under each language's ★ default stack. RU lands <strong>RED</strong> (direct identifiers leak at the strict TAB entity bar); EN/EN-real land <strong>AMBER</strong> (no direct-ID leak, but nonzero inference / incomplete HIPAA coverage). EN's worst-doc recall reads 0% because its tiny gold means one PII-bearing doc can be missed entirely — small-N noise, not a systematic EN failure. The RU detail follows.")}</p>
 <div class="status-strip">
-  <div class="status-cell {reg_tier_class}"><div class="status-label">residual-risk tier</div><div class="status-value">{reg_tier}</div><div class="status-note">ordinal R/A/G · RU ★ stack</div></div>
-  <div class="status-cell b"><div class="status-label">HIPAA-inspired coverage</div><div class="status-value">{reg_hip_pass}/{reg_hip_app}</div><div class="status-note">categories fully removed</div></div>
-  <div class="status-cell r"><div class="status-label">worst-doc recall</div><div class="status-value">{reg_wc_min:.0%}</div><div class="status-note">containment · {reg_wc_rate} leaks / 10k chars</div></div>
-  <div class="status-cell a"><div class="status-label">singled out</div><div class="status-value">{reg_singles}/{reg_nsingle}</div><div class="status-note">clients · residual quasi surface</div></div>
+  <div class="status-cell {reg_tier_class}"><div class="status-label">{t("residual-risk tier")}</div><div class="status-value">{reg_tier}</div><div class="status-note">{t("ordinal R/A/G · RU ★ stack")}</div></div>
+  <div class="status-cell b"><div class="status-label">{t("HIPAA-inspired coverage")}</div><div class="status-value">{reg_hip_pass}/{reg_hip_app}</div><div class="status-note">{t("categories fully removed")}</div></div>
+  <div class="status-cell r"><div class="status-label">{t("worst-doc recall")}</div><div class="status-value">{reg_wc_min:.0%}</div><div class="status-note">{t("containment · {rate} leaks / 10k chars", rate=reg_wc_rate)}</div></div>
+  <div class="status-cell a"><div class="status-label">{t("singled out")}</div><div class="status-value">{reg_singles}/{reg_nsingle}</div><div class="status-note">{t("clients · residual quasi surface")}</div></div>
 </div>
 <div class="aside-container">
   <div class="aside" style="border:none">
-  <p style="font-size:.95rem"><strong>WP29 (Art-29 WP 05/2014) re-identification triad</strong> — identifiability decomposes into <em>singling out</em> (residual quasi surface via a caveated population-fraction estimator — NOT corpus k-anonymity, N is tiny), <em>linkability</em> (pairwise session-linking ROC&nbsp;AUC {reg_link_roc:.2f}; at or below 0.50 = chance, which is the safe direction), and <em>inference</em> (attribute-recovery attack recovers {reg_inf:.0%}). HIPAA coverage is a Safe-Harbor-<em>inspired</em> checklist, not a legal determination (AGE is N/A; structured IDs collapsed).</p></div>
-  <div class="aside"><div class="t">reading the tier</div>
-  <p><strong>RED</strong> = any in-scope direct identifier leaks at entity level (one unmasked mention is a key). <strong>AMBER</strong> = special-category residual, nonzero inference, or linkability above chance. <strong>GREEN</strong> = all clear.</p>
-  <p><strong>What leaks:</strong> not whole names but specific <em>variants</em> — inflected/possessive/patronymic forms (Артёмом, Натальин, Денису), lowercase surnames, vocatives, Latin transliteration (Timur), and name/common-word collisions (Вера, Роман). Mention-level recall hides this; the strict TAB entity bar (one miss ⇒ unprotected) surfaces it.</p>
-  <p>Source: <code>results/regulatory-results.json</code> (<code>confide_eval.scoring.regulatory</code>, unit-tested). Singling-out is illustrative — see its independence caveat in the JSON.</p></div>
+  <p style="font-size:.95rem">{t("<strong>WP29 (Art-29 WP 05/2014) re-identification triad</strong> — identifiability decomposes into <em>singling out</em> (residual quasi surface via a caveated population-fraction estimator — NOT corpus k-anonymity, N is tiny), <em>linkability</em> (pairwise session-linking ROC&nbsp;AUC {roc}; at or below 0.50 = chance, which is the safe direction), and <em>inference</em> (attribute-recovery attack recovers {inf}). HIPAA coverage is a Safe-Harbor-<em>inspired</em> checklist, not a legal determination (AGE is N/A; structured IDs collapsed).", roc=f"{reg_link_roc:.2f}", inf=f"{reg_inf:.0%}")}</p></div>
+  <div class="aside"><div class="t">{t("reading the tier")}</div>
+  <p>{t("<strong>RED</strong> = any in-scope direct identifier leaks at entity level (one unmasked mention is a key). <strong>AMBER</strong> = special-category residual, nonzero inference, or linkability above chance. <strong>GREEN</strong> = all clear.")}</p>
+  <p>{t("<strong>What leaks:</strong> not whole names but specific <em>variants</em> — inflected/possessive/patronymic forms (Артёмом, Натальин, Денису), lowercase surnames, vocatives, Latin transliteration (Timur), and name/common-word collisions (Вера, Роман). Mention-level recall hides this; the strict TAB entity bar (one miss ⇒ unprotected) surfaces it.")}</p>
+  <p>{t("Source: <code>results/regulatory-results.json</code> (<code>confide_eval.scoring.regulatory</code>, unit-tested). Singling-out is illustrative — see its independence caveat in the JSON.")}</p></div>
 </div>
 
-<div class="flyout"><div class="t">methodology</div>
-<p>Each detector runs once per dataset; combinations are span-unions of cached spans, interval-merged to the deployed redaction mask before scoring. This report headlines <strong>coverage recall</strong> (relaxed overlap) — the privacy-critical number — and recall-weighted <strong>F2</strong> + precision sit in the leaderboard table. Type-aware micro/macro-F1 (i2b2) and entity-level recall (TAB; all mentions masked) are also reported. Numbers are mention-level unless marked entity-level. Gold for RU is located from the two answer-key PII inventories and hand-verified (a planted-signal recovery eval, not independently annotated gold); English reuses curated + real ai4privacy slices. Synthetic data — no real patients. Small N: treat per-type numbers as directional.</p></div>
+<div class="flyout"><div class="t">{t("methodology")}</div>
+<p>{t("Each detector runs once per dataset; combinations are span-unions of cached spans, interval-merged to the deployed redaction mask before scoring. This report headlines <strong>coverage recall</strong> (relaxed overlap) — the privacy-critical number — and recall-weighted <strong>F2</strong> + precision sit in the leaderboard table. Type-aware micro/macro-F1 (i2b2) and entity-level recall (TAB; all mentions masked) are also reported. Numbers are mention-level unless marked entity-level. Gold for RU is located from the two answer-key PII inventories and hand-verified (a planted-signal recovery eval, not independently annotated gold); English reuses curated + real ai4privacy slices. Synthetic data — no real patients. Small N: treat per-type numbers as directional.")}</p></div>
 
-<h2 id="references">References &amp; credits</h2>
+<h2 id="references">{t("References &amp; credits")}</h2>
 <div class="refs prose">
-<p>CONFIDE-Bench builds on the de-identification, re-identification, and documentation literature listed below. Every work named or relied on in this report is credited here with a link to its canonical page (DOI / arXiv / HuggingFace / GitHub). We credit only what the report actually uses; inclusion does not imply endorsement by those authors. URLs verified against <code>docs/CITATION-AUDIT.md</code>.</p>
+<p>{t("CONFIDE-Bench builds on the de-identification, re-identification, and documentation literature listed below. Every work named or relied on in this report is credited here with a link to its canonical page (DOI / arXiv / HuggingFace / GitHub). We credit only what the report actually uses; inclusion does not imply endorsement by those authors. URLs verified against <code>docs/CITATION-AUDIT.md</code>.")}</p>
 
-<h3>Benchmarks &amp; metrics</h3>
+<h3>{t("Benchmarks &amp; metrics")}</h3>
 <ul>
-  <li><strong>TAB — Text Anonymization Benchmark.</strong> Pilán, Lison, Øvrelid, Papadopoulou, Sánchez &amp; Batet (2022), <em>Computational Linguistics</em> 48(4):1053–1101. <span class="meta">Source of the direct vs. quasi-identifier distinction and entity-level (all-mentions-masked) recall.</span> <a href="https://doi.org/10.1162/coli_a_00458">doi:10.1162/coli_a_00458</a> · <a href="https://aclanthology.org/2022.cl-4.19/">ACL Anthology</a></li>
-  <li><strong>2014 i2b2/UTHealth de-identification (Track&nbsp;1).</strong> Stubbs, Kotfila &amp; Uzuner (2015), <em>J. Biomedical Informatics</em>. <span class="meta">Strict entity-based de-id evaluation; comparison point for clinical-note de-id.</span> <a href="https://pubmed.ncbi.nlm.nih.gov/26225918/">PubMed 26225918</a></li>
-  <li><strong>2016 CEGS N-GRID / n2c2 psychiatric-intake de-identification.</strong> Stubbs, Filannino &amp; Uzuner (2017), <em>J. Biomedical Informatics</em>. <span class="meta">Psychiatric-intake-note de-id comparison point.</span> <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5705537/">PMC5705537</a></li>
-  <li><strong>MEDDOCAN.</strong> Spanish synthetic clinical-case de-identification shared task (IberLEF 2019), ~22 PHI types. <span class="meta">Related clinical de-id benchmark.</span> <a href="https://github.com/PlanTL-GOB-ES/SPACCC_MEDDOCAN">PlanTL SPACCC_MEDDOCAN</a></li>
-  <li><strong>Presidio-research (F2 evaluation).</strong> Microsoft, MIT-licensed. <span class="meta">Basis for the recall-weighted F<sub>2</sub> (β=2) de-id scoring framing.</span> <a href="https://github.com/microsoft/presidio-research">github.com/microsoft/presidio-research</a></li>
-  <li><strong>Tau-Eval.</strong> Loiseau et al. (2025), EMNLP System Demonstrations. <span class="meta">Task-sensitive privacy-and-utility evaluation framing.</span> <a href="https://arxiv.org/abs/2506.05979">arXiv:2506.05979</a></li>
+  <li><strong>TAB — Text Anonymization Benchmark.</strong> Pilán, Lison, Øvrelid, Papadopoulou, Sánchez &amp; Batet (2022), <em>Computational Linguistics</em> 48(4):1053–1101. <span class="meta">{t("Source of the direct vs. quasi-identifier distinction and entity-level (all-mentions-masked) recall.")}</span> <a href="https://doi.org/10.1162/coli_a_00458">doi:10.1162/coli_a_00458</a> · <a href="https://aclanthology.org/2022.cl-4.19/">ACL Anthology</a></li>
+  <li><strong>2014 i2b2/UTHealth de-identification (Track&nbsp;1).</strong> Stubbs, Kotfila &amp; Uzuner (2015), <em>J. Biomedical Informatics</em>. <span class="meta">{t("Strict entity-based de-id evaluation; comparison point for clinical-note de-id.")}</span> <a href="https://pubmed.ncbi.nlm.nih.gov/26225918/">PubMed 26225918</a></li>
+  <li><strong>2016 CEGS N-GRID / n2c2 psychiatric-intake de-identification.</strong> Stubbs, Filannino &amp; Uzuner (2017), <em>J. Biomedical Informatics</em>. <span class="meta">{t("Psychiatric-intake-note de-id comparison point.")}</span> <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5705537/">PMC5705537</a></li>
+  <li><strong>MEDDOCAN.</strong> Spanish synthetic clinical-case de-identification shared task (IberLEF 2019), ~22 PHI types. <span class="meta">{t("Related clinical de-id benchmark.")}</span> <a href="https://github.com/PlanTL-GOB-ES/SPACCC_MEDDOCAN">PlanTL SPACCC_MEDDOCAN</a></li>
+  <li><strong>Presidio-research (F2 evaluation).</strong> Microsoft, MIT-licensed. <span class="meta">{t("Basis for the recall-weighted F<sub>2</sub> (β=2) de-id scoring framing.")}</span> <a href="https://github.com/microsoft/presidio-research">github.com/microsoft/presidio-research</a></li>
+  <li><strong>Tau-Eval.</strong> Loiseau et al. (2025), EMNLP System Demonstrations. <span class="meta">{t("Task-sensitive privacy-and-utility evaluation framing.")}</span> <a href="https://arxiv.org/abs/2506.05979">arXiv:2506.05979</a></li>
 </ul>
 
-<h3>Re-identification &amp; privacy attacks</h3>
+<h3>{t("Re-identification &amp; privacy attacks")}</h3>
 <ul>
-  <li><strong>Staab et al. — Beyond Memorization: Violating Privacy via Inference with LLMs.</strong> ICLR 2024. <span class="meta">LLM inference-attack framing; frontier attackers infer far more than the local lower-bound attacker used here.</span> <a href="https://arxiv.org/abs/2310.07298">arXiv:2310.07298</a></li>
-  <li><strong>Anonymeter.</strong> Giomi, Boenisch, Wehmeyer &amp; Tasnádi (2022/PETS 2023), Statice. <span class="meta">Attack-based singling-out / linkability / inference framing (the three GDPR risks).</span> <a href="https://arxiv.org/abs/2211.10459">arXiv:2211.10459</a> · <a href="https://github.com/statice/anonymeter">GitHub</a></li>
-  <li><strong>RAT-Bench.</strong> Imperial College (2026 preprint). <span class="meta">Attacker-based residual re-identification benchmark framing (cited as preprint evidence).</span> <a href="https://openreview.net/forum?id=FjbU4kLriN">OpenReview FjbU4kLriN</a></li>
+  <li><strong>Staab et al. — Beyond Memorization: Violating Privacy via Inference with LLMs.</strong> ICLR 2024. <span class="meta">{t("LLM inference-attack framing; frontier attackers infer far more than the local lower-bound attacker used here.")}</span> <a href="https://arxiv.org/abs/2310.07298">arXiv:2310.07298</a></li>
+  <li><strong>Anonymeter.</strong> Giomi, Boenisch, Wehmeyer &amp; Tasnádi (2022/PETS 2023), Statice. <span class="meta">{t("Attack-based singling-out / linkability / inference framing (the three GDPR risks).")}</span> <a href="https://arxiv.org/abs/2211.10459">arXiv:2211.10459</a> · <a href="https://github.com/statice/anonymeter">GitHub</a></li>
+  <li><strong>RAT-Bench.</strong> Imperial College (2026 preprint). <span class="meta">{t("Attacker-based residual re-identification benchmark framing (cited as preprint evidence).")}</span> <a href="https://openreview.net/forum?id=FjbU4kLriN">OpenReview FjbU4kLriN</a></li>
 </ul>
 
-<h3>Detectors &amp; tools</h3>
+<h3>{t("Detectors &amp; tools")}</h3>
 <ul>
-  <li><strong>Microsoft Presidio.</strong> MIT license; spaCy-backed PII detection (EN-first baseline). <a href="https://github.com/microsoft/presidio">github.com/microsoft/presidio</a></li>
-  <li><strong>Philter / philter-lite.</strong> UCSF clinical de-identification rule set; <code>philter-lite</code> is the Sirona Medical fork. <a href="https://github.com/SironaMedical/philter-lite">github.com/SironaMedical/philter-lite</a> · <a href="https://pypi.org/project/philter-lite/">PyPI</a></li>
-  <li><strong>Natasha.</strong> Russian NLP/NER toolkit (Cyrillic-only — the basis for the documented transliteration leak). <a href="https://github.com/natasha/natasha">github.com/natasha/natasha</a></li>
-  <li><strong>OpenAI Privacy Filter (OPF), <code>openai/privacy-filter</code>.</strong> Apache-2.0 token-classification PII model (used as the EN name/address backbone). The model card states it is a redaction / data-minimization aid, <em>not</em> an anonymization or compliance guarantee. <a href="https://huggingface.co/openai/privacy-filter">huggingface.co/openai/privacy-filter</a></li>
-  <li><strong>Ollama + Qwen.</strong> Local LLM runner and the Qwen model family used for the local-LLM detector layer and the local 3B re-identification attacker. <a href="https://ollama.com/">ollama.com</a> · <a href="https://github.com/QwenLM/Qwen2.5">QwenLM/Qwen2.5</a></li>
+  <li><strong>Microsoft Presidio.</strong> {t("MIT license; spaCy-backed PII detection (EN-first baseline).")} <a href="https://github.com/microsoft/presidio">github.com/microsoft/presidio</a></li>
+  <li><strong>Philter / philter-lite.</strong> {t("UCSF clinical de-identification rule set; <code>philter-lite</code> is the Sirona Medical fork.")} <a href="https://github.com/SironaMedical/philter-lite">github.com/SironaMedical/philter-lite</a> · <a href="https://pypi.org/project/philter-lite/">PyPI</a></li>
+  <li><strong>Natasha.</strong> {t("Russian NLP/NER toolkit (Cyrillic-only — the basis for the documented transliteration leak).")} <a href="https://github.com/natasha/natasha">github.com/natasha/natasha</a></li>
+  <li><strong>OpenAI Privacy Filter (OPF), <code>openai/privacy-filter</code>.</strong> {t("Apache-2.0 token-classification PII model (used as the EN name/address backbone). The model card states it is a redaction / data-minimization aid, <em>not</em> an anonymization or compliance guarantee.")} <a href="https://huggingface.co/openai/privacy-filter">huggingface.co/openai/privacy-filter</a></li>
+  <li><strong>Ollama + Qwen.</strong> {t("Local LLM runner and the Qwen model family used for the local-LLM detector layer and the local 3B re-identification attacker.")} <a href="https://ollama.com/">ollama.com</a> · <a href="https://github.com/QwenLM/Qwen2.5">QwenLM/Qwen2.5</a></li>
 </ul>
 
-<h3>Datasets</h3>
+<h3>{t("Datasets")}</h3>
 <ul>
-  <li><strong>ai4privacy / pii-masking-300k.</strong> Multilingual synthetic PII dataset; the EN-real validation slice is drawn from it. <span class="meta">License is custom/<code>other</code> (see the dataset's <code>license.md</code>) — verify before redistributing.</span> <a href="https://huggingface.co/datasets/ai4privacy/pii-masking-300k">huggingface.co/datasets/ai4privacy/pii-masking-300k</a></li>
+  <li><strong>ai4privacy / pii-masking-300k.</strong> {t("Multilingual synthetic PII dataset; the EN-real validation slice is drawn from it.")} <span class="meta">{t("License is custom/<code>other</code> (see the dataset's <code>license.md</code>) — verify before redistributing.")}</span> <a href="https://huggingface.co/datasets/ai4privacy/pii-masking-300k">huggingface.co/datasets/ai4privacy/pii-masking-300k</a></li>
 </ul>
 
-<h3>Documentation &amp; regulatory framing</h3>
+<h3>{t("Documentation &amp; regulatory framing")}</h3>
 <ul>
   <li><strong>Datasheets for Datasets.</strong> Gebru et al. (2021), <em>CACM</em>. <a href="https://www.microsoft.com/en-us/research/publication/datasheets-for-datasets/">Microsoft Research</a></li>
   <li><strong>Data Statements for NLP.</strong> Bender &amp; Friedman (2018), <em>TACL</em>. <a href="https://aclanthology.org/Q18-1041/">ACL Anthology Q18-1041</a></li>
-  <li><strong>GDPR Recital 26 &amp; WP29/EDPB anonymisation framework.</strong> &ldquo;Reasonably likely means&rdquo; and the singling-out / linkability / inference triad. <a href="https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng">GDPR (EUR-Lex)</a> · <a href="https://www.edpb.europa.eu/sme-data-protection-guide/secure-personal-data_en">EDPB SME guide</a></li>
-  <li><strong>HIPAA de-identification (Safe Harbor &amp; Expert Determination).</strong> Mapping is illustrative only — benchmark success is <em>not</em> a compliance certification. <a href="https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html">HHS HIPAA de-id guidance</a></li>
+  <li><strong>GDPR Recital 26 &amp; WP29/EDPB anonymisation framework.</strong> {t("&ldquo;Reasonably likely means&rdquo; and the singling-out / linkability / inference triad.")} <a href="https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng">GDPR (EUR-Lex)</a> · <a href="https://www.edpb.europa.eu/sme-data-protection-guide/secure-personal-data_en">EDPB SME guide</a></li>
+  <li><strong>HIPAA de-identification (Safe Harbor &amp; Expert Determination).</strong> {t("Mapping is illustrative only — benchmark success is <em>not</em> a compliance certification.")} <a href="https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html">HHS HIPAA de-id guidance</a></li>
 </ul>
 </div>
 
-<footer>Generated by <code>make_tufte_report.py</code> from <code>results/*-bench-results.json</code>. <strong>CONFIDE-Bench</strong>, part of <a href="https://github.com/glebis/confide">CONFIDE</a> — by Gleb Kalinin &amp; CONFIDE contributors, Psychodemia 2026. Metrics &amp; methods credit: TAB (Pilán et al. 2022), i2b2/n2c2 2014/2016, Microsoft Presidio-research, Datasheets for Datasets — see References above for full links. All data is synthetic/fictional — not real patient data.</footer>
+<footer>{t('Generated by <code>make_tufte_report.py</code> from <code>results/*-bench-results.json</code>. <strong>CONFIDE-Bench</strong>, part of <a href="https://github.com/glebis/confide">CONFIDE</a> — by Gleb Kalinin &amp; CONFIDE contributors, Psychodemia 2026. Metrics &amp; methods credit: TAB (Pilán et al. 2022), i2b2/n2c2 2014/2016, Microsoft Presidio-research, Datasheets for Datasets — see References above for full links. All data is synthetic/fictional — not real patient data.')}</footer>
 
 <script>
 const DATA = {json.dumps(DATA, ensure_ascii=False)};
@@ -457,21 +618,20 @@ Chart.defaults.responsiveAnimationDuration=0;
    {{label:d.a_name,data:d.a,backgroundColor:C3}},
    {{label:d.b_name,data:d.b,backgroundColor:C1}}]}},
   options:{{responsive:true,maintainAspectRatio:false,
-   scales:{{y:{{beginAtZero:true,max:1,title:{{display:true,text:'recall'}},grid:{{color:'#eee'}}}},x:{{grid:{{display:false}},ticks:{{maxRotation:60,minRotation:45}}}}}},
+   scales:{{y:{{beginAtZero:true,max:1,title:{{display:true,text:'{t("recall")}'}},grid:{{color:'#eee'}}}},x:{{grid:{{display:false}},ticks:{{maxRotation:60,minRotation:45}}}}}},
    plugins:{{legend:{{labels:{{boxWidth:8,boxHeight:8}}}}}}}}}});
 }})();
 
-// 2. leaderboards (horizontal bars, plotted datasets overlaid by combo recall) -> small multiples as one grouped chart
+// 2. leaderboards (horizontal bars, plotted datasets overlaid by combo recall)
 (function(){{
  const sets=[['RU',DATA.ru_leaderboard,C2],['EN',DATA.en_leaderboard,C1],['EN-real',DATA.enr_leaderboard,C3]];
- // union of combo names preserving RU order then extras
  const labels=[]; sets.forEach(([_,rows])=>rows.forEach(r=>{{if(!labels.includes(r.combo))labels.push(r.combo);}}));
  const datasets=sets.map(([name,rows,col])=>({{label:name,
    data:labels.map(l=>{{const r=rows.find(x=>x.combo===l);return r?+r.recall.toFixed(3):null}}),
    backgroundColor:col}}));
  new Chart(document.getElementById('boards'),{{type:'bar',data:{{labels,datasets}},
   options:{{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-   scales:{{x:{{beginAtZero:true,max:1,title:{{display:true,text:'coverage recall'}},grid:{{color:'#eee'}}}},y:{{grid:{{display:false}}}}}},
+   scales:{{x:{{beginAtZero:true,max:1,title:{{display:true,text:'{t("coverage recall")}'}},grid:{{color:'#eee'}}}},y:{{grid:{{display:false}}}}}},
    plugins:{{legend:{{labels:{{boxWidth:8,boxHeight:8}}}}}}}}}});
 }})();
 
@@ -479,10 +639,10 @@ Chart.defaults.responsiveAnimationDuration=0;
 (function(){{
  const rows=DATA.ru_leaderboard.filter(r=>r.direct!==undefined);
  new Chart(document.getElementById('directQuasi'),{{type:'bar',data:{{labels:rows.map(r=>r.combo),datasets:[
-   {{label:'direct',data:rows.map(r=>r.direct),backgroundColor:C2}},
-   {{label:'quasi',data:rows.map(r=>r.quasi),backgroundColor:C1}}]}},
+   {{label:'{t("direct")}',data:rows.map(r=>r.direct),backgroundColor:C2}},
+   {{label:'{t("quasi")}',data:rows.map(r=>r.quasi),backgroundColor:C1}}]}},
   options:{{responsive:true,maintainAspectRatio:false,
-   scales:{{y:{{beginAtZero:true,max:1,title:{{display:true,text:'entity recall'}},grid:{{color:'#eee'}}}},x:{{grid:{{display:false}},ticks:{{maxRotation:60,minRotation:45,font:{{size:10}}}}}}}},
+   scales:{{y:{{beginAtZero:true,max:1,title:{{display:true,text:'{t("entity recall")}'}},grid:{{color:'#eee'}}}},x:{{grid:{{display:false}},ticks:{{maxRotation:60,minRotation:45,font:{{size:10}}}}}}}},
    plugins:{{legend:{{labels:{{boxWidth:8,boxHeight:8}}}}}}}}}});
 }})();
 
@@ -491,10 +651,10 @@ Chart.defaults.responsiveAnimationDuration=0;
  function draw(id, d){{
    if(!d||!d.combos||!d.combos.length) return;
    new Chart(document.getElementById(id),{{type:'bar',data:{{labels:d.combos,datasets:[
-     {{label:'coverage F2 (headline)',data:d.covf2,backgroundColor:C1}},
-     {{label:'type micro-F1',data:d.microf1,backgroundColor:C2}}]}},
+     {{label:'{t("coverage F2 (headline)")}',data:d.covf2,backgroundColor:C1}},
+     {{label:'{t("type micro-F1")}',data:d.microf1,backgroundColor:C2}}]}},
     options:{{responsive:true,maintainAspectRatio:false,
-     scales:{{y:{{beginAtZero:true,max:1,title:{{display:true,text:'score'}},grid:{{color:'#eee'}}}},x:{{grid:{{display:false}},ticks:{{maxRotation:30,minRotation:0,font:{{size:10}}}}}}}},
+     scales:{{y:{{beginAtZero:true,max:1,title:{{display:true,text:'{t("score")}'}},grid:{{color:'#eee'}}}},x:{{grid:{{display:false}},ticks:{{maxRotation:30,minRotation:0,font:{{size:10}}}}}}}},
      plugins:{{legend:{{labels:{{boxWidth:8,boxHeight:8}}}}}}}}}});
  }}
  draw('baseEN', DATA.en_baselines);
@@ -504,6 +664,20 @@ Chart.defaults.responsiveAnimationDuration=0;
 </body></html>
 """
 
-out = os.path.join(HERE, "benchmark-report.html")
-open(out, "w", encoding="utf-8").write(HTML)
-print(f"[tufte] wrote {os.path.relpath(out)} ({len(HTML)} bytes)")
+
+def main():
+    for lang in languages():
+        html = build_html(lang)
+        suffix = "" if lang == "en" else f".{lang}"
+        out = os.path.join(HERE, f"benchmark-report{suffix}.html")
+        open(out, "w", encoding="utf-8").write(html)
+        print(f"[tufte] wrote {os.path.relpath(out)} ({len(html)} bytes, lang={lang})")
+    miss = missing()
+    if miss:
+        print(f"[tufte] WARNING: {len(miss)} untranslated string(s) fell back to English:")
+        for m in miss[:60]:
+            print(f"    · {m[:90]}")
+
+
+if __name__ == "__main__":
+    main()
