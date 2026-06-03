@@ -8,7 +8,7 @@ import Base from '../layouts/Base.astro';
         <p class="eyebrow">Bilingual · recall-first · open</p>
         <h1>Which layer earns its compute?</h1>
         <p class="lede">CONFIDE-Bench measures how well automatic privacy tools <strong>hide personal details in psychotherapy session transcripts</strong> — in Russian and English — and which combination of detectors is actually worth running.</p>
-        <p class="note">A missed identifier is leaked client data. So the benchmark is <em>recall-first</em>, scores detectors the way published de-identification work does (entity-level, direct vs. quasi), and asks the sharper question: <em>what can only an LLM catch, and what still leaks after we redact?</em></p>
+        <p class="note">A missed identifier is leaked client data. So the benchmark is <em>recall-first</em>, scores detectors the way published de-identification work does (entity-level, direct vs. quasi), and asks the sharper question: <em>what can only an <abbr title="Large Language Model">LLM</abbr> catch, and what still leaks after we redact?</em></p>
         <div class="cta">
           <a class="btn btn-primary" href="/report/benchmark-report.html">Read the interactive report</a>
           <a class="btn" href="/benchmark">How it works</a>
@@ -40,11 +40,11 @@ import Base from '../layouts/Base.astro';
       <div class="cards">
         <div class="card">
           <h3>Did we catch it?</h3>
-          <p>Coverage recall, entity-level (TAB): an entity counts as protected only if <em>every</em> mention is masked. One un-redacted recurrence is a leak. Recall is weighted over precision (F2).</p>
+          <p>Coverage recall, entity-level (<abbr title="Text Anonymization Benchmark (Pilán et al., 2022)">TAB</abbr>): an entity counts as protected only if <em>every</em> mention is masked. One un-redacted recurrence is a leak. Recall is weighted over precision (F2).</p>
         </div>
         <div class="card layered">
           <h3>What only an LLM catches</h3>
-          <p>Direct IDs fall to rules + NER. Quasi-identifiers needing world-knowledge — a drug name, an occupation, a spelled-out age — are invisible to pattern layers; the local LLM is the only layer that lifts them.</p>
+          <p>Direct IDs fall to rules + <abbr title="Named-Entity Recognition — finding names, places, organizations in text">NER</abbr>. Quasi-identifiers needing world-knowledge — a drug name, an occupation, a spelled-out age — are invisible to pattern layers; the local LLM is the only layer that lifts them.</p>
         </div>
         <div class="card risk">
           <h3>What still leaks</h3>
@@ -80,7 +80,7 @@ import Base from '../layouts/Base.astro';
           <div class="n">lone leak: a transliterated name</div>
         </div>
       </div>
-      <p class="prose note">Three PII types — age, medication, profession — sit near zero under the deterministic layers. The local LLM raises their mention-recall, but medication and profession stay low at the strict <em>entity</em> level, because every mention must be masked. Redaction of direct identifiers is necessary but not sufficient.</p>
+      <p class="prose note">Three <abbr title="Personally Identifiable Information">PII</abbr> types — age, medication, profession — sit near zero under the deterministic layers. The local LLM raises their mention-recall, but medication and profession stay low at the strict <em>entity</em> level, because every mention must be masked. Redaction of direct identifiers is necessary but not sufficient.</p>
       <div class="flyout prose" style="border-left-color:var(--red)">
         <div class="t" style="color:var(--red)">our position</div>
         <p>We report the <span class="pill red">RED</span> residual-risk tier on purpose. De-identification is <strong>harm-reduction, not anonymization</strong> — it never replaces <strong>explicit, informed client consent</strong> and local-only handling for any real recording. A tool that promised "safe to upload" would be the dangerous one. <a href="/about#ethics">Read our ethics &amp; consent stance →</a></p>

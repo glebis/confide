@@ -53,6 +53,7 @@ a:hover { border-bottom-color: var(--accent); }
 .sub { font-style: italic; color: var(--ink-light); font-size: 1.2rem; margin: 0 0 1.2rem; }
 .eyebrow { font-variant: small-caps; letter-spacing: .12em; font-size: .8rem; color: var(--ink-muted); }
 em { color: inherit; }
+abbr[title] { text-decoration: underline dotted; text-underline-offset: 2px; text-decoration-color: var(--ink-muted); cursor: help; }
 code { font-family: 'Monaspace Argon', monospace; font-size: .82em; background: #f0ece0; padding: .05em .3em; border-radius: 2px; }
 blockquote { border-left: 3px solid var(--accent); margin: 1.4rem 0; padding: .2rem 0 .2rem 1.2rem; color: var(--ink-light); font-style: italic; }
 
@@ -168,7 +169,7 @@ footer .cols { display: flex; flex-wrap: wrap; gap: 2rem 3rem; }
 .paper-body h1 { text-align: center; font-size: clamp(1.9rem, 4vw, 2.6rem); margin-top: 1rem; }
 .paper-body h1 + p, .paper-body h1 + p + p { text-align: center; color: var(--ink-light); }
 .paper-body h2 { font-variant: small-caps; font-weight: 500; font-size: 1.45rem;
-  margin-top: 2.6rem; padding-top: 1.4rem; border-top: 1px solid var(--rule); }
+  margin-top: 2.6rem; }
 .paper-body h3 { font-size: 1.1rem; margin-top: 1.8rem; }
 .paper-body p, .paper-body li { line-height: 1.62; }
 .paper-body hr { border: none; border-top: 1px solid var(--rule); margin: 2.4rem auto; width: 38%; }
