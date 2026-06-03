@@ -19,3 +19,12 @@ __pycache__/
 # stray agent scratch scripts must never be committed
 /_*.py
 *.tmp
+
+# AI4Privacy-derived EN-real artifacts: restricted license — build/fetch LOCALLY,
+# never commit (see data/sessions-en/README.md). Removed from the public tree.
+data/sessions-en/pii-eval-ai4privacy.jsonl
+caches/detector-cache/en-real.*
+caches/runs/*score_bench-en-real.json
+results/en-real-bench-results.json
+results/en-real-bootstrap-ci.json
+data/external/

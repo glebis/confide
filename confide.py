@@ -138,8 +138,9 @@ def cmd_stats(args):
 # docs/DATASETS.md for the full annotated list + licenses/caveats.
 DATASETS = {
     "ai4privacy-300k":   {"source": "hf", "id": "ai4privacy/pii-masking-300k",
-                          "license": "CC-BY-4.0 (OpenPII core)", "langs": "en,fr,de,it,nl,es",
-                          "note": "broad synthetic PII; already used for EN-real slice"},
+                          "license": "RESTRICTED — academic/non-commercial, NO redistribution of source or derivatives (HF card)",
+                          "langs": "en,fr,de,it,nl,es",
+                          "note": "EN-real slice; build/fetch LOCALLY (build_dataset / fetch_ai4privacy), never committed"},
     "ai4privacy-200k":   {"source": "hf", "id": "ai4privacy/pii-masking-200k",
                           "license": "varies", "langs": "en,fr,de,it", "note": "smaller synthetic PII"},
     "nemotron-pii":      {"source": "hf", "id": "nvidia/Nemotron-PII", "license": "CC-BY-4.0",
