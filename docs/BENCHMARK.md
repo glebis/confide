@@ -2,15 +2,17 @@
 
 > A reproducible, layered-detector ablation measuring how well a local, privacy-first anonymization stack redacts PII from psychotherapy session transcripts in **Russian and English**. Built for the Psychodemia 2026 masterclass.
 
+> Adding a new LLM model, prompt/runtime variant, provider endpoint, or fixed stack combo starts with **`BENCHMARK-MODEL-STACK-CHECKLIST.md`**; exploratory candidates must not overwrite the published defaults.
+
 ## Datasheet (Datasheets for Datasets / Data Statements for NLP)
 
 > Full datasheet + data statement: **`DATASHEET.md`**. Summary below.
 
 - **Motivation.** Compare detector layers (regex, Natasha RU-NER, the OpenAI Privacy Filter, and a local qwen LLM) for de-identifying therapy transcripts, and quantify which layer earns its compute — especially which PII types *require* an LLM to catch.
-- **Composition & provenance.** Four datasets (see per-dataset sections). Every **therapy transcript** — the Russian series and the EN-synth slice — is **fully synthetic and fictional** (no real patients), hand-built from synthetic client inventories. **EN-real is the one exception:** an external public slice of `ai4privacy/pii-masking-300k` containing **generic, non-therapy, non-clinical** PII; it is real generic PII (not synthetic the way the therapy corpus is) carried unmodified under that dataset's license and used **only as an external EN anchor** — it holds no real clinical/therapy data. The RU-adversarial set probes hard forms such as transliteration, handles, and structured IDs.
+- **Composition & provenance.** The public checkout has four runnable datasets (see per-dataset sections). Every **therapy transcript** — the Russian series and the EN-synth slice — is **fully synthetic and fictional** (no real patients), hand-built from synthetic client inventories. **EN-real is optional and local-only:** users with rights to `ai4privacy/pii-masking-300k` may build a small generic, non-therapy, non-clinical EN anchor locally; its gold, caches, and results are not redistributed by this repository. The RU-adversarial set probes hard forms such as transliteration, handles, and structured IDs.
 - **Languages.** Russian (`ru`), English (`en`).
 - **PII taxonomy (canonical).** PERSON, LOCATION, ORG, PHONE, EMAIL, URL, ID, DATE, MEDICATION, AGE, PROFESSION. Each RU entity is also tagged **direct** vs **quasi**-identifier (TAB), and `llm_required` where deterministic layers structurally cannot catch it (medication, age, profession, and some contextual or spelled-out dates).
-- **DATE coverage (T6).** The deterministic regex layer now covers not just numeric dates (DD.MM.YYYY / ISO) but also **relative / colloquial / month-name dates** in both languages — EN "last Tuesday", "12 December", "N weeks ago", "19th of the month"; RU "в прошлый вторник", "третьего февраля", "N дней назад". This closes the one additive gap the Presidio baseline exposed (its `DATE_TIME` recognizer), lifting regex-layer DATE recall to 1.00 on EN/EN-real and recovering the last spelled-out RU date. Bare deictic adverbs (today/this week / сегодня/на этой неделе) are deliberately excluded as non-identifying and gold-unannotated.
+- **DATE coverage (T6).** The deterministic regex layer now covers not just numeric dates (DD.MM.YYYY / ISO) but also **relative / colloquial / month-name dates** in both languages — EN "last Tuesday", "12 December", "N weeks ago", "19th of the month"; RU "в прошлый вторник", "третьего февраля", "N дней назад". This closes the one additive gap the Presidio baseline exposed (its `DATE_TIME` recognizer), lifting regex-layer DATE recall to 1.00 on EN-synth and recovering the last spelled-out RU date. Bare deictic adverbs (today/this week / сегодня/на этой неделе) are deliberately excluded as non-identifying and gold-unannotated.
 - **Collection / labeling.** RU gold is located programmatically from curated surface-form patterns (Cyrillic-morphology-aware) over the raw transcripts, then hand-verified; every mention carries an `entity_id` for entity-level scoring.
 - **Uses.** De-identification tool comparison; teaching. **Not** a clinical instrument; synthetic RU content must not be treated as real patient data.
 - **Limitations.** Small N (each miss moves recall several points); synthetic RU text; spelled-out digit strings are out of scope for the regex layer by design.
@@ -104,44 +106,6 @@ _Bootstrap 95% CI (2000 resamples, opf+regex+ollama ★): coverage recall **0.98
 | philter | 0.62 | 1.00 | 0.14 | 1.00 | 1.00 | 1.00 | 0.67 |
 | presidio+regex+ollama | 1.00 | 1.00 | 0.57 | 1.00 | 1.00 | 1.00 | 1.00 |
 
-## EN-real — External public slice of ai4privacy/pii-masking-300k — generic, non-therapy, non-clinical PII used only as an external EN anchor (real generic PII, not synthetic; no clinical data)
-
-**15 documents, 80 gold PII mentions.** ★ marks the proposed default stack for this language.
-
-_Bootstrap 95% CI (2000 resamples, opf+regex+ollama ★): coverage recall **0.91** (CI **0.80–0.97**) — wide, as small N demands; treat point estimates as directional._
-
-### Ablation leaderboard
-
-| Combo | MaskCov F2 (rel) | MaskCov R | Type F2 | Micro-F1 | Macro-F1 | Preds |
-|---|--:|--:|--:|--:|--:|--:|
-| regex | **0.208** | 0.175 | 0.193 | 0.271 | 0.289 | 16 |
-| opf | **0.603** | 0.562 | 0.603 | 0.676 | 0.732 | 52 |
-| ollama | **0.695** | 0.700 | 0.682 | 0.675 | 0.719 | 80 |
-| opf+regex | **0.669** | 0.637 | 0.656 | 0.708 | 0.771 | 60 |
-| opf+ollama | **0.851** | 0.900 | 0.851 | 0.787 | 0.847 | 100 |
-| regex+ollama | **0.727** | 0.738 | 0.714 | 0.699 | 0.754 | 83 |
-| opf+regex+ollama ★ | **0.861** | 0.912 | 0.861 | 0.794 | 0.858 | 101 |
-| natasha+regex+ollama | **0.702** | 0.738 | 0.690 | 0.643 | 0.752 | 97 |
-| presidio | **0.439** | 0.412 | 0.294 | 0.328 | 0.346 | 54 |
-| philter | **0.782** | 0.787 | 0.086 | 0.084 | 0.137 | 87 |
-| presidio+regex+ollama | **0.763** | 0.812 | 0.727 | 0.666 | 0.752 | 101 |
-
-### Per-category recall (relaxed, type-agnostic) — *which layer catches what*
-
-| Combo | DATE | EMAIL | ID | LOCATION | PERSON | PHONE |
-|---|--:|--:|--:|--:|--:|--:|
-| regex | 1.00 | 0.75 | 0.04 | 0.00 | 0.00 | 0.00 |
-| opf | 0.57 | 0.75 | 0.35 | 0.67 | 0.52 | 1.00 |
-| ollama | 0.71 | 0.88 | 0.70 | 0.44 | 0.72 | 0.75 |
-| opf+regex | 1.00 | 1.00 | 0.39 | 0.67 | 0.52 | 1.00 |
-| opf+ollama | 0.86 | 1.00 | 0.83 | 0.89 | 0.92 | 1.00 |
-| regex+ollama | 1.00 | 1.00 | 0.70 | 0.44 | 0.72 | 0.75 |
-| opf+regex+ollama ★ | 1.00 | 1.00 | 0.83 | 0.89 | 0.92 | 1.00 |
-| natasha+regex+ollama | 1.00 | 1.00 | 0.70 | 0.44 | 0.72 | 0.75 |
-| presidio | 0.43 | 1.00 | 0.30 | 0.00 | 0.44 | 0.50 |
-| philter | 1.00 | 1.00 | 0.87 | 0.44 | 0.64 | 1.00 |
-| presidio+regex+ollama | 1.00 | 1.00 | 0.78 | 0.44 | 0.84 | 0.88 |
-
 ## RU-adversarial — Russian robustness probe (16 snippets: patronymics, transliteration, diminutives, VK/Telegram handles, SNILS/INN/passport, abbreviated addresses, code-switching)
 
 **16 documents, 20 gold PII mentions.** ★ marks the proposed default stack for this language.
@@ -202,22 +166,22 @@ _Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **
 
 To anchor CONFIDE's metrics against a known, off-the-shelf system, two established de-identifiers run on the same gold via the same cache/manifest pipeline as every other detector:
 
-- **Microsoft Presidio** (`presidio-analyzer`, spaCy `en_core_web_sm` — the *small* model, chosen under a ~1.8 GiB disk constraint; `en_core_web_lg` would raise PERSON/LOCATION recall somewhat). Run on **en** and **en-real** only. Presidio's RU support is spaCy-NER-dependent and weak, so it is **not** reported on the RU datasets to avoid misrepresenting it — a documented scope limit, not a measured RU score.
-- **Philter** (`philter-lite`, UCSF clinical de-id, `philter_delta.toml` HIPAA Safe-Harbor rule set; needs NLTK `averaged_perceptron_tagger_eng`). English clinical-notes tool; run on **en** and **en-real**.
+- **Microsoft Presidio** (`presidio-analyzer`, spaCy `en_core_web_sm` — the *small* model, chosen under a ~1.8 GiB disk constraint; `en_core_web_lg` would raise PERSON/LOCATION recall somewhat). Run on **en** and, when locally reconstructed, **en-real**. Presidio's RU support is spaCy-NER-dependent and weak, so it is **not** reported on the RU datasets to avoid misrepresenting it — a documented scope limit, not a measured RU score.
+- **Philter** (`philter-lite`, UCSF clinical de-id, `philter_delta.toml` HIPAA Safe-Harbor rule set; needs NLTK `averaged_perceptron_tagger_eng`). English clinical-notes tool; run on **en** and optional local **en-real**.
 
-**Headline finding.** Neither off-the-shelf system beats the therapy-tuned CONFIDE stack on type-aware F1. On the easy curated EN set the stack now also leads coverage F2 (stack 0.910 vs Presidio 0.907) — since the regex layer gained a relative/colloquial-date recognizer (T6) it matches Presidio's `DATE_TIME` date recall — and its type-aware F1 stays far ahead (0.789 vs 0.577). On the harder **real** ai4privacy slice Presidio collapses to 0.412 coverage recall (0.439 F2 vs the stack's 0.861) — generic NER + structured recognizers don't cover the bespoke ID/markup formats. Philter is high-recall but emits nearly everything as untyped `OTHER`, unusable for type-aware redaction. **This is the expected, valid baseline result: a generic system is not a therapy-tuned one.**
+**Headline finding.** Neither off-the-shelf system beats the therapy-tuned CONFIDE stack on type-aware F1. On the easy curated EN set the stack now also leads coverage F2 (stack 0.910 vs Presidio 0.907) — since the regex layer gained a relative/colloquial-date recognizer (T6) it matches Presidio's `DATE_TIME` date recall — and its type-aware F1 stays far ahead (0.789 vs 0.577). Philter is high-recall but emits nearly everything as untyped `OTHER`, unusable for type-aware redaction. **This is the expected, valid baseline result: a generic system is not a therapy-tuned one.**
 
 ### Unique capabilities (what the baselines catch that the stack does not)
 
 Diffing gold spans missed by `opf+regex+ollama` but caught (relaxed overlap) by each baseline:
 
-- **Relative/colloquial dates — gap now CLOSED (T6).** Presidio's `DATE_TIME` was the one signal it caught that the stack missed — *"last Tuesday"*, *"12 December"*, *"last Thursday"*, *"19th of the month"*, *"5th of January"*. The regex layer now ships a tight relative/colloquial-date recognizer (EN + RU) covering exactly these forms, so the deterministic stack's DATE recall rose from **0.125→1.00** (EN) and **0.143→1.00** (EN-real), matching Presidio's date coverage **without** adopting Presidio. On EN-real, Presidio already caught **0** spans the stack missed.
-- **Philter** caught 1 unique span on EN-synth (*"12 December"* — now also covered by the new recognizer) and 1 on EN-real (a 2-letter country code *"GB"*). Breadth offset by no usable typing.
-- Presidio's **structured recognizers** (US_SSN, IBAN, credit card, bank/passport/driver-licence, crypto, IP) are a capability the regex layer lacks in principle, but on this gold they did **not** out-recall the stack: stack ID recall is 1.00 on EN-real vs Presidio's 0.30. A potential robustness asset on other corpora, not a measured win here.
+- **Relative/colloquial dates — gap now CLOSED (T6).** Presidio's `DATE_TIME` was the one signal it caught that the stack missed — *"last Tuesday"*, *"12 December"*, *"last Thursday"*, *"19th of the month"*, *"5th of January"*. The regex layer now ships a tight relative/colloquial-date recognizer (EN + RU) covering exactly these forms, so the deterministic stack's DATE recall rose from **0.125→1.00** (EN), matching Presidio's date coverage **without** adopting Presidio.
+- **Philter** caught 1 unique span on EN-synth (*"12 December"* — now also covered by the new recognizer). Breadth offset by no usable typing.
+- Presidio's **structured recognizers** (US_SSN, IBAN, credit card, bank/passport/driver-licence, crypto, IP) are a capability the regex layer lacks in principle, but not a measured win on the public EN-synth gold.
 
 **Takeaway:** the one coverage a baseline used to add over the stack — **relative/colloquial dates** (Presidio `DATE_TIME`) — has been folded into the deterministic regex layer (T6), so the stack no longer needs Presidio's date recognizer. No remaining baseline capability out-recalls the therapy-tuned stack on this gold.
 
-> **Graphic:** the grouped bar chart "CONFIDE stack vs established baselines" (Coverage F2 vs type-aware micro-F1 for {opf+regex+ollama ★, presidio, philter, presidio+regex+ollama}, one panel each for EN-synth and EN-real) is rendered in **`benchmark-report.html`** §6 (generated by `make_tufte_report.py` from `{en,en-real}-bench-results.json`). It shows baselines edging on coverage but falling far behind on type-aware F1, and Presidio collapsing on the real slice.
+> **Graphic:** the grouped bar chart "CONFIDE stack vs established baselines" (Coverage F2 vs type-aware micro-F1 for {opf+regex+ollama ★, presidio, philter, presidio+regex+ollama}) is rendered in **`benchmark-report.html`** §6 (generated by `make_tufte_report.py` from public results, plus optional local EN-real when present). It shows baselines edging on coverage but falling far behind on type-aware F1.
 
 ## RU-real framing & synthetic→real transfer gap (JayGuard)
 
@@ -290,7 +254,6 @@ Beyond relaxed (≥1-char) overlap, a **containment** metric requires ≥80% of 
 - **Small N** — each miss moves recall several points; treat per-type numbers as directional.
 - **Synthetic RU data** — fictional; not real patient text.
 - **Spelled-out digits** (e.g. phone read out word-by-word) are out of scope for the regex layer by design and fall to the LLM layer / manual review.
-- One EN-real doc failed Ollama JSON parsing (returned no spans) — a single-doc lower bound on the ollama EN-real numbers.
 - **Non-determinism.** The Ollama (qwen) and GPT-5/Codex (IAA) steps are not fully deterministic; qwen runs at temperature 0 and the IAA seed annotation is committed for reproducibility, but exact spans can vary run-to-run. The bootstrap CIs and the detector manifests bound and date the measurements.
 - Bootstrap confidence-interval support is included in `bootstrap_ci.py`; report the CI files only after they have been regenerated for the current gold and caches.
 

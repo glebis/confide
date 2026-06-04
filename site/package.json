@@ -1,0 +1,17 @@
+{
+  "name": "confide-bench-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "sync:report": "if [ -f ../results/benchmark-report.html ]; then mkdir -p public/report && cp ../results/benchmark-report.html ../results/benchmark-report.ru.html public/report/; else echo 'sync:report: ../results not present (CI build) — using committed public/report copies'; fi",
+    "prebuild": "npm run sync:report",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^6.1.9"
+  }
+}

@@ -10,7 +10,7 @@ comparison, and states honestly how much the corpus can and cannot support.
 > *measurement precision on detector recall*, quantified by document-level bootstrap CIs,
 > not statistical power to detect a clinical effect. Pairs with `BENCHMARK.md` (results),
 > `REPORTING.md` (what is included/omitted and why), `DATASHEET.md` (data provenance), and
-> `REPRODUCIBILITY.md` (re-run policy).
+> `REPRODUCIBILITY.md` plus `BENCHMARK-MODEL-STACK-CHECKLIST.md` (re-run and promotion policy).
 
 ---
 
@@ -47,13 +47,18 @@ post hoc to favour a result. The proposed default stack (★) per language:
 |---|---|
 | **RU-synth** | `natasha + regex + ollama` ★ |
 | **RU-adversarial** | `natasha + regex + ollama` ★ |
+| **RU-real (JayGuard)** | `natasha + regex + ollama` ★ |
 | **EN-synth** | `opf + regex + ollama` ★ |
-| **EN-real** | `opf + regex + ollama` ★ |
+| **EN-real (optional local)** | `opf + regex + ollama` ★ |
 
 The ★ default is what `run-benchmark.sh` and `score_bench.py` report as the headline stack;
 Presidio and Philter are carried as **external baselines** (separate rows), not as part of
 the ★ stack. The full set of ablation combos (single layers and their unions) is enumerated
 in `score_bench.py` and is identical across runs.
+
+New LLM candidates, provider endpoints, prompt/runtime variants, and proposed stack combos must
+pass `BENCHMARK-MODEL-STACK-CHECKLIST.md` before being promoted. Exploratory results scored with
+`score_llm_experiment.py` do not amend this preregistration; changing `COMBOS` or a ★ default does.
 
 ## 3. Dev / test protocol (no tuning on test)
 
@@ -74,17 +79,18 @@ person-disjoint generalization drop on a small corpus.)
 
 Uncertainty is the **nonparametric document-level bootstrap** (`bootstrap_ci.py`, 2000
 resamples, fixed seed 20260601, doc-level resampling with correct entity reweighting). The
-**current CI widths** (committed in `*-bootstrap-ci.json`):
+**current public CI widths** (committed in `*-bootstrap-ci.json`):
 
 | Dataset (★) | N docs | Coverage recall (95% CI) | Entity recall (95% CI) |
 |---|--:|---|---|
 | **RU-synth** | 30 | 0.837 (0.808–0.864), half-width ≈ ±0.028 | 0.625 (0.572–0.673), half-width ≈ **±0.050** |
 | **RU-adversarial** | 16 | 0.95 (0.842–1.00), half-width ≈ ±0.079 | 0.95 (0.842–1.00) |
 | **EN-synth** | 32 | 0.892 (0.800–0.976), half-width ≈ ±0.088 | (mention-level; no entity grouping) |
-| **EN-real** | 15 | 0.894 (0.789–0.964), half-width ≈ ±0.088 | (mention-level) |
 
 These intervals — not significance stars — are the preregistered uncertainty report. Point
-estimates are treated as **directional**; every headline is quoted with its CI.
+estimates are treated as **directional**; every headline is quoted with its CI. EN-real
+bootstrap CIs are local-only and are not committed because ai4privacy-derived artifacts are
+not redistributed.
 
 ## 5. Power / precision analysis (small and honest)
 
@@ -98,7 +104,7 @@ same docs, but still ~0.07–0.10 in practice at this N). Coverage recall is tig
 half-width → MDD ≈ 0.05–0.06).
 
 **Consequence — the corpus is underpowered for small effects.** Differences below ≈ 0.10
-entity recall (≈ 0.05 coverage recall) on RU, and larger on the smaller EN / EN-real / adv
+entity recall (≈ 0.05 coverage recall) on RU, and larger on the smaller EN / adv / optional local EN-real
 sets (half-widths ≈ ±0.08), **cannot be distinguished from noise** at this N. Therefore:
 
 - System comparisons are reported **with confidence intervals, not significance stars**, and

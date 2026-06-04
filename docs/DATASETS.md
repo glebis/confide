@@ -63,24 +63,20 @@ Numbers + the synthetic→real transfer-gap discussion: `BENCHMARK.md` §"RU-rea
 
 CONFIDE-Bench's **EN-real** slice is 15 documents sampled from
 `ai4privacy/pii-masking-300k`, whose license restricts redistribution of its source
-text. **This repo therefore does not ship that text.** The committed gold
-`data/sessions-en/pii-eval-ai4privacy.jsonl` carries, per document, only:
-`doc_id`, the `spans` (offsets + gold `value`s + types), `source`, a `text_sha256`
-(sha256 of the original document), and `text_len` — **never the source document**.
+text and derivatives. **This repo therefore does not ship EN-real gold, detector
+caches, or result artifacts.** The path `data/sessions-en/pii-eval-ai4privacy.jsonl`
+is gitignored and exists only in local worktrees after an explicit fetch/build step.
 
-To make EN-real runnable, reconstruct the text locally **under ai4privacy's own license**:
+To make EN-real runnable, build it locally **under ai4privacy's own license**:
 
 ```bash
 pip install datasets            # one-time, if needed
 python -m confide_eval.data.fetch_ai4privacy
 ```
 
-This re-downloads ai4privacy from Hugging Face, finds the 15 source rows by matching
-each recorded `text_sha256` (failing loudly on any mismatch), and writes a local,
-**gitignored** `data/sessions-en/pii-eval-ai4privacy.local.jsonl` (`{doc_id, text, spans}`).
-The scorer and detectors prefer this local file automatically when present (see
-`paths.en_real_gold()`). If it is absent, EN-real is **skipped gracefully** — RU,
-EN-synth and RU-adv are unaffected, and `make test` / `make check` still pass. The
-committed EN-real *results* (derived measurements computed when the text was present)
-remain in the repo; `make check` treats EN-real as fetch-required and never fails merely
-because the source text is not in the repo.
+This re-downloads ai4privacy from Hugging Face, deterministically samples 15 English
+validation rows, and writes a local, **gitignored**
+`data/sessions-en/pii-eval-ai4privacy.jsonl` (`{text, spans, source}`). The scorer and
+detectors use this local file only when present (see `paths.en_real_gold()`). If it is
+absent, EN-real is **skipped gracefully** — RU, EN-synth, RU-adversarial, and RU-real are
+unaffected, and `make test` / `make check` still pass without any EN-real artifact.

@@ -1,0 +1,142 @@
+---
+import Base from '../layouts/Base.astro';
+const datasets = [
+  { name: 'RU-synth', docs: 30, gold: 1076, what: 'Synthetic Russian therapy series (6 fictional clients, 30 sessions). Entity-level direct/quasi labels.', kind: 'synthetic' },
+  { name: 'RU-adversarial', docs: 16, gold: 20, what: 'Robustness probe: patronymics, transliteration, diminutives, VK/Telegram handles, Russian national-ID numbers (SNILS / INN / passport), code-switching.', kind: 'synthetic' },
+  { name: 'EN-synth', docs: 32, gold: 46, what: 'Curated English therapy-style snippets. Mention-level coverage (no per-entity ids).', kind: 'synthetic' },
+  { name: 'RU-real (JayGuard)', docs: 60, gold: 77, what: 'External, anonymized, real-but-non-clinical Russian text (Apache-2.0). PERSON/LOCATION only, machine-derived gold.', kind: 'real' },
+];
+const metrics = [
+  ['cov R', 'Mask-coverage recall (relaxed, ≥1-char overlap): did the mask touch the <abbr title="Personally Identifiable Information">PII</abbr> span at all? A miss = leaked PII.', '↑ higher is better'],
+  ['cov F2', 'Recall-weighted F2 (β=2): recall counts 2× precision, because a miss leaks while a false positive only over-redacts.', '↑ higher is better'],
+  ['ent R', 'Entity-level recall (<abbr title="Text Anonymization Benchmark (Pilán et al., 2022)">TAB</abbr>): protected only if ALL mentions are masked — one recurrence is a leak.', '↑ higher is better'],
+  ['direct', 'Entity recall for direct identifiers (name, phone, email, policy/ID).', '↑ higher is better'],
+  ['quasi', 'Entity recall for quasi-identifiers (age, profession, city, employer, medication, date).', '↑ higher is better'],
+];
+const layers = [
+  ['regex', 'Bilingual pattern rules — phones, emails, URLs, structured IDs, numeric & relative/colloquial dates.', 'deterministic'],
+  ['Natasha', 'Russian <abbr title="Named-Entity Recognition — finding names, places, organizations in text">NER</abbr> (Cyrillic-only) — names, locations, orgs.', 'deterministic'],
+  ['OpenAI Privacy Filter', 'English token-classification model — the EN name/address backbone.', 'model'],
+  ['Qwen2.5-3B (Ollama)', 'Published local <abbr title="Large Language Model">LLM</abbr> baseline, temp 0 — the layer that lifts world-knowledge quasi-identifiers (medication, profession, spelled-out age). Exploratory Gemma runs are now reported separately, not promoted to ★ defaults yet.', 'LLM'],
+];
+// Stack scores (NER + regex + the named LLM) from results/local-llm-gemma3-vs-gemma4-*.json
+// via the report's "LLM model comparison" table — regenerate with `make report`.
+const modelSwaps = [
+  ['RU-synth long', [['Qwen2.5-3B ★', '0.875', '0.802', '0.726'], ['Gemma3', '0.954', '0.362', '0.850']]],
+  ['RU-adv', [['Qwen2.5-3B ★', '0.950', '0.887', '0.950'], ['Gemma3', '1.000', '0.917', '1.000'], ['Gemma4 12B-MLX', '1.000', '0.948', '1.000'], ['Gemma4 26B-A4B (HF cloud)', '1.000', '0.943', '1.000']]],
+  ['RU-real', [['Qwen2.5-3B ★', '0.792', '0.614', '0.792'], ['Gemma3', '0.961', '0.730', '0.961'], ['Gemma4 12B-MLX', '1.000', '0.820', '1.000']]],
+  ['EN-synth', [['Qwen2.5-3B ★', '0.978', '0.870', '—'], ['Gemma3', '1.000', '0.904', '—'], ['Gemma4 12B-MLX', '1.000', '0.955', '—'], ['Gemma4 26B-A4B (HF cloud)', '0.935', '0.914', '—']]],
+];
+---
+<Base page="benchmark" title="The Benchmark" description="How CONFIDE-Bench works: datasets, detector layers, recall-first metrics, and the residual-risk view.">
+  <section class="hero">
+    <div class="wrap fig-grid">
+      <div class="prose">
+        <p class="eyebrow">The benchmark</p>
+        <h1>How it works</h1>
+        <p class="sub">A reproducible, layered-detector ablation: each detector runs once per dataset, combinations are span-unions merged to the deployed redaction mask, then scored recall-first.</p>
+        <p><a class="btn btn-primary" href="/report/benchmark-report.html">Open the interactive report</a> <a class="btn" href="/report/benchmark-report.ru.html">Русская версия</a></p>
+      </div>
+      <figure class="fig">
+        <img src="/images/how.png" alt="A stack of translucent detector layers over a page of text; each layer catches different kinds of marks as they pass through." width="600" height="600" loading="lazy" />
+        <figcaption>Layers compose by span-union; each catches what the others miss.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="prose">Datasets</h2>
+      <p class="prose note">Four slices. Every therapy transcript is synthetic/fictional; the one real-text anchor (RU-real) is external, anonymized, non-clinical public data.</p>
+      <table>
+        <thead><tr><th>dataset</th><th>docs</th><th>gold spans</th><th>what it is</th></tr></thead>
+        <tbody>
+          {datasets.map(d => (
+            <tr>
+              <td>{d.name} <span class={`pill ${d.kind === 'real' ? 'amber' : 'green'}`}>{d.kind}</span></td>
+              <td>{d.docs}</td>
+              <td>{d.gold}</td>
+              <td style="text-align:left; font-family:'EB Garamond',serif" set:html={d.what}></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="prose">The detector layers</h2>
+      <p class="prose note">The benchmark composes these by span-union. The proposed default (★) trades a little recall for large speed/precision gains — and runs entirely locally.</p>
+      <div class="cards">
+        {layers.map(([name, desc, kind]) => (
+          <div class={`card ${kind === 'LLM' ? 'layered' : ''}`}>
+            <h3>{name}</h3>
+            <p set:html={desc}></p>
+          </div>
+        ))}
+      </div>
+      <p class="prose note" style="margin-top:1.4rem"><strong>Proposed defaults:</strong> <code>natasha + regex + qwen2.5:3b ★</code> for Russian, <code>opf + regex + qwen2.5:3b ★</code> for English. Gemma3/Gemma4 are reported as exploratory model swaps until variance and promotion gates pass. Presidio &amp; Philter are reported as established English-only baselines.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="prose">Exploratory model swaps — Gemma vs the Qwen baseline</h2>
+      <p class="prose note">Same stack, different LLM layer: each row swaps only the model behind the ★ default. Gemma beats Qwen on every completed full short slice — local <strong>Gemma4 12B-MLX</strong> is strongest on quality, and the cloud <strong>Gemma4 26B-A4B</strong> probe (synthetic text only) is close behind. The ★ defaults stay Qwen until variance and promotion gates pass.</p>
+      <table>
+        <thead><tr><th>dataset</th><th>model</th><th>cov R</th><th>cov F2</th><th>ent R</th></tr></thead>
+        <tbody>
+          {modelSwaps.map(([ds, rows]) => rows.map((r, i) => (
+            <tr>
+              <td style="text-align:left">{i === 0 ? ds : ''}</td>
+              <td style="text-align:left">{r[0]}</td>
+              <td>{r[1]}</td>
+              <td>{r[2]}</td>
+              <td>{r[3]}</td>
+            </tr>
+          )))}
+        </tbody>
+      </table>
+      <p class="prose note">Gemma3 on the long RU slice trades precision for recall (cov F2 0.362 — heavy over-redaction from chunked prompting); it is included as a recall/noise tradeoff, not a candidate default. Missing rows are omitted, not scored as zero: the cloud probe is partial on English because provider billing stopped 13 requests. Full tables and caveats in <a href="/report/benchmark-report.html">the interactive report</a>.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="prose">Reading the metrics</h2>
+      <table>
+        <thead><tr><th>column</th><th>what it means</th><th>direction</th></tr></thead>
+        <tbody>
+          {metrics.map(([k, v, d]) => (
+            <tr>
+              <td><code>{k}</code></td>
+              <td style="text-align:left; font-family:'EB Garamond',serif" set:html={v}></td>
+              <td style="text-align:left; font-family:'EB Garamond',serif" class="note">{d}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="prose note">Type-aware micro/macro-F1 (<abbr title="Informatics for Integrating Biology & the Bedside — a clinical de-identification challenge">i2b2</abbr>) are also reported. Numbers are mention-level unless marked entity-level.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <p class="eyebrow">Beyond detection</p>
+      <h2>Residual risk — what survives</h2>
+      <p>Detection metrics measure what we catch; regulators care what <em>survives</em>. The report maps the default stack onto named risks:</p>
+      <ul class="ticks">
+        <li><strong>Reconstruction.</strong> ~31% of quasi-identifiers survive the default RU stack (both clients); a local 3B attacker recovers attributes from the <em>redacted</em> text — a lower bound, since a frontier model would recover more.</li>
+        <li><strong>Privacy vs. utility.</strong> The same masking keeps the clinical signal usable — the report shows distortion-extraction preserved alongside a char-level non-PII floor.</li>
+        <li><strong>Regulatory tier.</strong> Under the <abbr title="Article-29 Working Party — the EU data-protection advisory body (now the EDPB)">WP29</abbr> triad (singling-out / linkability / inference) + a <abbr title="Health Insurance Portability and Accountability Act — the US health-privacy law">HIPAA</abbr>-inspired checklist, the RU default lands <span class="pill red">RED</span> (a direct identifier still leaks at entity level), English <span class="pill amber">AMBER</span>.</li>
+      </ul>
+      <div class="flyout">
+        <div class="t">the takeaway</div>
+        <p>Redacting direct identifiers is necessary but not sufficient. Quasi-identifier survival is the gate worth checking before any session goes to cloud analysis — and the reason the gold needs human, multi-annotator labelling.</p>
+        <p>We surface the <span class="pill red">RED</span> tier deliberately: de-identification is <strong>harm-reduction, not anonymization</strong>. It never replaces <strong>explicit client consent</strong> and local-only handling for real recordings. See <a href="/about#ethics">Ethics &amp; consent</a> for our full position.</p>
+      </div>
+      <p><a href="/report/benchmark-report.html">Full numbers, charts, and citations in the interactive report →</a></p>
+    </div>
+  </section>
+</Base>

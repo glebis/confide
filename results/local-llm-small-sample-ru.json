@@ -1,0 +1,1211 @@
+{
+  "dataset": "ru",
+  "doc_ids": [
+    "ru-a-s01",
+    "ru-b-s03"
+  ],
+  "n_docs": 2,
+  "n_gold_mentions": 86,
+  "comparisons": {
+    "ollama :: llm-only": {
+      "members": [
+        "ollama"
+      ],
+      "n_pred": 25,
+      "coverage_relaxed": {
+        "support": 86,
+        "c": 23,
+        "fp": 2,
+        "fn": 63,
+        "p": 0.92,
+        "r": 0.267,
+        "f1": 0.414,
+        "f2": 0.312,
+        "macro_f1": 0.566,
+        "macro_r": 0.463
+      },
+      "coverage_containment": {
+        "support": 86,
+        "c": 22,
+        "fp": 2,
+        "fn": 64,
+        "p": 0.92,
+        "r": 0.256,
+        "f1": 0.4,
+        "f2": 0.299,
+        "macro_f1": 0.536,
+        "macro_r": 0.435
+      },
+      "type_relaxed": {
+        "support": 86,
+        "c": 23,
+        "fp": 2,
+        "fn": 63,
+        "p": 0.92,
+        "r": 0.267,
+        "f1": 0.414,
+        "f2": 0.312,
+        "macro_f1": 0.566,
+        "macro_r": 0.463
+      },
+      "coverage_relaxed_per_type": {
+        "DATE": {
+          "support": 3,
+          "c": 1,
+          "fp": 0,
+          "fn": 2,
+          "p": 1.0,
+          "r": 0.333,
+          "f1": 0.5,
+          "f2": 0.385
+        },
+        "EMAIL": {
+          "support": 2,
+          "c": 1,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "ID": {
+          "support": 4,
+          "c": 2,
+          "fp": 0,
+          "fn": 2,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "LOCATION": {
+          "support": 3,
+          "c": 2,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.667,
+          "f1": 0.8,
+          "f2": 0.714
+        },
+        "MEDICATION": {
+          "support": 5,
+          "c": 5,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.714,
+          "r": 1.0,
+          "f1": 0.833,
+          "f2": 0.926
+        },
+        "ORG": {
+          "support": 2,
+          "c": 1,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "PERSON": {
+          "support": 59,
+          "c": 10,
+          "fp": 0,
+          "fn": 49,
+          "p": 1.0,
+          "r": 0.169,
+          "f1": 0.29,
+          "f2": 0.203
+        },
+        "PHONE": {
+          "support": 2,
+          "c": 1,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "PROFESSION": {
+          "support": 6,
+          "c": 0,
+          "fp": 0,
+          "fn": 6,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 8,
+        "total": 28,
+        "entity_recall": 0.286,
+        "harm_weighted_recall": 0.228,
+        "by_class": {
+          "direct": {
+            "protected": 5,
+            "total": 18,
+            "recall": 0.278
+          },
+          "quasi": {
+            "protected": 3,
+            "total": 10,
+            "recall": 0.3
+          }
+        },
+        "by_type": {
+          "ID": {
+            "protected": 2,
+            "total": 4,
+            "recall": 0.5
+          },
+          "DATE": {
+            "protected": 1,
+            "total": 3,
+            "recall": 0.333
+          },
+          "PERSON": {
+            "protected": 0,
+            "total": 8,
+            "recall": 0.0
+          },
+          "PHONE": {
+            "protected": 1,
+            "total": 2,
+            "recall": 0.5
+          },
+          "EMAIL": {
+            "protected": 1,
+            "total": 2,
+            "recall": 0.5
+          },
+          "MEDICATION": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          },
+          "PROFESSION": {
+            "protected": 0,
+            "total": 4,
+            "recall": 0.0
+          },
+          "ORG": {
+            "protected": 1,
+            "total": 2,
+            "recall": 0.5
+          },
+          "LOCATION": {
+            "protected": 1,
+            "total": 2,
+            "recall": 0.5
+          }
+        }
+      }
+    },
+    "ollama :: natasha+regex+ollama": {
+      "members": [
+        "natasha",
+        "regex",
+        "ollama"
+      ],
+      "n_pred": 95,
+      "coverage_relaxed": {
+        "support": 86,
+        "c": 79,
+        "fp": 19,
+        "fn": 7,
+        "p": 0.8,
+        "r": 0.919,
+        "f1": 0.855,
+        "f2": 0.892,
+        "macro_f1": 0.743,
+        "macro_r": 0.833
+      },
+      "coverage_containment": {
+        "support": 86,
+        "c": 78,
+        "fp": 19,
+        "fn": 8,
+        "p": 0.8,
+        "r": 0.907,
+        "f1": 0.85,
+        "f2": 0.883,
+        "macro_f1": 0.727,
+        "macro_r": 0.806
+      },
+      "type_relaxed": {
+        "support": 86,
+        "c": 79,
+        "fp": 19,
+        "fn": 7,
+        "p": 0.8,
+        "r": 0.919,
+        "f1": 0.855,
+        "f2": 0.892,
+        "macro_f1": 0.743,
+        "macro_r": 0.833
+      },
+      "coverage_relaxed_per_type": {
+        "DATE": {
+          "support": 3,
+          "c": 3,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.75,
+          "r": 1.0,
+          "f1": 0.857,
+          "f2": 0.938
+        },
+        "EMAIL": {
+          "support": 2,
+          "c": 2,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "ID": {
+          "support": 4,
+          "c": 4,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "LOCATION": {
+          "support": 3,
+          "c": 3,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.75,
+          "r": 1.0,
+          "f1": 0.857,
+          "f2": 0.938
+        },
+        "MEDICATION": {
+          "support": 5,
+          "c": 5,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.714,
+          "r": 1.0,
+          "f1": 0.833,
+          "f2": 0.926
+        },
+        "ORG": {
+          "support": 2,
+          "c": 2,
+          "fp": 3,
+          "fn": 0,
+          "p": 0.4,
+          "r": 1.0,
+          "f1": 0.571,
+          "f2": 0.769
+        },
+        "PERSON": {
+          "support": 59,
+          "c": 59,
+          "fp": 12,
+          "fn": 0,
+          "p": 0.821,
+          "r": 1.0,
+          "f1": 0.902,
+          "f2": 0.958
+        },
+        "PHONE": {
+          "support": 2,
+          "c": 1,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "PROFESSION": {
+          "support": 6,
+          "c": 0,
+          "fp": 0,
+          "fn": 6,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 23,
+        "total": 28,
+        "entity_recall": 0.821,
+        "harm_weighted_recall": 0.842,
+        "by_class": {
+          "direct": {
+            "protected": 17,
+            "total": 18,
+            "recall": 0.944
+          },
+          "quasi": {
+            "protected": 6,
+            "total": 10,
+            "recall": 0.6
+          }
+        },
+        "by_type": {
+          "ID": {
+            "protected": 4,
+            "total": 4,
+            "recall": 1.0
+          },
+          "DATE": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "PERSON": {
+            "protected": 8,
+            "total": 8,
+            "recall": 1.0
+          },
+          "PHONE": {
+            "protected": 1,
+            "total": 2,
+            "recall": 0.5
+          },
+          "EMAIL": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          },
+          "MEDICATION": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          },
+          "PROFESSION": {
+            "protected": 0,
+            "total": 4,
+            "recall": 0.0
+          },
+          "ORG": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          },
+          "LOCATION": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          }
+        }
+      }
+    },
+    "local-gemma3-4b-p1 :: llm-only": {
+      "members": [
+        "local-gemma3-4b-p1"
+      ],
+      "n_pred": 0,
+      "coverage_relaxed": {
+        "support": 86,
+        "c": 0,
+        "fp": 0,
+        "fn": 86,
+        "p": 0.0,
+        "r": 0.0,
+        "f1": 0.0,
+        "f2": 0.0,
+        "macro_f1": 0.0,
+        "macro_r": 0.0
+      },
+      "coverage_containment": {
+        "support": 86,
+        "c": 0,
+        "fp": 0,
+        "fn": 86,
+        "p": 0.0,
+        "r": 0.0,
+        "f1": 0.0,
+        "f2": 0.0,
+        "macro_f1": 0.0,
+        "macro_r": 0.0
+      },
+      "type_relaxed": {
+        "support": 86,
+        "c": 0,
+        "fp": 0,
+        "fn": 86,
+        "p": 0.0,
+        "r": 0.0,
+        "f1": 0.0,
+        "f2": 0.0,
+        "macro_f1": 0.0,
+        "macro_r": 0.0
+      },
+      "coverage_relaxed_per_type": {
+        "DATE": {
+          "support": 3,
+          "c": 0,
+          "fp": 0,
+          "fn": 3,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "EMAIL": {
+          "support": 2,
+          "c": 0,
+          "fp": 0,
+          "fn": 2,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ID": {
+          "support": 4,
+          "c": 0,
+          "fp": 0,
+          "fn": 4,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "LOCATION": {
+          "support": 3,
+          "c": 0,
+          "fp": 0,
+          "fn": 3,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "MEDICATION": {
+          "support": 5,
+          "c": 0,
+          "fp": 0,
+          "fn": 5,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORG": {
+          "support": 2,
+          "c": 0,
+          "fp": 0,
+          "fn": 2,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 59,
+          "c": 0,
+          "fp": 0,
+          "fn": 59,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PHONE": {
+          "support": 2,
+          "c": 0,
+          "fp": 0,
+          "fn": 2,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PROFESSION": {
+          "support": 6,
+          "c": 0,
+          "fp": 0,
+          "fn": 6,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 0,
+        "total": 28,
+        "entity_recall": 0.0,
+        "harm_weighted_recall": 0.0,
+        "by_class": {
+          "direct": {
+            "protected": 0,
+            "total": 18,
+            "recall": 0.0
+          },
+          "quasi": {
+            "protected": 0,
+            "total": 10,
+            "recall": 0.0
+          }
+        },
+        "by_type": {
+          "ID": {
+            "protected": 0,
+            "total": 4,
+            "recall": 0.0
+          },
+          "DATE": {
+            "protected": 0,
+            "total": 3,
+            "recall": 0.0
+          },
+          "PERSON": {
+            "protected": 0,
+            "total": 8,
+            "recall": 0.0
+          },
+          "PHONE": {
+            "protected": 0,
+            "total": 2,
+            "recall": 0.0
+          },
+          "EMAIL": {
+            "protected": 0,
+            "total": 2,
+            "recall": 0.0
+          },
+          "MEDICATION": {
+            "protected": 0,
+            "total": 1,
+            "recall": 0.0
+          },
+          "PROFESSION": {
+            "protected": 0,
+            "total": 4,
+            "recall": 0.0
+          },
+          "ORG": {
+            "protected": 0,
+            "total": 2,
+            "recall": 0.0
+          },
+          "LOCATION": {
+            "protected": 0,
+            "total": 2,
+            "recall": 0.0
+          }
+        }
+      }
+    },
+    "local-gemma3-4b-p1 :: natasha+regex+local-gemma3-4b-p1": {
+      "members": [
+        "natasha",
+        "regex",
+        "local-gemma3-4b-p1"
+      ],
+      "n_pred": 86,
+      "coverage_relaxed": {
+        "support": 86,
+        "c": 73,
+        "fp": 17,
+        "fn": 13,
+        "p": 0.802,
+        "r": 0.849,
+        "f1": 0.825,
+        "f2": 0.839,
+        "macro_f1": 0.635,
+        "macro_r": 0.694
+      },
+      "coverage_containment": {
+        "support": 86,
+        "c": 73,
+        "fp": 17,
+        "fn": 13,
+        "p": 0.802,
+        "r": 0.849,
+        "f1": 0.825,
+        "f2": 0.839,
+        "macro_f1": 0.635,
+        "macro_r": 0.694
+      },
+      "type_relaxed": {
+        "support": 86,
+        "c": 73,
+        "fp": 17,
+        "fn": 13,
+        "p": 0.802,
+        "r": 0.849,
+        "f1": 0.825,
+        "f2": 0.839,
+        "macro_f1": 0.635,
+        "macro_r": 0.694
+      },
+      "coverage_relaxed_per_type": {
+        "DATE": {
+          "support": 3,
+          "c": 3,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.75,
+          "r": 1.0,
+          "f1": 0.857,
+          "f2": 0.938
+        },
+        "EMAIL": {
+          "support": 2,
+          "c": 2,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "ID": {
+          "support": 4,
+          "c": 3,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.75,
+          "f1": 0.857,
+          "f2": 0.789
+        },
+        "LOCATION": {
+          "support": 3,
+          "c": 3,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.75,
+          "r": 1.0,
+          "f1": 0.857,
+          "f2": 0.938
+        },
+        "MEDICATION": {
+          "support": 5,
+          "c": 0,
+          "fp": 0,
+          "fn": 5,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORG": {
+          "support": 2,
+          "c": 2,
+          "fp": 3,
+          "fn": 0,
+          "p": 0.4,
+          "r": 1.0,
+          "f1": 0.571,
+          "f2": 0.769
+        },
+        "PERSON": {
+          "support": 59,
+          "c": 59,
+          "fp": 12,
+          "fn": 0,
+          "p": 0.821,
+          "r": 1.0,
+          "f1": 0.902,
+          "f2": 0.958
+        },
+        "PHONE": {
+          "support": 2,
+          "c": 1,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "PROFESSION": {
+          "support": 6,
+          "c": 0,
+          "fp": 0,
+          "fn": 6,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 21,
+        "total": 28,
+        "entity_recall": 0.75,
+        "harm_weighted_recall": 0.772,
+        "by_class": {
+          "direct": {
+            "protected": 16,
+            "total": 18,
+            "recall": 0.889
+          },
+          "quasi": {
+            "protected": 5,
+            "total": 10,
+            "recall": 0.5
+          }
+        },
+        "by_type": {
+          "ID": {
+            "protected": 3,
+            "total": 4,
+            "recall": 0.75
+          },
+          "DATE": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "PERSON": {
+            "protected": 8,
+            "total": 8,
+            "recall": 1.0
+          },
+          "PHONE": {
+            "protected": 1,
+            "total": 2,
+            "recall": 0.5
+          },
+          "EMAIL": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          },
+          "MEDICATION": {
+            "protected": 0,
+            "total": 1,
+            "recall": 0.0
+          },
+          "PROFESSION": {
+            "protected": 0,
+            "total": 4,
+            "recall": 0.0
+          },
+          "ORG": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          },
+          "LOCATION": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          }
+        }
+      }
+    },
+    "local-gemma3-4b-p2 :: llm-only": {
+      "members": [
+        "local-gemma3-4b-p2"
+      ],
+      "n_pred": 0,
+      "coverage_relaxed": {
+        "support": 86,
+        "c": 0,
+        "fp": 0,
+        "fn": 86,
+        "p": 0.0,
+        "r": 0.0,
+        "f1": 0.0,
+        "f2": 0.0,
+        "macro_f1": 0.0,
+        "macro_r": 0.0
+      },
+      "coverage_containment": {
+        "support": 86,
+        "c": 0,
+        "fp": 0,
+        "fn": 86,
+        "p": 0.0,
+        "r": 0.0,
+        "f1": 0.0,
+        "f2": 0.0,
+        "macro_f1": 0.0,
+        "macro_r": 0.0
+      },
+      "type_relaxed": {
+        "support": 86,
+        "c": 0,
+        "fp": 0,
+        "fn": 86,
+        "p": 0.0,
+        "r": 0.0,
+        "f1": 0.0,
+        "f2": 0.0,
+        "macro_f1": 0.0,
+        "macro_r": 0.0
+      },
+      "coverage_relaxed_per_type": {
+        "DATE": {
+          "support": 3,
+          "c": 0,
+          "fp": 0,
+          "fn": 3,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "EMAIL": {
+          "support": 2,
+          "c": 0,
+          "fp": 0,
+          "fn": 2,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ID": {
+          "support": 4,
+          "c": 0,
+          "fp": 0,
+          "fn": 4,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "LOCATION": {
+          "support": 3,
+          "c": 0,
+          "fp": 0,
+          "fn": 3,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "MEDICATION": {
+          "support": 5,
+          "c": 0,
+          "fp": 0,
+          "fn": 5,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORG": {
+          "support": 2,
+          "c": 0,
+          "fp": 0,
+          "fn": 2,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 59,
+          "c": 0,
+          "fp": 0,
+          "fn": 59,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PHONE": {
+          "support": 2,
+          "c": 0,
+          "fp": 0,
+          "fn": 2,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PROFESSION": {
+          "support": 6,
+          "c": 0,
+          "fp": 0,
+          "fn": 6,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 0,
+        "total": 28,
+        "entity_recall": 0.0,
+        "harm_weighted_recall": 0.0,
+        "by_class": {
+          "direct": {
+            "protected": 0,
+            "total": 18,
+            "recall": 0.0
+          },
+          "quasi": {
+            "protected": 0,
+            "total": 10,
+            "recall": 0.0
+          }
+        },
+        "by_type": {
+          "ID": {
+            "protected": 0,
+            "total": 4,
+            "recall": 0.0
+          },
+          "DATE": {
+            "protected": 0,
+            "total": 3,
+            "recall": 0.0
+          },
+          "PERSON": {
+            "protected": 0,
+            "total": 8,
+            "recall": 0.0
+          },
+          "PHONE": {
+            "protected": 0,
+            "total": 2,
+            "recall": 0.0
+          },
+          "EMAIL": {
+            "protected": 0,
+            "total": 2,
+            "recall": 0.0
+          },
+          "MEDICATION": {
+            "protected": 0,
+            "total": 1,
+            "recall": 0.0
+          },
+          "PROFESSION": {
+            "protected": 0,
+            "total": 4,
+            "recall": 0.0
+          },
+          "ORG": {
+            "protected": 0,
+            "total": 2,
+            "recall": 0.0
+          },
+          "LOCATION": {
+            "protected": 0,
+            "total": 2,
+            "recall": 0.0
+          }
+        }
+      }
+    },
+    "local-gemma3-4b-p2 :: natasha+regex+local-gemma3-4b-p2": {
+      "members": [
+        "natasha",
+        "regex",
+        "local-gemma3-4b-p2"
+      ],
+      "n_pred": 86,
+      "coverage_relaxed": {
+        "support": 86,
+        "c": 73,
+        "fp": 17,
+        "fn": 13,
+        "p": 0.802,
+        "r": 0.849,
+        "f1": 0.825,
+        "f2": 0.839,
+        "macro_f1": 0.635,
+        "macro_r": 0.694
+      },
+      "coverage_containment": {
+        "support": 86,
+        "c": 73,
+        "fp": 17,
+        "fn": 13,
+        "p": 0.802,
+        "r": 0.849,
+        "f1": 0.825,
+        "f2": 0.839,
+        "macro_f1": 0.635,
+        "macro_r": 0.694
+      },
+      "type_relaxed": {
+        "support": 86,
+        "c": 73,
+        "fp": 17,
+        "fn": 13,
+        "p": 0.802,
+        "r": 0.849,
+        "f1": 0.825,
+        "f2": 0.839,
+        "macro_f1": 0.635,
+        "macro_r": 0.694
+      },
+      "coverage_relaxed_per_type": {
+        "DATE": {
+          "support": 3,
+          "c": 3,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.75,
+          "r": 1.0,
+          "f1": 0.857,
+          "f2": 0.938
+        },
+        "EMAIL": {
+          "support": 2,
+          "c": 2,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "ID": {
+          "support": 4,
+          "c": 3,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.75,
+          "f1": 0.857,
+          "f2": 0.789
+        },
+        "LOCATION": {
+          "support": 3,
+          "c": 3,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.75,
+          "r": 1.0,
+          "f1": 0.857,
+          "f2": 0.938
+        },
+        "MEDICATION": {
+          "support": 5,
+          "c": 0,
+          "fp": 0,
+          "fn": 5,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORG": {
+          "support": 2,
+          "c": 2,
+          "fp": 3,
+          "fn": 0,
+          "p": 0.4,
+          "r": 1.0,
+          "f1": 0.571,
+          "f2": 0.769
+        },
+        "PERSON": {
+          "support": 59,
+          "c": 59,
+          "fp": 12,
+          "fn": 0,
+          "p": 0.821,
+          "r": 1.0,
+          "f1": 0.902,
+          "f2": 0.958
+        },
+        "PHONE": {
+          "support": 2,
+          "c": 1,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "PROFESSION": {
+          "support": 6,
+          "c": 0,
+          "fp": 0,
+          "fn": 6,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 21,
+        "total": 28,
+        "entity_recall": 0.75,
+        "harm_weighted_recall": 0.772,
+        "by_class": {
+          "direct": {
+            "protected": 16,
+            "total": 18,
+            "recall": 0.889
+          },
+          "quasi": {
+            "protected": 5,
+            "total": 10,
+            "recall": 0.5
+          }
+        },
+        "by_type": {
+          "ID": {
+            "protected": 3,
+            "total": 4,
+            "recall": 0.75
+          },
+          "DATE": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "PERSON": {
+            "protected": 8,
+            "total": 8,
+            "recall": 1.0
+          },
+          "PHONE": {
+            "protected": 1,
+            "total": 2,
+            "recall": 0.5
+          },
+          "EMAIL": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          },
+          "MEDICATION": {
+            "protected": 0,
+            "total": 1,
+            "recall": 0.0
+          },
+          "PROFESSION": {
+            "protected": 0,
+            "total": 4,
+            "recall": 0.0
+          },
+          "ORG": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          },
+          "LOCATION": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          }
+        }
+      }
+    }
+  }
+}

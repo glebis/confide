@@ -299,17 +299,126 @@ def run_regex(text: str) -> list[Span]:
     return spans
 
 
-def run_ollama(text: str, model: str = "qwen2.5:3b") -> list[Span]:
+_DEFAULT_PII_PROMPT_TEMPLATE = (
+    'Extract ALL PII, including quasi-identifiers that narrow identity. '
+    'Include MEDICATIONS with dosages, AGES (also spelled-out, e.g. "тридцать четыре года"), '
+    'and PROFESSIONS/occupations. Return ONLY JSON array '
+    '[{"text":"...","type":"PERSON|LOCATION|ORG|PHONE|DATE|ADDRESS|MEDICATION|ID|AGE|PROFESSION"}]. '
+    'No explanations.\n\nText: {text}'
+)
+
+
+def _load_llm_prompt_template() -> str:
+    """Return the experiment prompt template, or the verified default prompt."""
+    prompt_file = os.environ.get("LLM_PROMPT_FILE")
+    if prompt_file:
+        with open(prompt_file, encoding="utf-8") as f:
+            return f.read()
+    return os.environ.get("LLM_PROMPT_TEMPLATE", _DEFAULT_PII_PROMPT_TEMPLATE)
+
+
+def _render_llm_prompt(text: str, prompt_template: Optional[str] = None) -> str:
+    """Render a prompt template without requiring JSON braces to be escaped."""
+    template = prompt_template if prompt_template is not None else _load_llm_prompt_template()
+    if "{text}" in template:
+        return template.replace("{text}", text)
+    return template.rstrip() + "\n\nText: " + text
+
+
+def _extract_json_array(output: str):
+    """Return the first valid JSON array in a model response.
+
+    Local models sometimes emit a valid array followed by another array or prose.
+    A greedy ``[.*]`` match turns that into "Extra data" and discards all spans.
+    Trying each ``[`` offset with JSONDecoder keeps strict JSON while tolerating
+    harmless trailing text.
+    """
+    decoder = json.JSONDecoder()
+    for i, ch in enumerate(output):
+        if ch != "[":
+            continue
+        try:
+            obj, _end = decoder.raw_decode(output[i:])
+        except json.JSONDecodeError:
+            continue
+        if isinstance(obj, list):
+            return obj
+    return None
+
+
+def iter_text_chunks(text: str, chunk_chars: int = 2500, overlap: int = 200):
+    """Yield ``(offset, chunk)`` pairs, preferring transcript-friendly boundaries.
+
+    This is semantic-enough for transcripts: keep turns/paragraphs intact when
+    possible, and use overlap so identifiers near a boundary are still visible.
+    It avoids embedding-based semantic chunking, which would add a second model
+    and would not help exact character-offset scoring.
+    """
+    if chunk_chars <= 0 or len(text) <= chunk_chars:
+        yield 0, text
+        return
+    if overlap < 0:
+        raise ValueError("overlap must be >= 0")
+    if overlap >= chunk_chars:
+        raise ValueError("overlap must be smaller than chunk_chars")
+
+    start = 0
+    n = len(text)
+    while start < n:
+        hard_end = min(n, start + chunk_chars)
+        if hard_end == n:
+            yield start, text[start:hard_end]
+            return
+
+        lower = start + max(1, chunk_chars // 3)
+        end = hard_end
+        for sep in ("\n\n", "\n", ". ", "? ", "! "):
+            pos = text.rfind(sep, lower, hard_end)
+            if pos != -1:
+                end = pos + len(sep)
+                break
+        if end <= start:
+            end = hard_end
+
+        yield start, text[start:end]
+        start = max(end - overlap, start + 1)
+
+
+def run_ollama_chunked(text: str, model: str = "qwen2.5:3b",
+                       prompt_template: Optional[str] = None,
+                       chunk_chars: int = 2500, overlap: int = 200) -> list[Span]:
+    """Run the LLM detector on overlapping chunks and map spans to full text."""
+    spans: list[Span] = []
+    seen = set()
+    for offset, chunk in iter_text_chunks(text, chunk_chars, overlap):
+        for span in run_ollama(chunk, model, prompt_template=prompt_template):
+            start = offset + span.start
+            end = offset + span.end
+            if not (0 <= start < end <= len(text)):
+                continue
+            key = (start, end, span.label)
+            if key in seen:
+                continue
+            seen.add(key)
+            spans.append(Span(
+                start=start,
+                end=end,
+                text=text[start:end],
+                label=span.label,
+                source=span.source,
+                confidence=span.confidence,
+            ))
+    return spans
+
+
+def run_ollama(text: str, model: str = "qwen2.5:3b",
+               prompt_template: Optional[str] = None) -> list[Span]:
     """Layer 3: Local LLM via Ollama HTTP API for medications, dates, contextual IDs."""
     import re
     try:
         import urllib.request
 
-        prompt = ('Extract ALL PII, including quasi-identifiers that narrow identity. '
-                  'Include MEDICATIONS with dosages, AGES (also spelled-out, e.g. "тридцать четыре года"), '
-                  'and PROFESSIONS/occupations. Return ONLY JSON array '
-                  '[{\"text\":\"...\",\"type\":\"PERSON|LOCATION|ORG|PHONE|DATE|ADDRESS|MEDICATION|ID|AGE|PROFESSION\"}]. '
-                  'No explanations.\n\nText: ' + text)
+        prompt = _render_llm_prompt(text, prompt_template)
 
         # Engine-agnostic local-LLM transport. LLM_API=openai targets the
         # OpenAI-compatible /v1/chat/completions endpoint that llama.cpp's
@@ -344,7 +453,11 @@ def run_ollama(text: str, model: str = "qwen2.5:3b") -> list[Span]:
                                      "Chrome/124.0 Safari/537.36")
         else:
             url = base + "/api/chat"
+            # Gemma 4 and other reasoning-capable Ollama models may otherwise
+            # spend the whole generation budget in message.thinking and return
+            # an empty content field. Non-reasoning models ignore this flag.
             payload = json.dumps({"model": model, "messages": messages, "stream": False,
+                                  "think": False,
                                   "options": {"temperature": temperature, "num_predict": max_tokens}}).encode()
 
         req = urllib.request.Request(url, data=payload, headers=headers)
@@ -357,11 +470,9 @@ def run_ollama(text: str, model: str = "qwen2.5:3b") -> list[Span]:
             output = data.get("message", {}).get("content", "")
         output = re.sub(r'<think>.*?</think>', '', output, flags=re.DOTALL)
 
-        match = re.search(r'\[.*\]', output, re.DOTALL)
-        if not match:
+        entities = _extract_json_array(output)
+        if entities is None:
             return []
-
-        entities = json.loads(match.group())
         spans = []
         seen = set()  # de-dupe (start,end) across entities
         low = text.lower()
@@ -513,6 +624,56 @@ def propagate_names(text: str, person_surfaces, capitalized_only: bool = True,
     return spans
 
 
+# --- RU AGE recognizer (spelled-out cardinals + numeric, age-anchored) -------
+# AGE is a 0-deterministic-recall quasi type. Russian ages are usually spelled-out
+# cardinals anchored to год/года/лет, a "возраст" cue, or a pronoun ("мне сорок
+# один"). The trap is relative-time expressions ("пять лет назад", "через три
+# года") — guarded out so they are never treated as ages.
+_AGE_TENS = "двадцать|тридцать|сорок|пятьдесят|шестьдесят|семьдесят|восемьдесят|девяносто|сто"
+_AGE_UNITS = "один|одна|два|две|три|четыре|пять|шесть|семь|восемь|девять"
+_AGE_TEENS = ("десять|одиннадцать|двенадцать|тринадцать|четырнадцать|пятнадцать|"
+              "шестнадцать|семнадцать|восемнадцать|девятнадцать")
+_AGE_CARD = rf"(?:(?:{_AGE_TENS})(?:\s+(?:{_AGE_UNITS}))?|{_AGE_TEENS}|{_AGE_UNITS})"
+_AGE_NUM = rf"(?:{_AGE_CARD}|\d{{1,3}})"
+_AGE_YEARS = r"(?:год(?:а|у|ом|е|ов)?|лет|годик(?:а|ов)?)"
+# A person reference disambiguates "N лет" as an AGE rather than a duration
+# (the precision trap: "двадцать лет всё то же" / "отца нет семь лет" are NOT ages).
+_AGE_PERSON = (r"(?:мужик\w*|мужчин\w*|женщин\w*|девушк\w*|парн\w*|пацан\w*|"
+               r"человек\w*|тётк\w*|тетк\w*|дядьк\w*|бабушк\w*|дедушк\w*|мальчик\w*|девочк\w*)")
+_AGE_FILL = r"(?:уже\s+|сейчас\s+|почти\s+|только\s+)?"
+# Strong, unambiguous cue — always an age.
+_AGE_STRONG = re.compile(rf"(?i)\b(?:возраст\w*|исполни\w+|стукнул\w+)[\s—:\-–]+{_AGE_FILL}({_AGE_NUM})\b")
+# Pronoun cue — an age ONLY when the number is a predicate (followed by a clause
+# boundary / год-лет / conjunction), NOT when it counts a following noun
+# ("дал ей ОДИН проект", "сто РАЗ").
+_AGE_BOUND = (r"(?=\s*(?:$|[.,;:!?…)»\"'—–-]|год|лет"
+              r"|\b(?:и|а|но|уже|всего|только|скоро|будет|было)\b))")
+_AGE_PRON = re.compile(rf"(?i)\b(?:мне|тебе|ему|ей|вам|нам|им)[\s—:\-–]+{_AGE_FILL}({_AGE_NUM})\b{_AGE_BOUND}")
+# number + год/лет + person ("сорок пять лет мужику")
+_AGE_NUM_PERSON = re.compile(rf"(?i)\b({_AGE_NUM})\s+{_AGE_YEARS}\s+{_AGE_PERSON}")
+
+
+def find_ages(text: str) -> list[Span]:
+    """Detect Russian ages anchored to an age context — a pronoun/возраст cue
+    ("мне сорок один") or N лет + a person reference ("сорок пять лет мужику").
+    Bare "N лет" is deliberately NOT matched: in transcripts it is overwhelmingly
+    a duration ("двадцать лет вместе"), so matching it destroys precision."""
+    spans, seen = [], set()
+
+    def add(m):
+        a, b = m.start(1), m.end(1)
+        if (a, b) in seen:
+            return
+        seen.add((a, b))
+        spans.append(Span(start=a, end=b, text=text[a:b], label="AGE",
+                          source="age", confidence=0.85))
+
+    for pat in (_AGE_STRONG, _AGE_PRON, _AGE_NUM_PERSON):
+        for m in pat.finditer(text):
+            add(m)
+    return spans
+
+
 def merge_spans(all_spans: list[Span]) -> list[Span]:
     """Merge overlapping spans, preferring higher-confidence or more specific labels."""
     if not all_spans:
@@ -626,6 +787,7 @@ def anonymize(text: str, layers: list[str] = None, model: str = "qwen2.5:3b",
     # residual name-variant leaks). Skipped if explicitly disabled.
     if "no-propagate" not in layers:
         all_spans.extend(find_patronymics(text))  # RU patronymics (direct IDs)
+        all_spans.extend(find_ages(text))         # RU spelled-out / numeric ages
         person_surfaces = {s.text for s in all_spans if s.label == "PERSON"}
         if person_surfaces:
             all_spans.extend(propagate_names(text, person_surfaces))

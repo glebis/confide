@@ -1,0 +1,163 @@
+---
+import Base from '../layouts/Base.astro';
+const GH = 'https://github.com/glebis/confide';
+const PKG = 'https://github.com/glebis/psychodemia-2026';
+const skills = [
+  { id: 'synthetic-session-generator', tag: 'infrastructure',
+    title: 'synthetic-session-generator',
+    blurb: 'Realistic, fully fictional session transcripts for evals, demos, and training data — the kind of corpus this benchmark runs on. No real client ever needed.',
+    alt: 'A fountain pen conjuring two translucent fictional silhouettes rising from a blank page.' },
+  { id: 'cbt-session-analysis', tag: 'analysis',
+    title: 'cbt-session-analysis',
+    blurb: 'One anonymized session in; the client’s cognitive distortions out — named, quoted as evidence, and confidence-rated (Diagnosis-of-Thought structure).',
+    alt: 'A magnifying glass over a speech bubble revealing a small tangled knot of thread.' },
+  { id: 'multi-session-patterns', tag: 'analysis',
+    title: 'multi-session-patterns',
+    blurb: 'A client’s whole corpus at once: distortion trends, theme evolution, avoidance candidates, and homework assigned-vs-checked.',
+    alt: 'A thread weaving through a row of pages, tracing a gently falling curve.' },
+  { id: 'cbt-supervision', tag: 'analysis',
+    title: 'cbt-supervision',
+    blurb: 'A structural self-check of the therapist’s own session — a 10-element CBT protocol score plus five questions to bring to supervision.',
+    alt: 'An empty therapist armchair facing a hand mirror, a small checklist card at its base.' },
+  { id: 'act-lens', tag: 'lens',
+    title: 'act-lens',
+    blurb: 'The same corpus read through ACT psychological flexibility — hexaflex processes, towards/away moves. Exploratory, hypotheses only.',
+    alt: 'A six-sided prism bending thin arrows toward a distant flag, one arrow turning away.' },
+  { id: 'psychodynamic-lens', tag: 'lens',
+    title: 'psychodynamic-lens',
+    blurb: 'A cautious psychodynamic reading: the CCRT relationship pattern, coarse defense groups, transference hints. Lowest confidence — deliberately last in line.',
+    alt: 'A serene iceberg, nine tenths below the waterline.' },
+  { id: 'cognitive-toolkit', tag: 'intervention',
+    title: 'cognitive-toolkit',
+    blurb: 'Client-facing guided CBT/DBT exercises — thought records, opposite action. An intervention you do, not an analysis you read.',
+    alt: 'A small wooden toolbox holding tools shaped like thought bubbles and a worksheet.' },
+  { id: 'mental-toolkit', tag: 'intervention',
+    title: 'mental-toolkit',
+    blurb: 'Structured self-management: timed worry processing, scenario planning, anxiety check-ins.',
+    alt: 'An hourglass beside a calm head in profile, a soft breathing circle around them.' },
+  { id: 'meeting-processor', tag: 'infrastructure',
+    title: 'meeting-processor',
+    blurb: 'Auto-detects what kind of transcript it’s looking at and applies type-specific extraction — including coaching and therapy sessions.',
+    alt: 'A wide funnel sorting falling sheets of paper into three wooden trays.' },
+];
+---
+<Base page="toolkit" title="Toolkit" description="The CONFIDE toolkit: the local anonymizer skill, nine companion skills for privacy-safe session analysis (CBT, ACT, psychodynamic lenses, supervision, interventions), and CONFIDE-Red, the re-identification red-team.">
+  <section class="hero">
+    <div class="wrap prose">
+      <p class="eyebrow">The toolkit</p>
+      <h1>Ten skills, a red team, and a benchmark to keep them honest</h1>
+      <p class="sub">CONFIDE isn't only a scorecard. It ships the thing that does the redaction — a local <strong>anonymizer skill</strong> — a package of <strong>nine companion skills</strong> for what comes after, and the thing that tries to break it all — <strong>CONFIDE-Red</strong>, a re-identification red-team.</p>
+    </div>
+  </section>
+
+  <section id="skill">
+    <div class="wrap prose">
+      <p class="eyebrow">The skill</p>
+      <h2>session-anonymizer — local <abbr title="Personally Identifiable Information">PII</abbr> redaction for your agent</h2>
+      <figure class="skill-art">
+        <img src="/images/skill-session-anonymizer.png" alt="A small hand roller applying neat blank masking labels over lines of handwritten text." width="380" height="380" loading="lazy" />
+      </figure>
+      <p>A three-layer, <strong>fully-local</strong> de-identifier for therapy / coaching session transcripts (Russian &amp; English). It installs straight into your coding agent as a skill, so you can say <em>"anonymize this transcript"</em> and it runs on your own machine — no raw client data leaves it.</p>
+      <table>
+        <thead><tr><th>layer</th><th>tool</th><th style="text-align:left">catches</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Natasha</td><td style="text-align:left;font-family:'EB Garamond',serif">Russian names, locations, organizations</td></tr>
+          <tr><td>2</td><td>regex</td><td style="text-align:left;font-family:'EB Garamond',serif">emails, URLs, phones, structured IDs (policy / account / card)</td></tr>
+          <tr><td>3</td><td>Ollama <abbr title="Large Language Model">LLM</abbr></td><td style="text-align:left;font-family:'EB Garamond',serif">medications, dates, contextual IDs</td></tr>
+        </tbody>
+      </table>
+      <p class="note">Plus a Russian entity-propagation pass that masks every <em>variant</em> of a detected name (inflected, possessive, vocative, transliterated) — closing the strict entity-level leaks the benchmark surfaced.</p>
+
+      <h3>Install in one command</h3>
+      <p>The skill is distributed with the <a href="https://www.npmjs.com/package/skills"><code>skills</code></a> CLI. From your project (or with <code>--global</code> for all projects):</p>
+      <pre><code>npx skills add glebis/confide</code></pre>
+      <p class="note">This clones the repo, finds the <code>session-anonymizer</code> skill, auto-detects your agent, and installs it. Then run its one-time setup (installs the three local layers, idempotent): <code>./setup.sh</code> inside the skill folder.</p>
+
+      <p class="cmd-label">Target a specific agent</p>
+      <pre><code>npx skills add glebis/confide --agent claude-code   # or: cursor, codex, windsurf, …
+npx skills add glebis/confide --agent '*'           # install to every detected agent</code></pre>
+
+      <p class="cmd-label">Install globally (all your projects)</p>
+      <pre><code>npx skills add glebis/confide --global</code></pre>
+
+      <p class="cmd-label">Just try it once, without installing</p>
+      <pre><code>npx skills use glebis/confide@session-anonymizer</code></pre>
+
+      <p class="cmd-label">Manual install (no npx)</p>
+      <pre><code>git clone https://github.com/glebis/confide
+cp -r confide/skills/session-anonymizer ~/.claude/skills/   # or your agent's skills dir
+cd ~/.claude/skills/session-anonymizer &amp;&amp; ./setup.sh</code></pre>
+
+      <div class="flyout">
+        <div class="t">consent first</div>
+        <p>The skill is local-first by design, but it never replaces <strong>explicit, informed client consent</strong> for recording and processing a real session. De-identification is harm-reduction, not anonymization — see <a href="/about#ethics">our ethics &amp; consent stance</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ornament">:::</div>
+
+  <section id="skills">
+    <div class="wrap">
+      <div class="prose">
+        <p class="eyebrow">The companion skills</p>
+        <h2>Nine skills for what comes after anonymization</h2>
+        <p>Redaction is step one. The same open package ships nine companion skills — analysis lenses, a supervision self-check, client-facing interventions, and the synthetic-data generator that feeds this benchmark. All are plain-prose skills that run on Claude Code <em>and</em> Codex; analysis output is in Russian (the audience language).</p>
+        <blockquote><strong>The rule that protects the whole package:</strong> local tools ≠ local inference. These agents reason in the cloud by default, so every analysis skill operates <strong>only on already-anonymized, human-reviewed text</strong> — and a safety-boundary scan (flagging material that needs a human protocol) runs <em>before</em> any analysis. It flags; it never scores risk.</blockquote>
+      </div>
+      <div class="skill-grid">
+        {skills.map(s => (
+          <div class="skill-card" id={s.id}>
+            <img src={`/images/skill-${s.id}.png`} alt={s.alt} width="400" height="400" loading="lazy" />
+            <div class="skill-body">
+              <span class={`skill-tag tag-${s.tag}`}>{s.tag}</span>
+              <h3><code>{s.title}</code></h3>
+              <p>{s.blurb}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="prose">
+        <h3>The pipeline order (it matters)</h3>
+        <p><strong>1.</strong> Anonymize locally (<code>session-anonymizer</code>) → manual quasi-identifier check → <strong>2.</strong> safety-boundary scan → <strong>3.</strong> single-session analysis → <strong>4.</strong> multi-session patterns → <strong>5.</strong> supervision self-check → <strong>6.</strong> the interpretive lenses last, at lowest confidence. Every observation follows a fixed schema: evidence quote → interpretation → alternative → confidence in words → clinical action → boundary. No diagnoses, no risk scoring, no treatment decisions.</p>
+        <p class="cmd-label">Install the package</p>
+        <pre><code>npx skills add glebis/psychodemia-2026        # all skills, auto-detects your agent
+git clone {PKG}   # or copy/symlink skill folders manually</code></pre>
+        <p class="note">Each skill is a single plain-prose <code>SKILL.md</code> folder — see the package's <a href={`${PKG}/blob/main/skills/INDEX.md`}>INDEX</a> for per-skill docs and the shared discipline.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ornament">:::</div>
+
+  <section id="red">
+    <div class="wrap prose">
+      <p class="eyebrow">The red-team</p>
+      <h2>CONFIDE-Red — try to re-identify what survived</h2>
+      <p>Removing names is routinely mistaken for "safe." CONFIDE-Red is the adversary that checks: it runs the three <abbr title="General Data Protection Regulation — the EU data-protection law">GDPR</abbr> Article-29 attacks against the <em>redacted</em> output and reports what a motivated reader could still recover.</p>
+      <div class="cards" style="margin:1.4rem 0">
+        <div class="card risk">
+          <h3>Inference</h3>
+          <p>A local LLM attacker, given only the masked transcript, guesses the client's attributes (top-k). A weak local model is a lower bound — a frontier model recovers more.</p>
+        </div>
+        <div class="card risk">
+          <h3>Singling-out</h3>
+          <p>Do the surviving quasi-identifiers, combined, narrow the population to one person? Estimated against sourced priors (illustrative on synthetic personas, not a probability).</p>
+        </div>
+        <div class="card risk">
+          <h3>Linkability</h3>
+          <p>Can two redacted sessions be matched as the same person? Reported as a pairwise <abbr title="Receiver Operating Characteristic — Area Under the Curve">ROC&nbsp;AUC</abbr>: a 0–1 score for how reliably an attacker can tell the two apart, where <strong>1.0</strong> = perfectly linkable and <strong>0.50</strong> = no better than a coin-flip. At or below 0.50 is the safe direction.</p>
+        </div>
+      </div>
+      <p>This is the same attack suite behind the report's <a href="/report/benchmark-report.html#regulatory">residual-risk (RED) tier</a>. It's why we say the honest part out loud: even the best stack leaves a re-identification surface, and CONFIDE-Red is how you measure it before a session ever leaves the room.</p>
+      <p class="cmd-label">Run it (from the repo)</p>
+      <pre><code>git clone https://github.com/glebis/confide &amp;&amp; cd confide
+python -m confide_eval.redteam.confide_red --dataset ru</code></pre>
+      <div class="cta">
+        <a class="btn" href={GH}>Code &amp; docs on GitHub</a>
+        <a class="btn" href="/benchmark">How the benchmark works</a>
+        <a class="btn btn-primary" href="/contribute">Contribute</a>
+      </div>
+    </div>
+  </section>
+</Base>

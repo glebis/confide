@@ -1,0 +1,116 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base page="home" title={null} description="CONFIDE-Bench — a bilingual, recall-first benchmark measuring how well privacy tools hide personal details in psychotherapy transcripts, in Russian and English.">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Bilingual · recall-first · open</p>
+        <h1>Which layer earns its compute?</h1>
+        <p class="lede">CONFIDE-Bench measures how well automatic privacy tools <strong>hide personal details in psychotherapy session transcripts</strong> — in Russian and English — and which combination of detectors is actually worth running.</p>
+        <p class="note">A missed identifier is leaked client data. So the benchmark is <em>recall-first</em>, scores detectors the way published de-identification work does (entity-level, direct vs. quasi), and asks the sharper question: <em>what can only an <abbr title="Large Language Model">LLM</abbr> catch, and what still leaks after we redact?</em></p>
+        <div class="cta">
+          <a class="btn btn-primary" href="/report/benchmark-report.html">Read the interactive report</a>
+          <a class="btn" href="/benchmark">How it works</a>
+          <a class="btn" href="/contribute">Help build it</a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <img src="/images/hero.png" alt="A psychotherapy transcript with personal details being masked — names, places, and a medication covered by redaction blocks." width="900" height="900" />
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <p class="eyebrow">The problem</p>
+      <h2>Therapists want AI help. The transcript can't leak the client.</h2>
+      <p>Therapists increasingly want to use AI to review their sessions — but a raw transcript can reveal a client's name, town, employer, diagnosis, or the medication they take. The fix is to <strong>strip identifying information out before anything leaves the therapist's machine</strong>. That is harder than it sounds:</p>
+      <ul class="ticks">
+        <li><strong>Easy clues</strong> — a phone or email <em>looks</em> like one, so a simple rule catches it.</li>
+        <li><strong>Hard clues</strong> — "I'm the only puppet-maker in my small town" contains no name, yet still points to one person.</li>
+      </ul>
+      <p>CONFIDE-Bench is the scorecard for that job — and, unusually, it covers <strong>Russian as well as English</strong>, and <strong>therapy conversations</strong> rather than hospital notes.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="eyebrow">What it measures</p>
+      <div class="cards">
+        <div class="card">
+          <h3>Did we catch it?</h3>
+          <p>Coverage recall, entity-level (<abbr title="Text Anonymization Benchmark (Pilán et al., 2022)">TAB</abbr>): an entity counts as protected only if <em>every</em> mention is masked. One un-redacted recurrence is a leak. Recall is weighted over precision (F2).</p>
+        </div>
+        <div class="card layered">
+          <h3>What only an LLM catches</h3>
+          <p>Direct IDs fall to rules + <abbr title="Named-Entity Recognition — finding names, places, organizations in text">NER</abbr>. Quasi-identifiers needing world-knowledge — a drug name, an occupation, a spelled-out age — are invisible to pattern layers; the local LLM is the only layer that lifts them.</p>
+        </div>
+        <div class="card risk">
+          <h3>What still leaks</h3>
+          <p>Even after redaction, surviving quasi-identifiers and an inference attack on the masked text show how much re-identification surface remains — mapped onto named regulatory risks.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="eyebrow">Headline findings</p>
+      <h2 class="prose">Direct identifiers are table stakes; quasi-identifiers are the real surface.</h2>
+      <div class="stats">
+        <div class="stat g">
+          <div class="v mono">88%</div>
+          <div class="l">RU default coverage</div>
+          <div class="n">natasha + regex + qwen2.5:3b ★</div>
+        </div>
+        <div class="stat b">
+          <div class="v mono">4</div>
+          <div class="l">datasets</div>
+          <div class="n">RU · RU-adv · EN · RU-real</div>
+        </div>
+        <div class="stat r">
+          <div class="v mono">31%</div>
+          <div class="l">quasi-ID survival</div>
+          <div class="n">both clients · re-id surface</div>
+        </div>
+        <div class="stat a">
+          <div class="v mono">19/20</div>
+          <div class="l">adversarial caught</div>
+          <div class="n">lone leak: a transliterated name</div>
+        </div>
+      </div>
+      <p class="prose note">Three <abbr title="Personally Identifiable Information">PII</abbr> types — age, medication, profession — sit near zero under the deterministic layers. The local LLM raises their mention-recall, but medication and profession stay low at the strict <em>entity</em> level, because every mention must be masked. Redaction of direct identifiers is necessary but not sufficient.</p>
+      <p class="prose note"><strong>Exploratory model-swap finding:</strong> Gemma3 and Gemma4 both beat the current Qwen baseline on completed full short slices; Gemma4 is strongest on quality, while Qwen remains the published default until variance and promotion gates pass.</p>
+      <div class="flyout prose" style="border-left-color:var(--red)">
+        <div class="t" style="color:var(--red)">our position</div>
+        <p>We report the <span class="pill red">RED</span> residual-risk tier on purpose. De-identification is <strong>harm-reduction, not anonymization</strong> — it never replaces <strong>explicit, informed client consent</strong> and local-only handling for any real recording. A tool that promised "safe to upload" would be the dangerous one. <a href="/about#ethics">Read our ethics &amp; consent stance →</a></p>
+      </div>
+      <p class="prose"><a href="/report/benchmark-report.html">See the full interactive report →</a> &nbsp;·&nbsp; <a href="/report/benchmark-report.ru.html">русская версия →</a></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <p class="eyebrow">The toolkit</p>
+      <h2>Not just a scorecard — the tools too.</h2>
+      <p>CONFIDE ships the redactor and the adversary. The <strong>session-anonymizer skill</strong> does three-layer, fully-local de-identification inside your coding agent — install it with <code>npx skills add glebis/confide</code>. <strong>CONFIDE-Red</strong> then tries to re-identify what survived (inference / singling-out / linkability) — the honest check behind the RED tier.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="/toolkit">Explore the toolkit</a>
+        <a class="btn" href="/toolkit#skill">Install the skill</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <p class="eyebrow">Help</p>
+      <h2>The gold standard needs more than one annotator.</h2>
+      <p>To make the benchmark trustworthy, its "gold" labels must be marked by <strong>several independent people</strong> — and <strong>Russian speakers are especially needed</strong>. A pilot is ~6–10 transcripts, roughly 3–5 hours, on your own schedule. You only ever see synthetic or consented data.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="/contribute">How to contribute</a>
+        <a class="btn" href="https://t.me/glebkalinin">Reach out on Telegram</a>
+      </div>
+    </div>
+  </section>
+</Base>

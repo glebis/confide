@@ -1,0 +1,1085 @@
+{
+  "dataset": "ru-adv",
+  "doc_ids": [
+    "ru-adv-00",
+    "ru-adv-01",
+    "ru-adv-02",
+    "ru-adv-03",
+    "ru-adv-04",
+    "ru-adv-05",
+    "ru-adv-06",
+    "ru-adv-07",
+    "ru-adv-08",
+    "ru-adv-09",
+    "ru-adv-10",
+    "ru-adv-11",
+    "ru-adv-12",
+    "ru-adv-13",
+    "ru-adv-14",
+    "ru-adv-15"
+  ],
+  "n_docs": 16,
+  "n_gold_mentions": 20,
+  "comparisons": {
+    "ollama :: llm-only": {
+      "members": [
+        "ollama"
+      ],
+      "n_pred": 25,
+      "coverage_relaxed": {
+        "support": 20,
+        "c": 13,
+        "fp": 7,
+        "fn": 7,
+        "p": 0.72,
+        "r": 0.65,
+        "f1": 0.683,
+        "f2": 0.663,
+        "macro_f1": 0.537,
+        "macro_r": 0.57
+      },
+      "coverage_containment": {
+        "support": 20,
+        "c": 9,
+        "fp": 7,
+        "fn": 11,
+        "p": 0.72,
+        "r": 0.45,
+        "f1": 0.554,
+        "f2": 0.486,
+        "macro_f1": 0.461,
+        "macro_r": 0.431
+      },
+      "type_relaxed": {
+        "support": 20,
+        "c": 12,
+        "fp": 10,
+        "fn": 8,
+        "p": 0.6,
+        "r": 0.6,
+        "f1": 0.6,
+        "f2": 0.6,
+        "macro_f1": 0.526,
+        "macro_r": 0.549
+      },
+      "coverage_relaxed_per_type": {
+        "EMAIL": {
+          "support": 1,
+          "c": 0,
+          "fp": 0,
+          "fn": 1,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ID": {
+          "support": 3,
+          "c": 2,
+          "fp": 2,
+          "fn": 1,
+          "p": 0.6,
+          "r": 0.667,
+          "f1": 0.632,
+          "f2": 0.652
+        },
+        "LOCATION": {
+          "support": 4,
+          "c": 4,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.75,
+          "r": 1.0,
+          "f1": 0.857,
+          "f2": 0.938
+        },
+        "NAME": {
+          "support": 0,
+          "c": 0,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORG": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 8,
+          "c": 6,
+          "fp": 2,
+          "fn": 2,
+          "p": 0.714,
+          "r": 0.75,
+          "f1": 0.732,
+          "f2": 0.743
+        },
+        "PHONE": {
+          "support": 1,
+          "c": 1,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "PROFESSION": {
+          "support": 0,
+          "c": 0,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "URL": {
+          "support": 3,
+          "c": 0,
+          "fp": 0,
+          "fn": 3,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 13,
+        "total": 20,
+        "entity_recall": 0.65,
+        "harm_weighted_recall": 0.725,
+        "by_class": {
+          "direct": {
+            "protected": 10,
+            "total": 17,
+            "recall": 0.588
+          },
+          "quasi": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          }
+        },
+        "by_type": {
+          "PERSON": {
+            "protected": 6,
+            "total": 8,
+            "recall": 0.75
+          },
+          "URL": {
+            "protected": 0,
+            "total": 3,
+            "recall": 0.0
+          },
+          "ID": {
+            "protected": 2,
+            "total": 3,
+            "recall": 0.667
+          },
+          "LOCATION": {
+            "protected": 4,
+            "total": 4,
+            "recall": 1.0
+          },
+          "EMAIL": {
+            "protected": 0,
+            "total": 1,
+            "recall": 0.0
+          },
+          "PHONE": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          }
+        }
+      }
+    },
+    "ollama :: natasha+regex+ollama": {
+      "members": [
+        "natasha",
+        "regex",
+        "ollama"
+      ],
+      "n_pred": 30,
+      "coverage_relaxed": {
+        "support": 20,
+        "c": 19,
+        "fp": 9,
+        "fn": 1,
+        "p": 0.7,
+        "r": 0.95,
+        "f1": 0.806,
+        "f2": 0.887,
+        "macro_f1": 0.888,
+        "macro_r": 0.979
+      },
+      "coverage_containment": {
+        "support": 20,
+        "c": 18,
+        "fp": 9,
+        "fn": 2,
+        "p": 0.7,
+        "r": 0.9,
+        "f1": 0.787,
+        "f2": 0.851,
+        "macro_f1": 0.872,
+        "macro_r": 0.938
+      },
+      "type_relaxed": {
+        "support": 20,
+        "c": 19,
+        "fp": 9,
+        "fn": 1,
+        "p": 0.7,
+        "r": 0.95,
+        "f1": 0.806,
+        "f2": 0.887,
+        "macro_f1": 0.888,
+        "macro_r": 0.979
+      },
+      "coverage_relaxed_per_type": {
+        "EMAIL": {
+          "support": 1,
+          "c": 1,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "ID": {
+          "support": 3,
+          "c": 3,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.6,
+          "r": 1.0,
+          "f1": 0.75,
+          "f2": 0.882
+        },
+        "LOCATION": {
+          "support": 4,
+          "c": 4,
+          "fp": 3,
+          "fn": 0,
+          "p": 0.667,
+          "r": 1.0,
+          "f1": 0.8,
+          "f2": 0.909
+        },
+        "ORG": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 8,
+          "c": 7,
+          "fp": 3,
+          "fn": 1,
+          "p": 0.7,
+          "r": 0.875,
+          "f1": 0.778,
+          "f2": 0.833
+        },
+        "PHONE": {
+          "support": 1,
+          "c": 1,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "URL": {
+          "support": 3,
+          "c": 3,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        }
+      },
+      "entity_level": {
+        "protected": 19,
+        "total": 20,
+        "entity_recall": 0.95,
+        "harm_weighted_recall": 0.925,
+        "by_class": {
+          "direct": {
+            "protected": 16,
+            "total": 17,
+            "recall": 0.941
+          },
+          "quasi": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          }
+        },
+        "by_type": {
+          "PERSON": {
+            "protected": 7,
+            "total": 8,
+            "recall": 0.875
+          },
+          "URL": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "ID": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "LOCATION": {
+            "protected": 4,
+            "total": 4,
+            "recall": 1.0
+          },
+          "EMAIL": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          },
+          "PHONE": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          }
+        }
+      }
+    },
+    "local-gemma3-latest-hybrid :: llm-only": {
+      "members": [
+        "local-gemma3-latest-hybrid"
+      ],
+      "n_pred": 33,
+      "coverage_relaxed": {
+        "support": 20,
+        "c": 20,
+        "fp": 10,
+        "fn": 0,
+        "p": 0.697,
+        "r": 1.0,
+        "f1": 0.821,
+        "f2": 0.92,
+        "macro_f1": 0.608,
+        "macro_r": 1.0
+      },
+      "coverage_containment": {
+        "support": 20,
+        "c": 18,
+        "fp": 10,
+        "fn": 2,
+        "p": 0.697,
+        "r": 0.9,
+        "f1": 0.786,
+        "f2": 0.85,
+        "macro_f1": 0.585,
+        "macro_r": 0.792
+      },
+      "type_relaxed": {
+        "support": 20,
+        "c": 15,
+        "fp": 16,
+        "fn": 5,
+        "p": 0.515,
+        "r": 0.75,
+        "f1": 0.611,
+        "f2": 0.687,
+        "macro_f1": 0.514,
+        "macro_r": 0.646
+      },
+      "coverage_relaxed_per_type": {
+        "DIMINUTIVE": {
+          "support": 0,
+          "c": 0,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "EMAIL": {
+          "support": 1,
+          "c": 1,
+          "fp": 0,
+          "fn": 0,
+          "p": 0.0,
+          "r": 1.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ID": {
+          "support": 3,
+          "c": 3,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.8,
+          "r": 1.0,
+          "f1": 0.889,
+          "f2": 0.952
+        },
+        "LANGUAGE": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "LOCATION": {
+          "support": 4,
+          "c": 4,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "ORG": {
+          "support": 0,
+          "c": 0,
+          "fp": 3,
+          "fn": 0,
+          "p": 0.25,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 8,
+          "c": 8,
+          "fp": 5,
+          "fn": 0,
+          "p": 0.615,
+          "r": 1.0,
+          "f1": 0.762,
+          "f2": 0.889
+        },
+        "PHONE": {
+          "support": 1,
+          "c": 1,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "SOCIAL_HANDLE": {
+          "support": 0,
+          "c": 0,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "URL": {
+          "support": 3,
+          "c": 3,
+          "fp": 0,
+          "fn": 0,
+          "p": 0.0,
+          "r": 1.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 20,
+        "total": 20,
+        "entity_recall": 1.0,
+        "harm_weighted_recall": 1.0,
+        "by_class": {
+          "direct": {
+            "protected": 17,
+            "total": 17,
+            "recall": 1.0
+          },
+          "quasi": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          }
+        },
+        "by_type": {
+          "PERSON": {
+            "protected": 8,
+            "total": 8,
+            "recall": 1.0
+          },
+          "URL": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "ID": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "LOCATION": {
+            "protected": 4,
+            "total": 4,
+            "recall": 1.0
+          },
+          "EMAIL": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          },
+          "PHONE": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          }
+        }
+      }
+    },
+    "local-gemma3-latest-hybrid :: natasha+regex+local-gemma3-latest-hybrid": {
+      "members": [
+        "natasha",
+        "regex",
+        "local-gemma3-latest-hybrid"
+      ],
+      "n_pred": 32,
+      "coverage_relaxed": {
+        "support": 20,
+        "c": 20,
+        "fp": 10,
+        "fn": 0,
+        "p": 0.688,
+        "r": 1.0,
+        "f1": 0.815,
+        "f2": 0.917,
+        "macro_f1": 0.924,
+        "macro_r": 1.0
+      },
+      "coverage_containment": {
+        "support": 20,
+        "c": 19,
+        "fp": 10,
+        "fn": 1,
+        "p": 0.688,
+        "r": 0.95,
+        "f1": 0.798,
+        "f2": 0.883,
+        "macro_f1": 0.903,
+        "macro_r": 0.958
+      },
+      "type_relaxed": {
+        "support": 20,
+        "c": 20,
+        "fp": 10,
+        "fn": 0,
+        "p": 0.688,
+        "r": 1.0,
+        "f1": 0.815,
+        "f2": 0.917,
+        "macro_f1": 0.924,
+        "macro_r": 1.0
+      },
+      "coverage_relaxed_per_type": {
+        "EMAIL": {
+          "support": 1,
+          "c": 1,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "ID": {
+          "support": 3,
+          "c": 3,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.75,
+          "r": 1.0,
+          "f1": 0.857,
+          "f2": 0.938
+        },
+        "LANGUAGE": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "LOCATION": {
+          "support": 4,
+          "c": 4,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.857,
+          "r": 1.0,
+          "f1": 0.923,
+          "f2": 0.968
+        },
+        "ORG": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 8,
+          "c": 8,
+          "fp": 5,
+          "fn": 0,
+          "p": 0.615,
+          "r": 1.0,
+          "f1": 0.762,
+          "f2": 0.889
+        },
+        "PHONE": {
+          "support": 1,
+          "c": 1,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "URL": {
+          "support": 3,
+          "c": 3,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        }
+      },
+      "entity_level": {
+        "protected": 20,
+        "total": 20,
+        "entity_recall": 1.0,
+        "harm_weighted_recall": 1.0,
+        "by_class": {
+          "direct": {
+            "protected": 17,
+            "total": 17,
+            "recall": 1.0
+          },
+          "quasi": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          }
+        },
+        "by_type": {
+          "PERSON": {
+            "protected": 8,
+            "total": 8,
+            "recall": 1.0
+          },
+          "URL": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "ID": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "LOCATION": {
+            "protected": 4,
+            "total": 4,
+            "recall": 1.0
+          },
+          "EMAIL": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          },
+          "PHONE": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          }
+        }
+      }
+    },
+    "local-gemma4-12b-mlx-hybrid :: llm-only": {
+      "members": [
+        "local-gemma4-12b-mlx-hybrid"
+      ],
+      "n_pred": 26,
+      "coverage_relaxed": {
+        "support": 20,
+        "c": 19,
+        "fp": 5,
+        "fn": 1,
+        "p": 0.808,
+        "r": 0.95,
+        "f1": 0.873,
+        "f2": 0.918,
+        "macro_f1": 0.632,
+        "macro_r": 0.979
+      },
+      "coverage_containment": {
+        "support": 20,
+        "c": 18,
+        "fp": 5,
+        "fn": 2,
+        "p": 0.808,
+        "r": 0.9,
+        "f1": 0.851,
+        "f2": 0.88,
+        "macro_f1": 0.608,
+        "macro_r": 0.938
+      },
+      "type_relaxed": {
+        "support": 20,
+        "c": 15,
+        "fp": 9,
+        "fn": 5,
+        "p": 0.654,
+        "r": 0.75,
+        "f1": 0.699,
+        "f2": 0.729,
+        "macro_f1": 0.524,
+        "macro_r": 0.646
+      },
+      "coverage_relaxed_per_type": {
+        "EMAIL": {
+          "support": 1,
+          "c": 1,
+          "fp": 0,
+          "fn": 0,
+          "p": 0.0,
+          "r": 1.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ID": {
+          "support": 3,
+          "c": 3,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.75,
+          "r": 1.0,
+          "f1": 0.857,
+          "f2": 0.938
+        },
+        "LOCATION": {
+          "support": 4,
+          "c": 4,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "ORG": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 8,
+          "c": 7,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.875,
+          "f1": 0.933,
+          "f2": 0.897
+        },
+        "PHONE": {
+          "support": 1,
+          "c": 1,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "PROFESSION": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "URL": {
+          "support": 3,
+          "c": 3,
+          "fp": 0,
+          "fn": 0,
+          "p": 0.0,
+          "r": 1.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 19,
+        "total": 20,
+        "entity_recall": 0.95,
+        "harm_weighted_recall": 0.925,
+        "by_class": {
+          "direct": {
+            "protected": 16,
+            "total": 17,
+            "recall": 0.941
+          },
+          "quasi": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          }
+        },
+        "by_type": {
+          "PERSON": {
+            "protected": 7,
+            "total": 8,
+            "recall": 0.875
+          },
+          "URL": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "ID": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "LOCATION": {
+            "protected": 4,
+            "total": 4,
+            "recall": 1.0
+          },
+          "EMAIL": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          },
+          "PHONE": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          }
+        }
+      }
+    },
+    "local-gemma4-12b-mlx-hybrid :: natasha+regex+local-gemma4-12b-mlx-hybrid": {
+      "members": [
+        "natasha",
+        "regex",
+        "local-gemma4-12b-mlx-hybrid"
+      ],
+      "n_pred": 28,
+      "coverage_relaxed": {
+        "support": 20,
+        "c": 20,
+        "fp": 6,
+        "fn": 0,
+        "p": 0.786,
+        "r": 1.0,
+        "f1": 0.88,
+        "f2": 0.948,
+        "macro_f1": 0.936,
+        "macro_r": 1.0
+      },
+      "coverage_containment": {
+        "support": 20,
+        "c": 19,
+        "fp": 6,
+        "fn": 1,
+        "p": 0.786,
+        "r": 0.95,
+        "f1": 0.86,
+        "f2": 0.912,
+        "macro_f1": 0.915,
+        "macro_r": 0.958
+      },
+      "type_relaxed": {
+        "support": 20,
+        "c": 20,
+        "fp": 6,
+        "fn": 0,
+        "p": 0.786,
+        "r": 1.0,
+        "f1": 0.88,
+        "f2": 0.948,
+        "macro_f1": 0.936,
+        "macro_r": 1.0
+      },
+      "coverage_relaxed_per_type": {
+        "EMAIL": {
+          "support": 1,
+          "c": 1,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "ID": {
+          "support": 3,
+          "c": 3,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.6,
+          "r": 1.0,
+          "f1": 0.75,
+          "f2": 0.882
+        },
+        "LOCATION": {
+          "support": 4,
+          "c": 4,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.857,
+          "r": 1.0,
+          "f1": 0.923,
+          "f2": 0.968
+        },
+        "ORG": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 8,
+          "c": 8,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.889,
+          "r": 1.0,
+          "f1": 0.941,
+          "f2": 0.976
+        },
+        "PHONE": {
+          "support": 1,
+          "c": 1,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "URL": {
+          "support": 3,
+          "c": 3,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        }
+      },
+      "entity_level": {
+        "protected": 20,
+        "total": 20,
+        "entity_recall": 1.0,
+        "harm_weighted_recall": 1.0,
+        "by_class": {
+          "direct": {
+            "protected": 17,
+            "total": 17,
+            "recall": 1.0
+          },
+          "quasi": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          }
+        },
+        "by_type": {
+          "PERSON": {
+            "protected": 8,
+            "total": 8,
+            "recall": 1.0
+          },
+          "URL": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "ID": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "LOCATION": {
+            "protected": 4,
+            "total": 4,
+            "recall": 1.0
+          },
+          "EMAIL": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          },
+          "PHONE": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          }
+        }
+      }
+    }
+  }
+}

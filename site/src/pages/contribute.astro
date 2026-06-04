@@ -1,0 +1,97 @@
+---
+import Base from '../layouts/Base.astro';
+const TG = 'https://t.me/glebkalinin';
+const GH = 'https://github.com/glebis/confide';
+---
+<Base page="contribute" title="Contribute" description="Help build CONFIDE — annotate transcripts, add a language, or run the benchmark. Russian annotators especially needed.">
+  <section class="hero">
+    <div class="wrap fig-grid">
+      <div class="prose">
+        <p class="eyebrow">Contribute</p>
+        <h1>Help build a safer mental-health AI</h1>
+        <p class="sub">CONFIDE is open. The single most valuable thing you can do is help label its gold standard — and <strong>Russian speakers are especially needed</strong>.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href={TG}>Volunteer to annotate</a>
+          <a class="btn" href={GH}>Contribute code</a>
+        </div>
+      </div>
+      <figure class="fig">
+        <img src="/images/contribute.png" alt="Several hands, each with a different coloured highlighter, independently marking the same transcript — collaborative annotation." width="600" height="600" loading="lazy" />
+        <figcaption>Independent annotators, one shared gold standard.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <h2>Annotate transcripts <span class="pill red">most wanted</span></h2>
+      <p>Therapists increasingly want AI to review their sessions — but a raw transcript can leak a client's name, diagnosis, employer, or worse. CONFIDE measures how well automatic tools strip that out <em>before</em> anything leaves the therapist's machine. To make the benchmark trustworthy, its gold standard must be labelled by <strong>several independent people</strong>, not just one. That's where you come in.</p>
+
+      <h3>What you'd do</h3>
+      <ul class="ticks">
+        <li>Read short therapy/counselling transcripts and <strong>highlight every piece of identifying information</strong> — names, places, employers, ages, dates, phone numbers, medications.</li>
+        <li>Follow a clear <strong>codebook</strong> (provided, plus a 30-minute walkthrough); label in a simple tool — no coding.</li>
+        <li>Work <strong>independently</strong> — that's the point: we measure how much annotators agree.</li>
+      </ul>
+
+      <div class="cards" style="margin:1.6rem 0">
+        <div class="card">
+          <h3>Time</h3>
+          <p>A pilot of ~6–10 transcripts, roughly <strong>3–5 hours total</strong>, on your own schedule. Optional follow-up adjudication session to resolve disagreements together.</p>
+        </div>
+        <div class="card layered">
+          <h3>Who fits</h3>
+          <p>Psychologists, therapists, counsellors, linguists, privacy/NLP people — or simply careful, detail-oriented readers. <strong>Russian especially</strong>; English too; German/French/Spanish welcome next.</p>
+        </div>
+        <div class="card">
+          <h3>What you get</h3>
+          <p>Co-authorship or named acknowledgement (your choice), a concrete contribution to open mental-health privacy research, and a certificate of contribution if useful.</p>
+        </div>
+      </div>
+
+      <div class="flyout">
+        <div class="t">privacy &amp; ethics</div>
+        <p>You only ever see <strong>synthetic</strong> (AI-generated, fictional) transcripts, or real ones used <strong>only with the client's explicit, informed consent</strong> under a strict local-only protocol. <strong>No real client data is ever exposed</strong> — and no real recording is ever made or processed without that consent. Nothing you see may be copied or re-shared; only your labels are collected.</p>
+        <p class="note">CONFIDE is honest that de-identification is harm-reduction, not anonymization — the default stack still lands at the <span class="pill red">RED</span> residual-risk tier. That honesty is the point. See our full position on <a href="/about#ethics">ethics &amp; consent</a>.</p>
+      </div>
+
+      <p><strong>Interested?</strong> Reach out at <a href={TG}>t.me/glebkalinin</a> with one line about your background (clinical / linguistic / technical / careful-reader) and which language(s) you can annotate. No experience required — we train you.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <h2>Contribute code &amp; data</h2>
+      <p>Prefer to help technically? The benchmark is fully reproducible and modular:</p>
+      <ul class="ticks">
+        <li><strong>Add a detector layer</strong> — wire a new de-identifier into the cache/manifest pipeline; it scores against the same gold as everything else.</li>
+        <li><strong>Add a language</strong> — German, French, and Spanish are the next targets; the report is already internationalized from one source.</li>
+        <li><strong>Add a real-text anchor</strong> — like the RU-real (JayGuard) slice: an external, licensed, anonymized corpus mapped into the CONFIDE gold schema.</li>
+        <li><strong>Run it &amp; report</strong> — reproduce the numbers on your hardware, file discrepancies, or stress the adversarial probe with new hard forms.</li>
+      </ul>
+      <p>Start from the <a href={GH}>repository</a> — the datasheet, annotation codebook, preregistration, and reproducibility guide are all in <code>docs/</code>.</p>
+      <div class="cta">
+        <a class="btn" href={GH}>Open an issue / PR</a>
+        <a class="btn" href="/report/benchmark-report.html">See current results</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="ornament">· · ·</div>
+
+  <section style="border-top:none; padding-top:0">
+    <div class="wrap prose">
+      <h2 lang="ru">По-русски</h2>
+      <p lang="ru" class="sub">Помогите собрать CONFIDE — открытый бенчмарк для безопасного удаления персональных данных из расшифровок психотерапии.</p>
+      <p lang="ru">Психологи всё чаще хотят использовать ИИ для разбора своих сессий — но отправка «сырой» расшифровки в облако может раскрыть имя клиента, диагноз, место работы и не только. CONFIDE измеряет, насколько хорошо автоматические инструменты вычищают идентифицирующую информацию <em>до того</em>, как что-либо покидает компьютер терапевта. Чтобы бенчмарк был достоверным, его «эталон» должны разметить <strong>несколько независимых людей</strong>. Здесь нужны вы — <strong>особенно носители русского языка</strong>.</p>
+      <h3 lang="ru">Что нужно делать</h3>
+      <ul class="ticks" lang="ru">
+        <li>Читать короткие расшифровки сессий и <strong>выделять каждую единицу идентифицирующей информации</strong> — имена, места, работодателей, возраст, даты, телефоны, лекарства.</li>
+        <li>Следовать понятному <strong>кодбуку</strong> (даём его и 30-минутный разбор); разметка в простом инструменте, программировать не нужно.</li>
+        <li>Работать <strong>независимо</strong> — мы измеряем согласованность разметчиков.</li>
+      </ul>
+      <p lang="ru"><strong>Время:</strong> пилот из ~6–10 расшифровок, примерно <strong>3–5 часов</strong>, в удобном темпе. <strong>Конфиденциальность:</strong> вы видите только синтетические (вымышленные) расшифровки или согласованные реальные под строгим локальным протоколом — реальные данные клиентов никогда не раскрываются.</p>
+      <p lang="ru"><strong>Хотите помочь?</strong> Напишите на <a href={TG}>t.me/glebkalinin</a> одну строку о себе (клиника / лингвистика / техника / внимательный читатель) и на каком языке готовы размечать. Опыт не нужен — мы обучим.</p>
+    </div>
+  </section>
+</Base>

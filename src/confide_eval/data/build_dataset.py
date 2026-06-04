@@ -2,16 +2,16 @@
 """
 Build the English PII eval dataset(s) for the OpenAI Privacy Filter eval.
 
-Outputs two JSONL files under ../sessions-en/:
+Outputs the redistributable JSONL file under ../sessions-en/:
   1. pii-eval.jsonl        -- PRIMARY. Curated, synthetic, therapy-style snippets.
                               Authored by hand for the masterclass demo. Every entity
                               is gold-labeled against the model's 8 categories.
-  2. pii-eval-ai4privacy.jsonl -- SECONDARY (optional, requires `datasets` + network).
-                              A real slice of ai4privacy/pii-masking-300k (English),
-                              label-mapped to the model's 8 categories. Generic
-                              (non-therapy) content; kept as a real-data sanity check.
+An optional local-only EN-real slice can be built through
+`python -m confide_eval.data.fetch_ai4privacy` (requires `datasets` + network). It
+samples ai4privacy/pii-masking-300k under that dataset's own license and writes the
+gitignored pii-eval-ai4privacy.jsonl; the public tree must not ship that derivative.
 
-Each line in either file:
+Each line:
   {"text": "...", "spans": [{"start": int, "end": int, "type": "<one of 8>", "value": "..."}],
    "source": "curated-synthetic" | "ai4privacy-300k"}
 
@@ -146,7 +146,7 @@ def build_curated(path):
 
 
 # ---------------------------------------------------------------------------
-# SECONDARY: real ai4privacy slice, label-mapped to the 8 model categories.
+# OPTIONAL LOCAL: real ai4privacy slice, label-mapped to the 8 model categories.
 # ai4privacy label -> model label. Unmapped labels are dropped (the model has
 # no category for them, so they would only add noise).
 # ---------------------------------------------------------------------------
@@ -222,4 +222,5 @@ def build_ai4privacy(path, n=15, seed=13):
 
 if __name__ == "__main__":
     build_curated(os.path.join(OUT_DIR, "pii-eval.jsonl"))
-    build_ai4privacy(os.path.join(OUT_DIR, "pii-eval-ai4privacy.jsonl"))
+    print("[ai4privacy] optional EN-real not built by default; run "
+          "`python -m confide_eval.data.fetch_ai4privacy` locally if licensed.")

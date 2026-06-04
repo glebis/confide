@@ -39,7 +39,8 @@ and a local **qwen** LLM — contributes to redacting PII, and crucially **which
 |---|---|---|
 | `dev` | RU-synth, clients a/c/e | fully **fictional** therapy series (no real patients), hand-built from answer-key PII inventories |
 | `test` | RU-synth, clients b/d/f | distinct synthetic people → no profile leakage across splits |
-| `en` | curated synthetic + `ai4privacy/pii-masking-300k` slice | English validation |
+| `en` | curated synthetic | English validation |
+| `en-real` | optional local `ai4privacy/pii-masking-300k` slice | not redistributed; build locally only if licensed |
 
 ## PII taxonomy (canonical)
 
@@ -63,10 +64,10 @@ Type-aware relaxed span results from `score_bench.py`.
 | Dataset | Snippets | Gold PII | Recall | Precision | F1 | **F2** |
 |---|--:|--:|--:|--:|--:|--:|
 | curated therapy-style | 32 | 46 | 0.783 | 0.953 | 0.860 | **0.812** |
-| ai4privacy (in-distribution) | 15 | 80 | 0.975 | 0.780 | 0.867 | **0.929** |
 
 > Measured locally on an Apple Silicon laptop — our own numbers, not vendor marketing
 > (the model card claims F1 96%).
+> The ai4privacy EN-real anchor is optional and local-only; its gold/results are not redistributed.
 > The Privacy Filter remains in the benchmark as a comparison point. It is not the Russian default;
 > deterministic regex + Natasha + local qwen is the local-first stack.
 
@@ -87,6 +88,8 @@ LLM_API=ollama LLM_BASE_URL=http://localhost:11434 LLM_MODEL=qwen2.5:3b ./run-be
 ```
 
 See `BENCHMARK.md` for the full datasheet and `DATASHEET.md` for the data statement.
+Before adding a new LLM model, provider, prompt/runtime variant, or fixed stack combo, use
+`BENCHMARK-MODEL-STACK-CHECKLIST.md` so experiments stay separate from published defaults.
 
 ## ⚠️ Disclaimer
 

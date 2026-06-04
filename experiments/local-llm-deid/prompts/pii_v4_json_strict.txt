@@ -1,0 +1,15 @@
+Task: extract redaction candidates.
+
+Return valid JSON only. The entire response must parse with json.loads as a single array.
+
+Schema:
+[{"text":"substring copied exactly from input","type":"PERSON|LOCATION|ORG|PHONE|DATE|ADDRESS|MEDICATION|ID|AGE|PROFESSION"}]
+
+Selection policy:
+1. Mark direct identifiers: names, places, organizations, phone numbers, dates, addresses, account numbers, social handles, document numbers.
+2. Mark quasi-identifiers: age, profession, rare medication plus dose, rare school or employer, and distinctive personal facts.
+3. Do not invent normalized forms. If the exact substring is absent, omit it.
+4. Do not write prose before or after the JSON.
+
+Input:
+{text}

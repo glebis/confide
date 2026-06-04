@@ -60,7 +60,7 @@ Composite per dataset for the ★ combo.
 
 - New module `src/confide_eval/scoring/regulatory.py`:
   - reuse `score_bench` helpers (`union_preds`, gold loader, overlap fn) — import, don't duplicate.
-  - compute families 1–4 for the ★ combo of `ru` (primary) and `en`/`en-real` where applicable.
+  - compute families 1–4 for the ★ combo of `ru` (primary), `en`, and optional local `en-real` where applicable.
   - write `results/regulatory-results.json`.
 - Report `make_tufte_report.py`: load `regulatory-results.json`; add findings subsection **f7
   "Regulatory residual-risk"** (status-strip with the gate + triad + HIPAA coverage + worst-case), a
@@ -96,7 +96,7 @@ The draft was reviewed against the real data shapes. Corrections (all must-fix):
 
 ### 3. Gate → "residual-risk tier" (ordinal R/A/G ONLY; no scalar weighted index)
 - Drop the 0–1 index and the "safe to send to cloud?" wording (legal/operational claim, would embarrass the paper). 
-- **RU only** (EN/EN-real star combos have no `entity_level`). 
+- **RU only** (EN and optional local EN-real star combos have no `entity_level`).
 - Inputs from stored results: residual direct = `entity_level.by_class.direct.{total-protected}`; special-category residual via span `confidential_status` (NOT an invented `DIAGNOSIS` type) and `entity_level.by_type.MEDICATION`; inference from `B_inference_attack`; linkability above base rate.
 - **RED** = any residual direct ID; **AMBER** = residual special/confidential quasi OR nonzero inference OR linkability above baseline; **GREEN** = all residual-risk tests zero/near-baseline.
 

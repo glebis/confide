@@ -1,0 +1,94 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base page="about" title="About" description="Why CONFIDE-Bench exists: a recall-first, bilingual de-identification benchmark for therapy transcripts, built on synthetic data.">
+  <section class="hero">
+    <div class="wrap prose">
+      <p class="eyebrow">About</p>
+      <h1>De-identification, in plain language</h1>
+      <p class="sub">A sticker-checking game for robots: how good are different tools at finding every private detail in a therapy transcript — without erasing the parts a therapist still needs?</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="fig-grid left">
+        <figure class="fig">
+          <img src="/images/about.png" alt="A single figure pinpointed by four ordinary attributes — age, workplace, city, medication — each harmless alone but together identifying one person." width="600" height="600" loading="lazy" />
+          <figcaption>Quasi-identifiers: ordinary alone, identifying together.</figcaption>
+        </figure>
+        <div class="prose">
+          <h2>The two kinds of clues</h2>
+          <p>De-identification means removing the clues that reveal <em>who</em> someone is. There are two kinds:</p>
+          <ul class="ticks">
+            <li><strong>Direct identifiers</strong> — a name, phone, email, ID number. One of these alone points to you.</li>
+            <li><strong>Quasi-identifiers</strong> — your age, your job, your city, your employer, a medication. Each is shared by many people, but stack three or four together and only one person matches.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section style="border-top:none; padding-top:0">
+    <div class="wrap prose">
+      <p>CONFIDE-Bench tests a <strong>team of tools working together</strong>: a rule-checker for patterns (phones, emails), a name-finder for Russian (Natasha), the OpenAI Privacy Filter for English, and a small <strong>local</strong> language model (Qwen2.5-3B via Ollama) for the trickier, world-knowledge clues. The scorecard answers three questions:</p>
+      <dl class="wwn">
+        <dt>Did we catch it?</dt><dd>We count misses — <strong>a miss is a leak</strong>.</dd>
+        <dt>Did we erase too much?</dt><dd>Covering up real therapy content is its own cost (utility).</dd>
+        <dt>Could someone still guess?</dt><dd>We let a local AI try to re-identify the client from what's left.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <h2>Why this benchmark is different</h2>
+      <ul class="ticks">
+        <li><strong>Bilingual.</strong> Almost every de-id benchmark is English-only; CONFIDE covers <strong>Russian and English</strong>, with Russian as the priority and the harder side.</li>
+        <li><strong>Therapy, not hospital notes.</strong> Existing clinical de-id work targets structured medical records; therapy conversation is messier and more revealing.</li>
+        <li><strong>Recall-first, entity-level.</strong> Scored the way privacy researchers do — a recall-weighted F2, and the strict <abbr title="Text Anonymization Benchmark (Pilán et al., 2022)">TAB</abbr> bar where an entity is "protected" only if <em>all</em> its mentions are masked.</li>
+        <li><strong>Local-first.</strong> The default stack runs on the therapist's own machine — nothing sensitive goes to the cloud to be de-identified.</li>
+        <li><strong>Honest about what survives.</strong> It reports the residual re-identification surface and maps it onto named regulatory risks (<abbr title="Article-29 Working Party — the EU data-protection advisory body (now the EDPB)">WP29</abbr> singling-out / linkability / inference; a HIPAA-inspired checklist).</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="ethics">
+    <div class="wrap prose">
+      <p class="eyebrow">Ethics, consent &amp; our stance</p>
+      <h2>Consent first — and honesty about what survives</h2>
+
+      <h3>Explicit consent for every recording</h3>
+      <p>The benchmark is built on <strong>synthetic, fictional</strong> transcripts — no real patients. But the tools it measures are meant, eventually, for <em>real</em> therapy sessions, and there our position is unambiguous: <strong>any real recording or transcript must have the client's explicit, informed consent</strong> before it is recorded, stored, or processed — including being run through these de-identification tools. Consent is specific (this purpose), revocable, and documented; processing is <strong>local-only</strong> by default, so nothing identifiable leaves the therapist's machine. No real session data should ever be re-identified, and none is exposed to annotators.</p>
+
+      <h3>Our stance</h3>
+      <ul class="ticks">
+        <li><strong>Privacy-first, local-first.</strong> The default stack runs on the therapist's own machine; the cloud is opt-in, after redaction, and only with consent.</li>
+        <li><strong>Recall-first &amp; honest.</strong> We weight catching a leak over tidy precision, and we publish our misses, our confidence intervals, and our limitations rather than a single flattering number.</li>
+        <li><strong>Harm-reduction, not a guarantee.</strong> De-identification lowers risk; it does not make a transcript safe to share freely. We say so plainly.</li>
+      </ul>
+
+      <h3>The red part — what we don't hide</h3>
+      <div class="flyout" style="border-left-color:var(--red)">
+        <div class="t" style="color:var(--red)">residual risk: RED</div>
+        <p>Under named regulatory risks (the WP29 singling-out / linkability / inference triad, plus a HIPAA-inspired checklist), the default Russian stack lands at the <strong style="color:var(--red)">RED</strong> tier: a direct identifier can still leak at the strict entity bar, and <strong>~31% of quasi-identifiers survive</strong> the redaction. A local inference attack recovers attributes from the <em>masked</em> text — a lower bound, since a frontier model would recover more.</p>
+        <p>We report this prominently <em>by design</em>. A tool that claimed "anonymized — safe to upload" would be the dangerous one. CONFIDE's value is the opposite: it shows exactly how much re-identification surface remains, so a clinician can decide — with the client — whether a given session may leave the room at all.</p>
+      </div>
+
+      <h3>What this is — and is NOT</h3>
+      <p><strong>Not a <abbr title="Health Insurance Portability and Accountability Act — the US health-privacy law">HIPAA</abbr>/<abbr title="General Data Protection Regulation — the EU data-protection law">GDPR</abbr> compliance certificate.</strong> Types map loosely to Safe-Harbor / GDPR identifier concepts, but the mapping is illustrative, not legal certification. The one real-text exception in the data is the external <strong>RU-real (JayGuard)</strong> slice — anonymized, non-clinical, public Russian text under an Apache-2.0 licence. Samples are small, so per-type numbers are directional.</p>
+      <p>Gold labels are currently located from curated answer-keys and hand-verified — a planted-signal recovery eval, not yet independently annotated. That is exactly why <a href="/contribute">multi-annotator labelling</a> is the project's most-wanted contribution.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap prose">
+      <h2>Who &amp; where</h2>
+      <p>CONFIDE is built by <a href="https://github.com/glebis">Gleb Kalinin</a> and contributors, for the Psychodemia 2026 masterclass. The tooling, gold, and the full datasheet are released openly so others can build safer mental-health AI.</p>
+      <p>Built on the de-identification and re-identification literature — TAB (Pilán et al. 2022), <abbr title="Informatics for Integrating Biology & the Bedside — a clinical de-identification challenge">i2b2</abbr>/<abbr title="National NLP Clinical Challenges — clinical de-identification shared tasks">n2c2</abbr>, Microsoft Presidio-research, Staab et al. on <abbr title="Large Language Model">LLM</abbr> inference attacks, and the Datasheets for Datasets / Data Statements documentation standards. Full credits are in the <a href="/report/benchmark-report.html#references">report references</a>.</p>
+      <div class="cta">
+        <a class="btn" href="https://github.com/glebis/confide">Code &amp; docs on GitHub</a>
+        <a class="btn" href="/benchmark">How the benchmark works</a>
+      </div>
+    </div>
+  </section>
+</Base>

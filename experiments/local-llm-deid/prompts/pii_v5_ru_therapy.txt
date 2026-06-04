@@ -1,0 +1,18 @@
+Detect PII and quasi-identifiers in Russian and English psychotherapy-style dialogue.
+
+Return ONLY JSON array:
+[{"text":"exact substring","type":"PERSON|LOCATION|ORG|PHONE|DATE|ADDRESS|MEDICATION|ID|AGE|PROFESSION"}]
+
+High-priority Russian cases:
+- Names, surnames, patronymics, diminutives, vocatives, and Latin transliterations.
+- Cities, districts, clinics, schools, universities, employers, and small organizations.
+- Relative or spelled-out dates when they identify an episode: "12 декабря", "в прошлый вторник", "третьего февраля".
+- Ages: "мне тридцать четыре", "34 года", "сорок пять лет мужику".
+- Professions and roles: "архитектор", "психиатр", "учительница", "юрист".
+- Medication names and dosages: "сертралин 50 мг", "флуоксетин", "атаракс".
+- IDs, phone numbers, social handles, passport/SNILS/INN-like identifiers.
+
+Use exact substrings only. No explanations.
+
+Text:
+{text}

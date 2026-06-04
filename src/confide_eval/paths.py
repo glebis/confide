@@ -28,12 +28,10 @@ ANONYMIZER_SCRIPTS = SKILLS / "session-anonymizer" / "scripts"
 
 # Canonical gold files.
 #
-# EN-real (ai4privacy) is special: the committed file ships span offsets +
-# per-doc sha256 ONLY — the source `text` is NOT redistributed (ai4privacy's
-# license restricts redistribution). A runnable, text-bearing copy is fetched
-# on demand by `python -m confide_eval.data.fetch_ai4privacy`, which writes the
-# gitignored `*.local.jsonl` below. en_real_gold() prefers the local file when
-# present and falls back to the stripped (text-less) committed file otherwise.
+# EN-real (ai4privacy) is special: ai4privacy-derived source text, spans, caches,
+# and results are local-only because the license restricts redistribution. Build
+# or fetch it on demand under ai4privacy's own license; the generated file is
+# gitignored and absent in the public tree.
 GOLD = {
     "ru":      SESSIONS_RU / "pii-eval-ru.jsonl",
     "ru-adv":  SESSIONS_RU / "pii-adversarial-ru.jsonl",
@@ -45,17 +43,25 @@ GOLD = {
     "ru-real": SESSIONS_RU_REAL / "jayguard-ru.jsonl",
 }
 
-# Stripped (committed, text-less) and local (fetched, text-bearing) EN-real gold.
-EN_REAL_STRIPPED = SESSIONS_EN / "pii-eval-ai4privacy.jsonl"
-EN_REAL_LOCAL = SESSIONS_EN / "pii-eval-ai4privacy.local.jsonl"
+# Local-only, gitignored EN-real gold. The legacy `.local.jsonl` name is accepted
+# for existing worktrees, but new local builds use `pii-eval-ai4privacy.jsonl`.
+EN_REAL_LOCAL = SESSIONS_EN / "pii-eval-ai4privacy.jsonl"
+EN_REAL_LEGACY_LOCAL = SESSIONS_EN / "pii-eval-ai4privacy.local.jsonl"
 
 
 def en_real_gold():
-    """Resolve the EN-real gold path: the fetched `.local.jsonl` (text present)
-    if it exists, else the stripped committed file (no source text)."""
-    return EN_REAL_LOCAL if EN_REAL_LOCAL.exists() else EN_REAL_STRIPPED
+    """Resolve the local-only EN-real gold path.
+
+    The path may not exist in a public checkout; callers must check
+    en_real_text_present() before loading EN-real.
+    """
+    if EN_REAL_LOCAL.exists():
+        return EN_REAL_LOCAL
+    if EN_REAL_LEGACY_LOCAL.exists():
+        return EN_REAL_LEGACY_LOCAL
+    return EN_REAL_LOCAL
 
 
 def en_real_text_present():
-    """True iff the runnable, text-bearing EN-real gold has been fetched."""
-    return EN_REAL_LOCAL.exists()
+    """True iff runnable, text-bearing EN-real gold exists locally."""
+    return EN_REAL_LOCAL.exists() or EN_REAL_LEGACY_LOCAL.exists()

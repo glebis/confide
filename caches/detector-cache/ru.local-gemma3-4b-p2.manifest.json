@@ -1,0 +1,20 @@
+{
+  "dataset": "ru",
+  "detector": "local-gemma3-4b-p2",
+  "n_docs": 2,
+  "n_spans": 0,
+  "invalid_spans": 0,
+  "empty_docs": 2,
+  "doc_ids": [
+    "ru-a-s01",
+    "ru-b-s03"
+  ],
+  "docs_sha": "9ce22aa45af9",
+  "code_sha": "9175f77df568",
+  "model": "gemma3:4b",
+  "provider": "ollama",
+  "provider_base": "http://localhost:11434",
+  "prompt_file": "experiments/local-llm-deid/prompts/pii_v2_taxonomy_first.txt",
+  "prompt_sha": "001146d9bf43",
+  "seconds": 139.5
+}

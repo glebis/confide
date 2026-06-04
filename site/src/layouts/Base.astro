@@ -1,0 +1,74 @@
+---
+import '../styles/tufte.css';
+const { title, description, page } = Astro.props;
+const desc = description ?? 'A bilingual, recall-first benchmark for de-identifying psychotherapy transcripts in Russian and English.';
+const SITE = 'https://confide.salient.community';
+const pageTitle = title ? `${title} · CONFIDE-Bench` : 'CONFIDE-Bench — Which Layer Earns Its Compute?';
+const canonical = new URL(Astro.url.pathname, SITE).href;
+const ogImage = new URL('/images/social.png', SITE).href;
+const nav = [
+  { href: '/', label: 'Home', id: 'home' },
+  { href: '/about', label: 'About', id: 'about' },
+  { href: '/benchmark', label: 'The Benchmark', id: 'benchmark' },
+  { href: '/whitepaper', label: 'White Paper', id: 'whitepaper' },
+  { href: '/toolkit', label: 'Toolkit', id: 'toolkit' },
+  { href: '/contribute', label: 'Contribute', id: 'contribute' },
+];
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{pageTitle}</title>
+  <meta name="description" content={desc} />
+  <link rel="canonical" href={canonical} />
+  <meta property="og:site_name" content="CONFIDE-Bench" />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={desc} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="CONFIDE-Bench — redaction bars over a therapy transcript, with a padlock." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={desc} />
+  <meta name="twitter:image" content={ogImage} />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="wrap">
+      <a class="brand" href="/">CONFIDE-Bench</a>
+      {nav.filter(n => n.id !== 'home').map(n => (
+        <a href={n.href} aria-current={page === n.id ? 'page' : undefined}>{n.label}</a>
+      ))}
+      <a href="https://github.com/glebis/confide">GitHub</a>
+    </div>
+  </nav>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer>
+    <div class="wrap cols">
+      <div>
+        <strong>CONFIDE-Bench</strong><br />
+        <span class="note">A bilingual de-identification benchmark for psychotherapy transcripts.</span><br />
+        <span class="note">By Gleb Kalinin &amp; CONFIDE contributors · 2026.</span>
+      </div>
+      <div>
+        <a href="/about#ethics">Ethics &amp; consent</a> · <a href="/about">About</a> · <a href="/benchmark">The Benchmark</a> · <a href="/whitepaper">White Paper</a> · <a href="/contribute">Contribute</a><br />
+        <a href="/report/benchmark-report.html">Interactive report (EN)</a> · <a href="/report/benchmark-report.ru.html">отчёт (RU)</a><br />
+        <a href="https://github.com/glebis/confide">github.com/glebis/confide</a>
+      </div>
+      <div>
+        <span class="note"><strong>Consent first.</strong> Any real session processed with these tools requires <strong>explicit, informed client consent</strong> and local-only handling. The benchmark itself uses only synthetic or consented data — no real patient data. De-identification is <strong>harm-reduction, not a guarantee</strong>: even our best stack lands at the <span style="color:var(--red)">RED</span> residual-risk tier, and we report that openly. Benchmark success is <em>not</em> <abbr title="Health Insurance Portability and Accountability Act — the US health-privacy law">HIPAA</abbr>/<abbr title="General Data Protection Regulation — the EU data-protection law">GDPR</abbr> compliance.</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -8,7 +8,8 @@ Layout follows published de-id benchmark conventions:
   - Per-category recall table (which layer catches what -> LLM-required types)
   - Direct vs quasi-identifier entity-level recall (RU)
 
-Run after score_bench.py has produced ru-/en-/en-real-bench-results.json.
+Run after score_bench.py has produced the public dataset bench-results JSON files.
+EN-real is ai4privacy-derived and appears only when built locally.
 """
 import json
 import os
@@ -19,9 +20,9 @@ HERE = os.fspath(paths.RESULTS)
 DATASETS = [
     ("ru", "RU-synth", "Russian synthetic therapy series (6 clients, 30 sessions)"),
     ("en", "EN-synth", "English curated therapy-style snippets"),
-    ("en-real", "EN-real", "External public slice of ai4privacy/pii-masking-300k — "
+    ("en-real", "EN-real", "Optional local ai4privacy/pii-masking-300k slice — "
      "generic, non-therapy, non-clinical PII used only as an external EN anchor "
-     "(real generic PII, not synthetic; no clinical data)"),
+     "(local-only; not redistributed)"),
     ("ru-adv", "RU-adversarial", "Russian robustness probe (16 snippets: patronymics, "
      "transliteration, diminutives, VK/Telegram handles, SNILS/INN/passport, abbreviated "
      "addresses, code-switching)"),
@@ -139,6 +140,10 @@ def main():
       "privacy-first anonymization stack redacts PII from psychotherapy session "
       "transcripts in **Russian and English**. Built for the Psychodemia 2026 masterclass.")
     A("")
+    A("> Adding a new LLM model, prompt/runtime variant, provider endpoint, or fixed "
+      "stack combo starts with **`BENCHMARK-MODEL-STACK-CHECKLIST.md`**; exploratory "
+      "candidates must not overwrite the published defaults.")
+    A("")
     A("## Datasheet (Datasheets for Datasets / Data Statements for NLP)")
     A("")
     A("> Full datasheet + data statement: **`DATASHEET.md`**. Summary below.")
@@ -147,15 +152,14 @@ def main():
       "Privacy Filter, and a local qwen LLM) for de-identifying therapy transcripts, "
       "and quantify which layer earns its compute — especially which PII types *require* "
       "an LLM to catch.")
-    A("- **Composition & provenance.** Four datasets (see per-dataset sections). Every "
-      "**therapy transcript** — the Russian series and the EN-synth slice — is **fully "
-      "synthetic and fictional** (no real patients), hand-built from synthetic client "
-      "inventories. **EN-real is the one exception:** an external public slice of "
-      "`ai4privacy/pii-masking-300k` containing **generic, non-therapy, non-clinical** PII; "
-      "it is real generic PII (not synthetic the way the therapy corpus is) carried "
-      "unmodified under that dataset's license and used **only as an external EN anchor** — "
-      "it holds no real clinical/therapy data. The RU-adversarial set probes hard forms "
-      "such as transliteration, handles, and structured IDs.")
+    A("- **Composition & provenance.** The public checkout has four runnable datasets "
+      "(see per-dataset sections). Every **therapy transcript** — the Russian series and "
+      "the EN-synth slice — is **fully synthetic and fictional** (no real patients), "
+      "hand-built from synthetic client inventories. **EN-real is optional and "
+      "local-only:** users with rights to `ai4privacy/pii-masking-300k` may build a "
+      "small generic, non-therapy, non-clinical EN anchor locally; its gold, caches, and "
+      "results are not redistributed by this repository. The RU-adversarial set probes "
+      "hard forms such as transliteration, handles, and structured IDs.")
     A("- **Languages.** Russian (`ru`), English (`en`).")
     A("- **PII taxonomy (canonical).** PERSON, LOCATION, ORG, PHONE, EMAIL, URL, ID, "
       "DATE, MEDICATION, AGE, PROFESSION. Each RU entity is also tagged **direct** vs "
@@ -167,7 +171,7 @@ def main():
       "both languages — EN \"last Tuesday\", \"12 December\", \"N weeks ago\", \"19th of the "
       "month\"; RU \"в прошлый вторник\", \"третьего февраля\", \"N дней назад\". This closes "
       "the one additive gap the Presidio baseline exposed (its `DATE_TIME` recognizer), "
-      "lifting regex-layer DATE recall to 1.00 on EN/EN-real and recovering the last "
+      "lifting regex-layer DATE recall to 1.00 on EN-synth and recovering the last "
       "spelled-out RU date. Bare deictic adverbs (today/this week / сегодня/на этой неделе) "
       "are deliberately excluded as non-identifying and gold-unannotated.")
     A("- **Collection / labeling.** RU gold is located programmatically from curated "
@@ -227,6 +231,8 @@ def main():
 
     for ds, short, desc in DATASETS:
         res = load(ds)
+        if ds == "en-real" and res is None:
+            continue
         A(f"## {short} — {desc}")
         A("")
         if res is None:
@@ -286,34 +292,38 @@ def main():
         A("")
         A("- **Microsoft Presidio** (`presidio-analyzer`, spaCy `en_core_web_sm` — the "
           "*small* model, chosen under a ~1.8 GiB disk constraint; `en_core_web_lg` "
-          "would raise PERSON/LOCATION recall somewhat). Run on **en** and **en-real** "
-          "only. Presidio's RU support is spaCy-NER-dependent and weak, so it is **not** "
-          "reported on the RU datasets to avoid misrepresenting it — a documented scope "
-          "limit, not a measured RU score.")
+          "would raise PERSON/LOCATION recall somewhat). Run on **en** and, when locally "
+          "reconstructed, **en-real**. Presidio's RU support is spaCy-NER-dependent and "
+          "weak, so it is **not** reported on the RU datasets to avoid misrepresenting it "
+          "— a documented scope limit, not a measured RU score.")
         A("- **Philter** (`philter-lite`, UCSF clinical de-id, `philter_delta.toml` HIPAA "
           "Safe-Harbor rule set; needs NLTK `averaged_perceptron_tagger_eng`). English "
-          "clinical-notes tool; run on **en** and **en-real**.")
+          "clinical-notes tool; run on **en** and optional local **en-real**.")
         A("")
         p_f2 = _cell(en_res, "presidio", ["coverage_relaxed", "f2"])
         s_f2 = _cell(en_res, "opf+regex+ollama ★", ["coverage_relaxed", "f2"])
         p_t = _cell(en_res, "presidio", ["type_relaxed", "f1"])
         s_t = _cell(en_res, "opf+regex+ollama ★", ["type_relaxed", "f1"])
+        _cmp = ("now also leads coverage F2" if s_f2 >= p_f2
+                else "trails Presidio's broad-`DATE_TIME` coverage F2 only slightly")
+        headline = (f"**Headline finding.** Neither off-the-shelf system beats the "
+                    f"therapy-tuned CONFIDE stack on type-aware F1. On the easy curated "
+                    f"EN set the stack {_cmp} (stack {s_f2:.3f} vs Presidio {p_f2:.3f}) "
+                    f"— since the regex layer gained a relative/colloquial-date recognizer "
+                    f"(T6) it matches Presidio's `DATE_TIME` date recall — and its "
+                    f"type-aware F1 stays far ahead ({s_t:.3f} vs {p_t:.3f}).")
         pr_f2 = _cell(enr_res, "presidio", ["coverage_relaxed", "f2"])
         pr_r = _cell(enr_res, "presidio", ["coverage_relaxed", "r"])
         sr_f2 = _cell(enr_res, "opf+regex+ollama ★", ["coverage_relaxed", "f2"])
-        _cmp = ("now also leads coverage F2" if s_f2 >= p_f2
-                else "trails Presidio's broad-`DATE_TIME` coverage F2 only slightly")
-        A(f"**Headline finding.** Neither off-the-shelf system beats the therapy-tuned "
-          f"CONFIDE stack on type-aware F1. On the easy curated EN set the stack {_cmp} "
-          f"(stack {s_f2:.3f} vs Presidio {p_f2:.3f}) — since the regex layer gained a "
-          f"relative/colloquial-date recognizer (T6) it matches Presidio's `DATE_TIME` "
-          f"date recall — and its type-aware F1 stays far ahead ({s_t:.3f} vs {p_t:.3f}). "
-          f"On the harder **real** ai4privacy slice Presidio collapses to "
-          f"{pr_r:.3f} coverage recall ({pr_f2:.3f} F2 vs the stack's {sr_f2:.3f}) — generic NER + "
-          f"structured recognizers don't cover the bespoke ID/markup formats. Philter is "
-          f"high-recall but emits nearly everything as untyped `OTHER`, unusable for "
-          f"type-aware redaction. **This is the expected, valid baseline result: a generic "
-          f"system is not a therapy-tuned one.**")
+        if pr_f2 is not None and pr_r is not None and sr_f2 is not None:
+            headline += (f" On the harder **local ai4privacy** slice Presidio collapses "
+                         f"to {pr_r:.3f} coverage recall ({pr_f2:.3f} F2 vs the stack's "
+                         f"{sr_f2:.3f}) — generic NER + structured recognizers don't "
+                         f"cover the bespoke ID/markup formats.")
+        headline += (" Philter is high-recall but emits nearly everything as untyped "
+                     "`OTHER`, unusable for type-aware redaction. **This is the expected, "
+                     "valid baseline result: a generic system is not a therapy-tuned one.**")
+        A(headline)
         A("")
         A("### Unique capabilities (what the baselines catch that the stack does not)")
         A("")
@@ -325,17 +335,13 @@ def main():
           "*\"12 December\"*, *\"last Thursday\"*, *\"19th of the month\"*, *\"5th of "
           "January\"*. The regex layer now ships a tight relative/colloquial-date "
           "recognizer (EN + RU) covering exactly these forms, so the deterministic stack's "
-          "DATE recall rose from **0.125→1.00** (EN) and **0.143→1.00** (EN-real), matching "
-          "Presidio's date coverage **without** adopting Presidio. On EN-real, Presidio "
-          "already caught **0** spans the stack missed.")
+          "DATE recall rose from **0.125→1.00** (EN), matching Presidio's date coverage "
+          "**without** adopting Presidio.")
         A("- **Philter** caught 1 unique span on EN-synth (*\"12 December\"* — now also "
-          "covered by the new recognizer) and 1 on EN-real (a 2-letter country code "
-          "*\"GB\"*). Breadth offset by no usable typing.")
+          "covered by the new recognizer). Breadth offset by no usable typing.")
         A("- Presidio's **structured recognizers** (US_SSN, IBAN, credit card, bank/"
           "passport/driver-licence, crypto, IP) are a capability the regex layer lacks in "
-          "principle, but on this gold they did **not** out-recall the stack: stack ID "
-          "recall is 1.00 on EN-real vs Presidio's 0.30. A potential robustness asset on "
-          "other corpora, not a measured win here.")
+          "principle, but not a measured win on the public EN-synth gold.")
         A("")
         A("**Takeaway:** the one coverage a baseline used to add over the stack — "
           "**relative/colloquial dates** (Presidio `DATE_TIME`) — has been folded into the "
@@ -345,10 +351,10 @@ def main():
         A("")
         A("> **Graphic:** the grouped bar chart \"CONFIDE stack vs established baselines\" "
           "(Coverage F2 vs type-aware micro-F1 for {opf+regex+ollama ★, presidio, philter, "
-          "presidio+regex+ollama}, one panel each for EN-synth and EN-real) is rendered in "
-          "**`benchmark-report.html`** §6 (generated by `make_tufte_report.py` from "
-          "`{en,en-real}-bench-results.json`). It shows baselines edging on coverage but "
-          "falling far behind on type-aware F1, and Presidio collapsing on the real slice.")
+          "presidio+regex+ollama}) is rendered in **`benchmark-report.html`** §6 "
+          "(generated by `make_tufte_report.py` from public results, plus optional local "
+          "EN-real when present). It shows baselines edging on coverage but falling far "
+          "behind on type-aware F1.")
         A("")
 
     # --- RU-real (JayGuard) honest framing + synthetic→real transfer gap --------
@@ -579,8 +585,9 @@ def main():
     A("- **Synthetic RU data** — fictional; not real patient text.")
     A("- **Spelled-out digits** (e.g. phone read out word-by-word) are out of scope for "
       "the regex layer by design and fall to the LLM layer / manual review.")
-    A("- One EN-real doc failed Ollama JSON parsing (returned no spans) — a single-doc "
-      "lower bound on the ollama EN-real numbers.")
+    if enr_res is not None:
+        A("- One EN-real doc failed Ollama JSON parsing (returned no spans) — a single-doc "
+          "lower bound on the ollama EN-real numbers.")
     A("- **Non-determinism.** The Ollama (qwen) and GPT-5/Codex (IAA) steps are not fully "
       "deterministic; qwen runs at temperature 0 and the IAA seed annotation is committed "
       "for reproducibility, but exact spans can vary run-to-run. The bootstrap CIs and the "

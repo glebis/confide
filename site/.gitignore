@@ -1,0 +1,16 @@
+# build output & deps
+node_modules/
+dist/
+.astro/
+.vercel/
+.netlify/
+
+# the report is synced from ../results at build time (prebuild); don't commit the copies
+public/report/
+
+# image generation sidecar metadata
+public/images/*.json
+
+# os
+.DS_Store
+.vercel

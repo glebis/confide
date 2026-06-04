@@ -1,0 +1,10 @@
+Extract ALL personal data and quasi-identifiers that could narrow identity in a therapy, coaching, or consulting transcript.
+
+Return ONLY a JSON array. Each item must have:
+- "text": the exact substring from the input
+- "type": one of PERSON, LOCATION, ORG, PHONE, DATE, ADDRESS, MEDICATION, ID, AGE, PROFESSION
+
+Include medications with dosages, ages, occupations, institutions, handles, IDs, and contextual identifiers. Do not explain.
+
+Text:
+{text}

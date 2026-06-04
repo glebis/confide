@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import { Content as Paper } from '../../../docs/WHITEPAPER.md';
+---
+<Base page="whitepaper" title="White Paper" description="CONFIDE — making therapy transcripts safer to share, and measuring when they aren't. The full practitioner-facing white paper: the layered local anonymizer, the bilingual benchmark, and the red team that attacks its own output.">
+  <article class="paper">
+    <div class="wrap">
+      <header class="paper-head">
+        <p class="eyebrow">White paper · Version 1.0 · June 2026</p>
+        <figure class="paper-art">
+          <img src="/images/whitepaper.png" alt="A marked sheet of paper passing down through three sieves of progressively finer mesh, each catching dark ink marks; a magnifying glass inspects the cleaner sheet below." width="520" height="520" loading="eager" />
+          <figcaption>The layered anonymizer: each sieve catches what the previous one cannot — and a magnifying glass still checks what got through.</figcaption>
+        </figure>
+        <p class="paper-cta">
+          <a class="btn btn-primary" href="/whitepaper.pdf">Download PDF</a>
+          <a class="btn" href="https://github.com/glebis/confide/blob/main/docs/WHITEPAPER.md">Markdown source</a>
+        </p>
+      </header>
+      <div class="paper-body">
+        <Paper />
+      </div>
+    </div>
+  </article>
+</Base>

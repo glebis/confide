@@ -1,0 +1,29 @@
+{
+  "ts": "2026-06-03T12:21:14+00:00",
+  "kind": "real_session_eval",
+  "dataset": "own-sessions",
+  "privacy": "real-local-statsonly",
+  "git_commit": "ad00673",
+  "git_dirty": true,
+  "code_sha": "7f3e911bbe60",
+  "runner_sha": "b022bc75454d",
+  "model": "qwen2.5:3b",
+  "versions": {
+    "python": "3.13.9",
+    "torch": "2.9.1",
+    "transformers": "5.9.0"
+  },
+  "host": {
+    "platform": "macOS-26.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64"
+  },
+  "metrics": {
+    "n_files": 34,
+    "overall_redaction_rate": 0.0331,
+    "spans_by_layer": {
+      "natasha": 1604,
+      "regex": 1845,
+      "ollama": 1292
+    }
+  }
+}
