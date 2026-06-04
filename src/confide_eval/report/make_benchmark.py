@@ -38,7 +38,47 @@ def load(ds):
     return json.load(open(p, encoding="utf-8")) if os.path.exists(p) else None
 
 
-def leaderboard(res):
+def _load_json(name):
+    p = os.path.join(HERE, name)
+    return json.load(open(p, encoding="utf-8")) if os.path.exists(p) else None
+
+
+# Exploratory Gemma model swaps of the ★ stack (score_llm_experiment.py outputs).
+# Mirrors make_tufte_report.LOCAL_LLM / CLOUD_LLM; ◇ rows are separate caches,
+# not promoted defaults.
+GEMMA_LLM = {
+    "ru": _load_json("local-llm-gemma3-latest-hybrid-full-chunk2k-ru.json"),
+    "ru-adv": _load_json("local-llm-gemma3-vs-gemma4-ru-adv.json"),
+    "ru-real": _load_json("local-llm-gemma3-vs-gemma4-ru-real.json"),
+    "en": _load_json("local-llm-gemma3-vs-gemma4-en.json"),
+}
+GEMMA_CLOUD = {
+    "ru-adv": _load_json("local-llm-gemma-cloud-ru-adv.json"),
+    "en": _load_json("local-llm-gemma-cloud-en.json"),
+}
+
+
+def gemma_stack_rows(ds):
+    """(display_name, entry) Gemma swaps of the ★ stack, combo-entry-shaped."""
+    rows = []
+    for source, prefix, label in (
+        (GEMMA_LLM, "local-gemma3", "gemma3"),
+        (GEMMA_LLM, "local-gemma4", "gemma4-12b-mlx"),
+        (GEMMA_CLOUD, "cloud-hf-gemma4", "gemma4-26b-cloud"),
+    ):
+        res = source.get(ds)
+        if not res:
+            continue
+        for e in res.get("comparisons", {}).values():
+            members = e.get("members", [])
+            if len(members) > 1 and any(m.startswith(prefix) for m in members):
+                base = "+".join(m for m in members if not m.startswith(prefix))
+                rows.append((f"{base}+{label} ◇", e))
+                break
+    return rows
+
+
+def leaderboard(res, ds=None):
     has_ent = any("entity_level" in c for c in res["combos"].values() if isinstance(c, dict) and "members" in c)
     lines = []
     head = "| Combo | MaskCov F2 (rel) | MaskCov R | Type F2 | Micro-F1 | Macro-F1 | Preds |"
@@ -48,9 +88,10 @@ def leaderboard(res):
                 "Harm-wtd R | Direct-R | Quasi-R | Preds |")
         sep =  "|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|"
     lines += [head, sep]
-    for name, e in res["combos"].items():
-        if e.get("status") == "missing-cache":
-            continue
+    gemma = gemma_stack_rows(ds) if ds else []
+    entries = [(n, e) for n, e in res["combos"].items()
+               if not e.get("status") == "missing-cache"] + gemma
+    for name, e in entries:
         cr, tr = e["coverage_relaxed"], e["type_relaxed"]
         if has_ent and "entity_level" in e:
             el = e["entity_level"]
@@ -60,9 +101,16 @@ def leaderboard(res):
             lines.append(f"| {name} | **{cr['f2']:.3f}** | {cr['r']:.3f} | {tr['f2']:.3f} | "
                          f"{tr['macro_f1']:.3f} | {el['entity_recall']:.3f} | {hw:.3f} | "
                          f"{d:.3f} | {q:.3f} | {e['n_pred']} |")
+        elif has_ent:
+            lines.append(f"| {name} | **{cr['f2']:.3f}** | {cr['r']:.3f} | {tr['f2']:.3f} | "
+                         f"{tr['macro_f1']:.3f} | — | — | — | — | {e['n_pred']} |")
         else:
             lines.append(f"| {name} | **{cr['f2']:.3f}** | {cr['r']:.3f} | {tr['f2']:.3f} | "
                          f"{tr['overall']['f1'] if 'overall' in tr else tr['f1']:.3f} | {tr['macro_f1']:.3f} | {e['n_pred']} |")
+    if gemma:
+        lines += ["", "_◇ exploratory Gemma model swap of the ★ stack — separate detector "
+                  "cache (score_llm_experiment.py), not a promoted default; variance and "
+                  "promotion gates pending (see “LLM model comparison”)._"]
     return "\n".join(lines)
 
 
@@ -254,7 +302,7 @@ def main():
         A("")
         A("### Ablation leaderboard")
         A("")
-        A(leaderboard(res))
+        A(leaderboard(res, ds))
         A("")
         st = split_table(res)
         if st:

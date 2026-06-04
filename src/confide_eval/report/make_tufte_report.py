@@ -257,13 +257,32 @@ def _legend(cols):
             f"<ul>{''.join(items)}</ul></details>")
 
 
-def leaderboard_table(res, title):
+def gemma_stack_rows(ds_key):
+    """Exploratory Gemma swaps of the LLM layer in the ★ stack, shaped like
+    combos entries so they can sit in the main ablation leaderboards. ◇ marks
+    them as model swaps from separate detector caches — not promoted defaults."""
+    rows = []
+    for source, prefix, label in (
+        (LOCAL_LLM, "local-gemma3", "gemma3"),
+        (LOCAL_LLM, "local-gemma4", "gemma4-12b-mlx"),
+        (CLOUD_LLM, "cloud-hf-gemma4", "gemma4-26b·cloud"),
+    ):
+        e = _local_llm_pick(source.get(ds_key), prefix)
+        if not e:
+            continue
+        base = "+".join(m for m in e["members"] if not m.startswith(prefix))
+        rows.append((f"{base}+{label} ◇", e))
+    return rows
+
+
+def leaderboard_table(res, title, ds_key=None):
     rows = combos_clean(res)
-    has_ent = any("entity_level" in e for _, e in rows)
+    gemma = gemma_stack_rows(ds_key) if ds_key else []
+    has_ent = any("entity_level" in e for _, e in rows + gemma)
     cols = ["cov R", "cov F2"] + (["ent R", "direct", "quasi"] if has_ent else []) + ["preds"]
     head = "<tr><th style='text-align:left'>combo</th>" + "".join(_th(c) for c in cols) + "</tr>"
     body = []
-    for n, e in rows:
+    for n, e in rows + gemma:
         cls = " class='highlight-row'" if "★" in n else ""
         cr = e["coverage_relaxed"]
         # name the model behind the "ollama" layer inline.
@@ -279,8 +298,10 @@ def leaderboard_table(res, title):
             cells += ["<td>—</td>", "<td>—</td>", "<td>—</td>"]
         cells.append(f"<td>{e['n_pred']}</td>")
         body.append(f"<tr{cls}>" + "".join(cells) + "</tr>")
+    gemma_note = (f"<p class='caption' style='text-align:left'>{t('◇ exploratory Gemma model swap of the ★ stack — separate detector cache, not a promoted default (variance and promotion gates pending; see the LLM model comparison section).')}</p>"
+                  if gemma else "")
     return (f"<div class='table-wrapper'><table><thead>{head}</thead>"
-            f"<tbody>{''.join(body)}</tbody></table></div>{_legend(cols)}")
+            f"<tbody>{''.join(body)}</tbody></table></div>{gemma_note}{_legend(cols)}")
 
 
 def _local_llm_pick(res, detector_prefix):
@@ -427,7 +448,7 @@ def build_html(lang):
       rr_gold = RUREAL["n_gold_mentions"]
       rureal_block = (f'<p class="sub-h">{t("RU-real (JayGuard slice) — {docs} docs, {gold} gold mentions", docs=rr_docs, gold=rr_gold)} '
                       f'<span class="note-inline">{t("(external, anonymized, real-but-non-clinical Russian text — Apache-2.0; PERSON/LOCATION only, machine-derived gold, not human-adjudicated)")}</span></p>\n'
-                      + leaderboard_table(RUREAL, "RU-real"))
+                      + leaderboard_table(RUREAL, "RU-real", "ru-real"))
       rureal_bullet = f'<p>{t("<strong>RU-real (JayGuard):</strong> on external real Russian text the local stack reaches strong coverage — a real-text anchor for the otherwise-synthetic RU corpus (PERSON/LOCATION only).")}</p>'
   else:
       rureal_block = rureal_bullet = ""
@@ -573,12 +594,12 @@ footer a {{ color:var(--ink-light); }}
   {enr_bullet}
   {rureal_bullet}</div>
 </div>
-{leaderboard_table(RU, "RU") if RU else ""}
+{leaderboard_table(RU, "RU", "ru") if RU else ""}
 
 {rureal_block}
 
 <p class="sub-h">{t("EN-synth — {docs} docs, {gold} gold mentions", docs=en_docs, gold=en_gold)} <span class="note-inline">{t("(no entity-level / direct-quasi: the EN sets carry no per-entity <code>entity_id</code> annotation, so only mention-level coverage is scored)")}</span></p>
-{leaderboard_table(EN, "EN") if EN else ""}
+{leaderboard_table(EN, "EN", "en") if EN else ""}
 
 {enr_table_block}
 
@@ -587,7 +608,7 @@ footer a {{ color:var(--ink-light); }}
 <h2>2b. {t("Adversarial robustness (RU)")}</h2>
 <p class="state-line">{t("On the hard-forms probe the full stack catches <strong>{n}/{total}</strong> adversarial identifiers — the lone leak is a Latin-transliterated Russian name.", n=adv_caught, total=radv_gold)}</p>
 <div class="aside-container">
-  <div>{leaderboard_table(RUADV, "RU-adv") if RUADV else f'<em>{t("RU-adversarial set not scored.")}</em>'}</div>
+  <div>{leaderboard_table(RUADV, "RU-adv", "ru-adv") if RUADV else f'<em>{t("RU-adversarial set not scored.")}</em>'}</div>
   <div class="aside"><div class="t">{t("what the probe contains")}</div>
   <p>{t("<strong>{docs} snippets, {gold} gold forms:</strong> patronymics, transliteration, diminutives, VK/Telegram handles, SNILS/INN/passport IDs, abbreviated addresses, and code-switching.", docs=radv_docs, gold=radv_gold)}</p>
   <p>{t("Regex catches the structured IDs and handles; Natasha&nbsp;+&nbsp;{model} recover patronymics, diminutives and code-switching. The <strong>one residual leak</strong> is <em>“Sergey Volkov”</em> — a Latin-transliterated Russian name: Natasha is Cyrillic-only, regex has no name rule, and qwen missed it. This is the argument for adding an English/Latin NER (OPF) when transliteration is expected.", model=OLLAMA_MODEL)}</p></div>
