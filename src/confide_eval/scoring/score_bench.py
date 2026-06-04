@@ -132,15 +132,15 @@ def prf(c, fp, fn):
 
 
 def gold_path(dataset):
-    """Resolve the gold file. EN-real prefers the fetched text-bearing local
-    file and falls back to the stripped (text-less) committed file."""
+    """Resolve the gold file. EN-real is local-only and may not exist in a
+    public checkout; callers must check en_real_text_present() before loading."""
     if dataset == "en-real":
         return os.fspath(paths.en_real_gold())
     return GOLD[dataset]
 
 
 def en_real_text_present():
-    """True iff the runnable text-bearing EN-real gold has been fetched."""
+    """True iff runnable, text-bearing EN-real gold exists locally."""
     return paths.en_real_text_present()
 
 

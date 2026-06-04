@@ -1,0 +1,1871 @@
+{
+  "dataset": "ru",
+  "doc_ids": [
+    "ru-a-s01",
+    "ru-b-s03"
+  ],
+  "n_docs": 2,
+  "n_gold_mentions": 86,
+  "comparisons": {
+    "ollama :: llm-only": {
+      "members": [
+        "ollama"
+      ],
+      "n_pred": 25,
+      "coverage_relaxed": {
+        "support": 86,
+        "c": 23,
+        "fp": 2,
+        "fn": 63,
+        "p": 0.92,
+        "r": 0.267,
+        "f1": 0.414,
+        "f2": 0.312,
+        "macro_f1": 0.566,
+        "macro_r": 0.463
+      },
+      "coverage_containment": {
+        "support": 86,
+        "c": 22,
+        "fp": 2,
+        "fn": 64,
+        "p": 0.92,
+        "r": 0.256,
+        "f1": 0.4,
+        "f2": 0.299,
+        "macro_f1": 0.536,
+        "macro_r": 0.435
+      },
+      "type_relaxed": {
+        "support": 86,
+        "c": 23,
+        "fp": 2,
+        "fn": 63,
+        "p": 0.92,
+        "r": 0.267,
+        "f1": 0.414,
+        "f2": 0.312,
+        "macro_f1": 0.566,
+        "macro_r": 0.463
+      },
+      "coverage_relaxed_per_type": {
+        "DATE": {
+          "support": 3,
+          "c": 1,
+          "fp": 0,
+          "fn": 2,
+          "p": 1.0,
+          "r": 0.333,
+          "f1": 0.5,
+          "f2": 0.385
+        },
+        "EMAIL": {
+          "support": 2,
+          "c": 1,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "ID": {
+          "support": 4,
+          "c": 2,
+          "fp": 0,
+          "fn": 2,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "LOCATION": {
+          "support": 3,
+          "c": 2,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.667,
+          "f1": 0.8,
+          "f2": 0.714
+        },
+        "MEDICATION": {
+          "support": 5,
+          "c": 5,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.714,
+          "r": 1.0,
+          "f1": 0.833,
+          "f2": 0.926
+        },
+        "ORG": {
+          "support": 2,
+          "c": 1,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "PERSON": {
+          "support": 59,
+          "c": 10,
+          "fp": 0,
+          "fn": 49,
+          "p": 1.0,
+          "r": 0.169,
+          "f1": 0.29,
+          "f2": 0.203
+        },
+        "PHONE": {
+          "support": 2,
+          "c": 1,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "PROFESSION": {
+          "support": 6,
+          "c": 0,
+          "fp": 0,
+          "fn": 6,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 8,
+        "total": 28,
+        "entity_recall": 0.286,
+        "harm_weighted_recall": 0.228,
+        "by_class": {
+          "direct": {
+            "protected": 5,
+            "total": 18,
+            "recall": 0.278
+          },
+          "quasi": {
+            "protected": 3,
+            "total": 10,
+            "recall": 0.3
+          }
+        },
+        "by_type": {
+          "ID": {
+            "protected": 2,
+            "total": 4,
+            "recall": 0.5
+          },
+          "DATE": {
+            "protected": 1,
+            "total": 3,
+            "recall": 0.333
+          },
+          "PERSON": {
+            "protected": 0,
+            "total": 8,
+            "recall": 0.0
+          },
+          "PHONE": {
+            "protected": 1,
+            "total": 2,
+            "recall": 0.5
+          },
+          "EMAIL": {
+            "protected": 1,
+            "total": 2,
+            "recall": 0.5
+          },
+          "MEDICATION": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          },
+          "PROFESSION": {
+            "protected": 0,
+            "total": 4,
+            "recall": 0.0
+          },
+          "ORG": {
+            "protected": 1,
+            "total": 2,
+            "recall": 0.5
+          },
+          "LOCATION": {
+            "protected": 1,
+            "total": 2,
+            "recall": 0.5
+          }
+        }
+      }
+    },
+    "ollama :: natasha+regex+ollama": {
+      "members": [
+        "natasha",
+        "regex",
+        "ollama"
+      ],
+      "n_pred": 95,
+      "coverage_relaxed": {
+        "support": 86,
+        "c": 79,
+        "fp": 19,
+        "fn": 7,
+        "p": 0.8,
+        "r": 0.919,
+        "f1": 0.855,
+        "f2": 0.892,
+        "macro_f1": 0.743,
+        "macro_r": 0.833
+      },
+      "coverage_containment": {
+        "support": 86,
+        "c": 78,
+        "fp": 19,
+        "fn": 8,
+        "p": 0.8,
+        "r": 0.907,
+        "f1": 0.85,
+        "f2": 0.883,
+        "macro_f1": 0.727,
+        "macro_r": 0.806
+      },
+      "type_relaxed": {
+        "support": 86,
+        "c": 79,
+        "fp": 19,
+        "fn": 7,
+        "p": 0.8,
+        "r": 0.919,
+        "f1": 0.855,
+        "f2": 0.892,
+        "macro_f1": 0.743,
+        "macro_r": 0.833
+      },
+      "coverage_relaxed_per_type": {
+        "DATE": {
+          "support": 3,
+          "c": 3,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.75,
+          "r": 1.0,
+          "f1": 0.857,
+          "f2": 0.938
+        },
+        "EMAIL": {
+          "support": 2,
+          "c": 2,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "ID": {
+          "support": 4,
+          "c": 4,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "LOCATION": {
+          "support": 3,
+          "c": 3,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.75,
+          "r": 1.0,
+          "f1": 0.857,
+          "f2": 0.938
+        },
+        "MEDICATION": {
+          "support": 5,
+          "c": 5,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.714,
+          "r": 1.0,
+          "f1": 0.833,
+          "f2": 0.926
+        },
+        "ORG": {
+          "support": 2,
+          "c": 2,
+          "fp": 3,
+          "fn": 0,
+          "p": 0.4,
+          "r": 1.0,
+          "f1": 0.571,
+          "f2": 0.769
+        },
+        "PERSON": {
+          "support": 59,
+          "c": 59,
+          "fp": 12,
+          "fn": 0,
+          "p": 0.821,
+          "r": 1.0,
+          "f1": 0.902,
+          "f2": 0.958
+        },
+        "PHONE": {
+          "support": 2,
+          "c": 1,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "PROFESSION": {
+          "support": 6,
+          "c": 0,
+          "fp": 0,
+          "fn": 6,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 23,
+        "total": 28,
+        "entity_recall": 0.821,
+        "harm_weighted_recall": 0.842,
+        "by_class": {
+          "direct": {
+            "protected": 17,
+            "total": 18,
+            "recall": 0.944
+          },
+          "quasi": {
+            "protected": 6,
+            "total": 10,
+            "recall": 0.6
+          }
+        },
+        "by_type": {
+          "ID": {
+            "protected": 4,
+            "total": 4,
+            "recall": 1.0
+          },
+          "DATE": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "PERSON": {
+            "protected": 8,
+            "total": 8,
+            "recall": 1.0
+          },
+          "PHONE": {
+            "protected": 1,
+            "total": 2,
+            "recall": 0.5
+          },
+          "EMAIL": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          },
+          "MEDICATION": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          },
+          "PROFESSION": {
+            "protected": 0,
+            "total": 4,
+            "recall": 0.0
+          },
+          "ORG": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          },
+          "LOCATION": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          }
+        }
+      }
+    },
+    "local-gemma3-latest-hybrid-2doc-chunk2k :: llm-only": {
+      "members": [
+        "local-gemma3-latest-hybrid-2doc-chunk2k"
+      ],
+      "n_pred": 666,
+      "coverage_relaxed": {
+        "support": 86,
+        "c": 69,
+        "fp": 600,
+        "fn": 17,
+        "p": 0.099,
+        "r": 0.802,
+        "f1": 0.176,
+        "f2": 0.332,
+        "macro_f1": 0.458,
+        "macro_r": 0.811
+      },
+      "coverage_containment": {
+        "support": 86,
+        "c": 69,
+        "fp": 600,
+        "fn": 17,
+        "p": 0.099,
+        "r": 0.802,
+        "f1": 0.176,
+        "f2": 0.332,
+        "macro_f1": 0.458,
+        "macro_r": 0.811
+      },
+      "type_relaxed": {
+        "support": 86,
+        "c": 67,
+        "fp": 602,
+        "fn": 19,
+        "p": 0.096,
+        "r": 0.779,
+        "f1": 0.171,
+        "f2": 0.322,
+        "macro_f1": 0.444,
+        "macro_r": 0.774
+      },
+      "coverage_relaxed_per_type": {
+        "ACTION": {
+          "support": 0,
+          "c": 0,
+          "fp": 17,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ACTIVITY": {
+          "support": 0,
+          "c": 0,
+          "fp": 6,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ADJECTIVE": {
+          "support": 0,
+          "c": 0,
+          "fp": 11,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ADVERB": {
+          "support": 0,
+          "c": 0,
+          "fp": 10,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "AGE": {
+          "support": 0,
+          "c": 0,
+          "fp": 26,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "BODY_PART": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "COMMAND": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "CONCEPT": {
+          "support": 0,
+          "c": 0,
+          "fp": 18,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "CONCERN": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "CONDITION": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "DATA": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "DATE": {
+          "support": 3,
+          "c": 2,
+          "fp": 46,
+          "fn": 1,
+          "p": 0.042,
+          "r": 0.667,
+          "f1": 0.078,
+          "f2": 0.167
+        },
+        "DESCRIPTION": {
+          "support": 0,
+          "c": 0,
+          "fp": 6,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "DIRECTION": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "DURATION": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "EMAIL": {
+          "support": 2,
+          "c": 2,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "EMOTION": {
+          "support": 0,
+          "c": 0,
+          "fp": 11,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "EMPLOYER": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ENVIRONMENT": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ERROR_TYPE": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "EVENT": {
+          "support": 0,
+          "c": 0,
+          "fp": 7,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "FREQUENCY": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "GOAL": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ID": {
+          "support": 4,
+          "c": 2,
+          "fp": 0,
+          "fn": 2,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "LOCATION": {
+          "support": 3,
+          "c": 3,
+          "fp": 25,
+          "fn": 0,
+          "p": 0.107,
+          "r": 1.0,
+          "f1": 0.194,
+          "f2": 0.375
+        },
+        "MEDICAL": {
+          "support": 0,
+          "c": 0,
+          "fp": 6,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "MEDICAL CONDITION": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "MEDICAL DEVICE": {
+          "support": 0,
+          "c": 0,
+          "fp": 3,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "MEDICAL_CONDITION": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "MEDICATION": {
+          "support": 5,
+          "c": 5,
+          "fp": 5,
+          "fn": 0,
+          "p": 0.5,
+          "r": 1.0,
+          "f1": 0.667,
+          "f2": 0.833
+        },
+        "METAPHOR": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "MISC": {
+          "support": 0,
+          "c": 0,
+          "fp": 4,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "NUMBER": {
+          "support": 0,
+          "c": 0,
+          "fp": 14,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "OBJECT": {
+          "support": 0,
+          "c": 0,
+          "fp": 5,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "OBSERVATION": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "OCCUPATION": {
+          "support": 0,
+          "c": 0,
+          "fp": 14,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORDINAL": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORG": {
+          "support": 2,
+          "c": 2,
+          "fp": 8,
+          "fn": 0,
+          "p": 0.273,
+          "r": 1.0,
+          "f1": 0.429,
+          "f2": 0.652
+        },
+        "ORGANISM": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORGANIZATION": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "OTHER": {
+          "support": 0,
+          "c": 0,
+          "fp": 17,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERCENTAGE": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 59,
+          "c": 47,
+          "fp": 178,
+          "fn": 12,
+          "p": 0.198,
+          "r": 0.797,
+          "f1": 0.317,
+          "f2": 0.497
+        },
+        "PHONE": {
+          "support": 2,
+          "c": 1,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "PHRASE": {
+          "support": 0,
+          "c": 0,
+          "fp": 4,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PRODUCT": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PROFESSION": {
+          "support": 6,
+          "c": 5,
+          "fp": 51,
+          "fn": 1,
+          "p": 0.056,
+          "r": 0.833,
+          "f1": 0.104,
+          "f2": 0.219
+        },
+        "QUALIFIERS": {
+          "support": 0,
+          "c": 0,
+          "fp": 3,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "QUANTITY": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "QUASI-IDENTIFIER": {
+          "support": 0,
+          "c": 0,
+          "fp": 17,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "QUASI_IDENTIFIER": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "RELATIONSHIP": {
+          "support": 0,
+          "c": 0,
+          "fp": 3,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ROLE": {
+          "support": 0,
+          "c": 0,
+          "fp": 4,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "SENSATION": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "SENTIMENT": {
+          "support": 0,
+          "c": 0,
+          "fp": 8,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "STATE": {
+          "support": 0,
+          "c": 0,
+          "fp": 7,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "SYMPTOM": {
+          "support": 0,
+          "c": 0,
+          "fp": 6,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "TEXT": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.333,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "TIME": {
+          "support": 0,
+          "c": 0,
+          "fp": 10,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "UNKNOWN": {
+          "support": 0,
+          "c": 0,
+          "fp": 10,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "VERB": {
+          "support": 0,
+          "c": 0,
+          "fp": 4,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "VOCATIVE": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 18,
+        "total": 28,
+        "entity_recall": 0.643,
+        "harm_weighted_recall": 0.614,
+        "by_class": {
+          "direct": {
+            "protected": 10,
+            "total": 18,
+            "recall": 0.556
+          },
+          "quasi": {
+            "protected": 8,
+            "total": 10,
+            "recall": 0.8
+          }
+        },
+        "by_type": {
+          "ID": {
+            "protected": 2,
+            "total": 4,
+            "recall": 0.5
+          },
+          "DATE": {
+            "protected": 2,
+            "total": 3,
+            "recall": 0.667
+          },
+          "PERSON": {
+            "protected": 3,
+            "total": 8,
+            "recall": 0.375
+          },
+          "PHONE": {
+            "protected": 1,
+            "total": 2,
+            "recall": 0.5
+          },
+          "EMAIL": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          },
+          "MEDICATION": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          },
+          "PROFESSION": {
+            "protected": 3,
+            "total": 4,
+            "recall": 0.75
+          },
+          "ORG": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          },
+          "LOCATION": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          }
+        }
+      }
+    },
+    "local-gemma3-latest-hybrid-2doc-chunk2k :: natasha+regex+local-gemma3-latest-hybrid-2doc-chunk2k": {
+      "members": [
+        "natasha",
+        "regex",
+        "local-gemma3-latest-hybrid-2doc-chunk2k"
+      ],
+      "n_pred": 692,
+      "coverage_relaxed": {
+        "support": 86,
+        "c": 84,
+        "fp": 612,
+        "fn": 2,
+        "p": 0.116,
+        "r": 0.977,
+        "f1": 0.207,
+        "f2": 0.392,
+        "macro_f1": 0.498,
+        "macro_r": 0.926
+      },
+      "coverage_containment": {
+        "support": 86,
+        "c": 84,
+        "fp": 612,
+        "fn": 2,
+        "p": 0.116,
+        "r": 0.977,
+        "f1": 0.207,
+        "f2": 0.392,
+        "macro_f1": 0.498,
+        "macro_r": 0.926
+      },
+      "type_relaxed": {
+        "support": 86,
+        "c": 82,
+        "fp": 614,
+        "fn": 4,
+        "p": 0.113,
+        "r": 0.953,
+        "f1": 0.202,
+        "f2": 0.383,
+        "macro_f1": 0.485,
+        "macro_r": 0.889
+      },
+      "coverage_relaxed_per_type": {
+        "ACTION": {
+          "support": 0,
+          "c": 0,
+          "fp": 17,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ACTIVITY": {
+          "support": 0,
+          "c": 0,
+          "fp": 6,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ADJECTIVE": {
+          "support": 0,
+          "c": 0,
+          "fp": 10,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ADVERB": {
+          "support": 0,
+          "c": 0,
+          "fp": 10,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "AGE": {
+          "support": 0,
+          "c": 0,
+          "fp": 26,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "BODY_PART": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "COMMAND": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "CONCEPT": {
+          "support": 0,
+          "c": 0,
+          "fp": 17,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "CONCERN": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "CONDITION": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "DATA": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "DATE": {
+          "support": 3,
+          "c": 3,
+          "fp": 46,
+          "fn": 0,
+          "p": 0.061,
+          "r": 1.0,
+          "f1": 0.115,
+          "f2": 0.246
+        },
+        "DESCRIPTION": {
+          "support": 0,
+          "c": 0,
+          "fp": 6,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "DIRECTION": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "DURATION": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "EMAIL": {
+          "support": 2,
+          "c": 2,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "EMOTION": {
+          "support": 0,
+          "c": 0,
+          "fp": 11,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "EMPLOYER": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ENVIRONMENT": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ERROR_TYPE": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "EVENT": {
+          "support": 0,
+          "c": 0,
+          "fp": 7,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "FREQUENCY": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "GOAL": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ID": {
+          "support": 4,
+          "c": 4,
+          "fp": 0,
+          "fn": 0,
+          "p": 1.0,
+          "r": 1.0,
+          "f1": 1.0,
+          "f2": 1.0
+        },
+        "LOCATION": {
+          "support": 3,
+          "c": 3,
+          "fp": 26,
+          "fn": 0,
+          "p": 0.103,
+          "r": 1.0,
+          "f1": 0.188,
+          "f2": 0.366
+        },
+        "MEDICAL": {
+          "support": 0,
+          "c": 0,
+          "fp": 6,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "MEDICAL CONDITION": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "MEDICAL DEVICE": {
+          "support": 0,
+          "c": 0,
+          "fp": 3,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "MEDICAL_CONDITION": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "MEDICATION": {
+          "support": 5,
+          "c": 5,
+          "fp": 5,
+          "fn": 0,
+          "p": 0.5,
+          "r": 1.0,
+          "f1": 0.667,
+          "f2": 0.833
+        },
+        "METAPHOR": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "MISC": {
+          "support": 0,
+          "c": 0,
+          "fp": 4,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "NUMBER": {
+          "support": 0,
+          "c": 0,
+          "fp": 14,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "OBJECT": {
+          "support": 0,
+          "c": 0,
+          "fp": 5,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "OBSERVATION": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "OCCUPATION": {
+          "support": 0,
+          "c": 0,
+          "fp": 14,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORDINAL": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORG": {
+          "support": 2,
+          "c": 2,
+          "fp": 10,
+          "fn": 0,
+          "p": 0.231,
+          "r": 1.0,
+          "f1": 0.375,
+          "f2": 0.6
+        },
+        "ORGANISM": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ORGANIZATION": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "OTHER": {
+          "support": 0,
+          "c": 0,
+          "fp": 17,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERCENTAGE": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PERSON": {
+          "support": 59,
+          "c": 59,
+          "fp": 189,
+          "fn": 0,
+          "p": 0.225,
+          "r": 1.0,
+          "f1": 0.368,
+          "f2": 0.593
+        },
+        "PHONE": {
+          "support": 2,
+          "c": 1,
+          "fp": 0,
+          "fn": 1,
+          "p": 1.0,
+          "r": 0.5,
+          "f1": 0.667,
+          "f2": 0.556
+        },
+        "PHRASE": {
+          "support": 0,
+          "c": 0,
+          "fp": 4,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PRODUCT": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "PROFESSION": {
+          "support": 6,
+          "c": 5,
+          "fp": 51,
+          "fn": 1,
+          "p": 0.056,
+          "r": 0.833,
+          "f1": 0.104,
+          "f2": 0.219
+        },
+        "QUALIFIERS": {
+          "support": 0,
+          "c": 0,
+          "fp": 3,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "QUANTITY": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "QUASI-IDENTIFIER": {
+          "support": 0,
+          "c": 0,
+          "fp": 17,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "QUASI_IDENTIFIER": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "RELATIONSHIP": {
+          "support": 0,
+          "c": 0,
+          "fp": 3,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "ROLE": {
+          "support": 0,
+          "c": 0,
+          "fp": 4,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "SENSATION": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "SENTIMENT": {
+          "support": 0,
+          "c": 0,
+          "fp": 8,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "STATE": {
+          "support": 0,
+          "c": 0,
+          "fp": 7,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "SYMPTOM": {
+          "support": 0,
+          "c": 0,
+          "fp": 6,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "TEXT": {
+          "support": 0,
+          "c": 0,
+          "fp": 2,
+          "fn": 0,
+          "p": 0.333,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "TIME": {
+          "support": 0,
+          "c": 0,
+          "fp": 10,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "UNKNOWN": {
+          "support": 0,
+          "c": 0,
+          "fp": 10,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "VERB": {
+          "support": 0,
+          "c": 0,
+          "fp": 4,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        },
+        "VOCATIVE": {
+          "support": 0,
+          "c": 0,
+          "fp": 1,
+          "fn": 0,
+          "p": 0.0,
+          "r": 0.0,
+          "f1": 0.0,
+          "f2": 0.0
+        }
+      },
+      "entity_level": {
+        "protected": 26,
+        "total": 28,
+        "entity_recall": 0.929,
+        "harm_weighted_recall": 0.947,
+        "by_class": {
+          "direct": {
+            "protected": 17,
+            "total": 18,
+            "recall": 0.944
+          },
+          "quasi": {
+            "protected": 9,
+            "total": 10,
+            "recall": 0.9
+          }
+        },
+        "by_type": {
+          "ID": {
+            "protected": 4,
+            "total": 4,
+            "recall": 1.0
+          },
+          "DATE": {
+            "protected": 3,
+            "total": 3,
+            "recall": 1.0
+          },
+          "PERSON": {
+            "protected": 8,
+            "total": 8,
+            "recall": 1.0
+          },
+          "PHONE": {
+            "protected": 1,
+            "total": 2,
+            "recall": 0.5
+          },
+          "EMAIL": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          },
+          "MEDICATION": {
+            "protected": 1,
+            "total": 1,
+            "recall": 1.0
+          },
+          "PROFESSION": {
+            "protected": 3,
+            "total": 4,
+            "recall": 0.75
+          },
+          "ORG": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          },
+          "LOCATION": {
+            "protected": 2,
+            "total": 2,
+            "recall": 1.0
+          }
+        }
+      }
+    }
+  }
+}

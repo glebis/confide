@@ -49,6 +49,8 @@ The Tufte-style HTML report (`results/benchmark-report.html`) uses **[Chart.js](
 
 ---
 
-*Tool versions are pinned in `requirements.lock` (see [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md)); the local LLM model id +
+*Tool versions are pinned in `requirements.lock` (see [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md)); new
+models/providers/runtimes should pass [`BENCHMARK-MODEL-STACK-CHECKLIST.md`](BENCHMARK-MODEL-STACK-CHECKLIST.md);
+the local LLM model id +
 date are recorded per run in the registry (`caches/runs/`). Cloud providers expose no model
 digest, so we record the served `id` string + date instead.*

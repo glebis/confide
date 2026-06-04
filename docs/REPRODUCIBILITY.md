@@ -4,6 +4,9 @@ How to keep the benchmark **comparable over time** as tools, models, and data ch
 Follows the living-benchmark norms of HELM and EleutherAI lm-evaluation-harness, and
 the LLM-nondeterminism literature (temperature 0 ≠ deterministic).
 
+For the operational checklist used before adding a new LLM model, provider, prompt/runtime
+variant, or fixed stack combo, see `BENCHMARK-MODEL-STACK-CHECKLIST.md`.
+
 ## 1. Versioning
 
 - **Benchmark version = gold version × scorer version.** Results are comparable ONLY
@@ -21,7 +24,7 @@ the LLM-nondeterminism literature (temperature 0 ≠ deterministic).
 |---|---|
 | A detector's `code_sha` or model version changes | Re-run THAT detector's cache, then rescore. Manifest flags the staleness automatically. |
 | Gold changes (e.g. v2→v3 adjudication) | Re-run scoring; bump benchmark version. `docs_sha` flags transcript-text changes. |
-| **New / swapped LLM** (qwen→other, version bump, cloud model) | Run as a **NEW `runs.jsonl` row** — compare, never overwrite. |
+| **New / swapped LLM** (qwen→other, version bump, cloud model) | Run as a **NEW `runs.jsonl` row** — compare, never overwrite. Follow `BENCHMARK-MODEL-STACK-CHECKLIST.md`. |
 | Dependency bump (`transformers`, `torch`, `ollama`, `natasha`) | Periodic **drift check** (≈quarterly): re-run, diff against the last registry row. |
 | Publishing a number | Re-run the LLM-dependent layers **N≥3** and report **mean ± std** (see §3). |
 
@@ -95,7 +98,7 @@ It enforces three invariants:
    intentionally omitted (e.g. the stale RU `opf` row) is allowed only because BENCHMARK.md
    presents no numeric row for it.
 3. **Markdown ↔ JSON consistency** — the numbers quoted in BENCHMARK.md and IAA-RESULTS.md
-   (RU ★ coverage/entity/harm-weighted recall, EN/EN-real Presidio + Philter coverage-F2 +
+   (RU ★ coverage/entity/harm-weighted recall, EN and optional local EN-real Presidio + Philter coverage-F2 +
    micro-F1, IAA F1 + κ) equal the regenerated JSON, and IAA-RESULTS.md is labelled an
    **LLM-assisted consistency check**, not human inter-annotator agreement (audit R4).
 
@@ -108,9 +111,9 @@ Full regeneration order (the checker prints this on failure):
 `make check` is **enforced in CI**: the GitHub Actions workflow
 `.github/workflows/check-artifacts.yml` runs it on every `push` and `pull_request`,
 and the build **fails on artifact drift**. The job is deterministic, LLM-free, and
-network-free — it runs only stdlib Python (3.11) against the committed gold and
-detector caches (the JSONL is in the repo); it does **not** install or require
-Ollama / OPF / Presidio / torch / transformers, and needs no network. The pre-existing
+network-free — it runs only stdlib Python (3.11) against the committed public gold and
+detector caches. It does **not** install or require the local-only EN-real ai4privacy
+slice, Ollama / OPF / Presidio / torch / transformers, or network access. The pre-existing
 `⚠` warnings about the stale RU `opf` cache and legacy `opf` manifests are non-fatal
 and do not fail CI.
 

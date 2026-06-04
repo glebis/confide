@@ -1,0 +1,27 @@
+Your entire response must be a single valid JSON array that parses with json.loads. No text before or after the array. No markdown code fences.
+
+Detect ALL personal data, direct identifiers, and quasi-identifiers in this Russian/English psychotherapy-style transcript. Prefer recall over precision; when in doubt, include.
+
+Schema:
+[{"text":"exact substring from input","type":"PERSON|LOCATION|ORG|PHONE|DATE|ADDRESS|MEDICATION|ID|AGE|PROFESSION"}]
+
+Direct identifiers - extract every instance:
+- Names, surnames, patronymics, diminutives, vocatives, nicknames, and Latin transliterations. Include every inflected form separately.
+- Locations: cities, districts, streets, clinics, schools, universities, employers, and small organizations.
+- Phone numbers, social handles, passport/SNILS/INN-like identifiers, document numbers.
+- Addresses, including partial addresses such as "на Тверской" or "в ЦАО".
+
+Quasi-identifiers - extract when they narrow identity:
+- Ages: numeric ("34 года") and spelled-out ("тридцать четыре").
+- Professions and roles: "архитектор", "психиатр", "учительница", "юрист".
+- Medications with dosages: "сертралин 50 мг", "флуоксетин", "атаракс".
+- Relative and absolute dates: "12 декабря", "в прошлый вторник", "третьего февраля".
+- Rare combinations: profession plus employer, family relationship plus profession, medication plus age, rare school or employer plus location.
+
+Rules:
+- Use exact substrings only. Do not normalize or invent forms.
+- Include every distinct surface form, even if it refers to the same entity.
+- Return [] if no identifiers are found.
+
+Text:
+{text}

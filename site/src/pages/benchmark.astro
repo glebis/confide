@@ -17,7 +17,15 @@ const layers = [
   ['regex', 'Bilingual pattern rules — phones, emails, URLs, structured IDs, numeric & relative/colloquial dates.', 'deterministic'],
   ['Natasha', 'Russian <abbr title="Named-Entity Recognition — finding names, places, organizations in text">NER</abbr> (Cyrillic-only) — names, locations, orgs.', 'deterministic'],
   ['OpenAI Privacy Filter', 'English token-classification model — the EN name/address backbone.', 'model'],
-  ['Qwen2.5-3B (Ollama)', 'Local <abbr title="Large Language Model">LLM</abbr>, temp 0 — the only layer that lifts world-knowledge quasi-identifiers (medication, profession, spelled-out age).', 'LLM'],
+  ['Qwen2.5-3B (Ollama)', 'Published local <abbr title="Large Language Model">LLM</abbr> baseline, temp 0 — the layer that lifts world-knowledge quasi-identifiers (medication, profession, spelled-out age). Exploratory Gemma runs are now reported separately, not promoted to ★ defaults yet.', 'LLM'],
+];
+// Stack scores (NER + regex + the named LLM) from results/local-llm-gemma3-vs-gemma4-*.json
+// via the report's "LLM model comparison" table — regenerate with `make report`.
+const modelSwaps = [
+  ['RU-synth long', [['Qwen2.5-3B ★', '0.875', '0.802', '0.726'], ['Gemma3', '0.954', '0.362', '0.850']]],
+  ['RU-adv', [['Qwen2.5-3B ★', '0.950', '0.887', '0.950'], ['Gemma3', '1.000', '0.917', '1.000'], ['Gemma4 12B-MLX', '1.000', '0.948', '1.000'], ['Gemma4 26B-A4B (HF cloud)', '1.000', '0.943', '1.000']]],
+  ['RU-real', [['Qwen2.5-3B ★', '0.792', '0.614', '0.792'], ['Gemma3', '0.961', '0.730', '0.961'], ['Gemma4 12B-MLX', '1.000', '0.820', '1.000']]],
+  ['EN-synth', [['Qwen2.5-3B ★', '0.978', '0.870', '—'], ['Gemma3', '1.000', '0.904', '—'], ['Gemma4 12B-MLX', '1.000', '0.955', '—'], ['Gemma4 26B-A4B (HF cloud)', '0.935', '0.914', '—']]],
 ];
 ---
 <Base page="benchmark" title="The Benchmark" description="How CONFIDE-Bench works: datasets, detector layers, recall-first metrics, and the residual-risk view.">
@@ -68,7 +76,29 @@ const layers = [
           </div>
         ))}
       </div>
-      <p class="prose note" style="margin-top:1.4rem"><strong>Proposed defaults:</strong> <code>natasha + regex + qwen2.5:3b ★</code> for Russian, <code>opf + regex + qwen2.5:3b ★</code> for English. Presidio &amp; Philter are reported as established English-only baselines.</p>
+      <p class="prose note" style="margin-top:1.4rem"><strong>Proposed defaults:</strong> <code>natasha + regex + qwen2.5:3b ★</code> for Russian, <code>opf + regex + qwen2.5:3b ★</code> for English. Gemma3/Gemma4 are reported as exploratory model swaps until variance and promotion gates pass. Presidio &amp; Philter are reported as established English-only baselines.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="prose">Exploratory model swaps — Gemma vs the Qwen baseline</h2>
+      <p class="prose note">Same stack, different LLM layer: each row swaps only the model behind the ★ default. Gemma beats Qwen on every completed full short slice — local <strong>Gemma4 12B-MLX</strong> is strongest on quality, and the cloud <strong>Gemma4 26B-A4B</strong> probe (synthetic text only) is close behind. The ★ defaults stay Qwen until variance and promotion gates pass.</p>
+      <table>
+        <thead><tr><th>dataset</th><th>model</th><th>cov R</th><th>cov F2</th><th>ent R</th></tr></thead>
+        <tbody>
+          {modelSwaps.map(([ds, rows]) => rows.map((r, i) => (
+            <tr>
+              <td style="text-align:left">{i === 0 ? ds : ''}</td>
+              <td style="text-align:left">{r[0]}</td>
+              <td>{r[1]}</td>
+              <td>{r[2]}</td>
+              <td>{r[3]}</td>
+            </tr>
+          )))}
+        </tbody>
+      </table>
+      <p class="prose note">Gemma3 on the long RU slice trades precision for recall (cov F2 0.362 — heavy over-redaction from chunked prompting); it is included as a recall/noise tradeoff, not a candidate default. Missing rows are omitted, not scored as zero: the cloud probe is partial on English because provider billing stopped 13 requests. Full tables and caveats in <a href="/report/benchmark-report.html">the interactive report</a>.</p>
     </div>
   </section>
 

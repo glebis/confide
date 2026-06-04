@@ -8,6 +8,8 @@ touched a cloud endpoint (`THREE-LOCKS.md`).
 
 These APIs do not expose model digests, so the served `id` string + date are the
 pinned provenance (recorded in the run registry, `privacy="synthetic-cloud"`).
+Future cloud model candidates should pass `BENCHMARK-MODEL-STACK-CHECKLIST.md`
+before publication or promotion to a fixed benchmark combo.
 
 ## Why qwen3-32b, and why Groq
 

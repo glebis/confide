@@ -1,0 +1,16 @@
+Find every string that should be anonymized in this transcript.
+
+Output ONLY a JSON array of objects with "text" and "type".
+Allowed types: PERSON, LOCATION, ORG, PHONE, DATE, ADDRESS, MEDICATION, ID, AGE, PROFESSION.
+
+Critical requirements:
+- Include every variant that appears in the text: full names, first names, patronymics, surnames, nicknames, transliterations, inflected forms, and repeated surface forms if they differ.
+- Include spelled-out and numeric ages.
+- Include professions and workplaces when they identify the speaker or client.
+- Include medication names, doses, and psychiatric diagnoses only when they are identifying in context.
+- Keep "text" as an exact substring from the input.
+
+Return [] if there is no personal or quasi-identifying information.
+
+Text:
+{text}

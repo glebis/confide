@@ -125,7 +125,8 @@ report it **privately** (never post real PII or a re-id recipe in a public issue
 
 Pinned environment + Docker (`Dockerfile`, `requirements.lock`), an append-only
 run registry (`caches/runs/`), a CI artifact stale-check, and full docs:
-`docs/REPRODUCIBILITY.md`, `docs/DATASHEET.md`, `docs/EXPLAINER.md`.
+`docs/REPRODUCIBILITY.md`, `docs/BENCHMARK-MODEL-STACK-CHECKLIST.md`,
+`docs/DATASHEET.md`, `docs/EXPLAINER.md`.
 
 A benchmark is only as trustworthy as its reporting choices are explicit.
 [`docs/REPORTING.md`](https://github.com/glebis/confide/blob/main/docs/REPORTING.md) documents exactly what CONFIDE puts in the headline
@@ -152,6 +153,7 @@ re-identification recipe.
 | [`docs/THREE-LOCKS.md`](https://github.com/glebis/confide/blob/main/docs/THREE-LOCKS.md) | Device + encrypted store + per-file isolation, with a storage checklist for real data. |
 | **Reproducibility** | |
 | [`docs/REPRODUCIBILITY.md`](https://github.com/glebis/confide/blob/main/docs/REPRODUCIBILITY.md) | Keeping the benchmark comparable over time; versioning, re-run policy, cost. |
+| [`docs/BENCHMARK-MODEL-STACK-CHECKLIST.md`](https://github.com/glebis/confide/blob/main/docs/BENCHMARK-MODEL-STACK-CHECKLIST.md) | Checklist for adding a new LLM model, provider, prompt/runtime variant, or fixed stack combo without overwriting defaults. |
 | [`docs/SOURCES.md`](https://github.com/glebis/confide/blob/main/docs/SOURCES.md) | Primary/near-primary sources checked for publishable methodology claims. |
 | [`requirements.lock`](https://github.com/glebis/confide/blob/main/requirements.lock) | Pinned dependencies for a deterministic environment. |
 | [`Dockerfile`](https://github.com/glebis/confide/blob/main/Dockerfile) / [`run-benchmark.sh`](https://github.com/glebis/confide/blob/main/run-benchmark.sh) | Containerised, one-command benchmark run. |
@@ -169,13 +171,12 @@ re-identification recipe.
 > **external anchor** for the EN detectors. It contains **no real therapy/clinical data**,
 > but it is *not* "synthetic" the way the therapy corpus is — it is real generic PII from a
 > public dataset. **EN-real source text is NOT redistributed by this repo:** ai4privacy's
-> license restricts redistribution, so the committed gold ships only **span offsets + the
-> gold values + a per-document `text_sha256` and `text_len`** — never the source documents.
-> To run EN-real, fetch the text yourself under ai4privacy's own license:
+> license restricts redistribution, so EN-real gold, detector caches, and result artifacts
+> are local-only and gitignored. To run EN-real, build it yourself under ai4privacy's own license:
 > `python -m confide_eval.data.fetch_ai4privacy` (needs `pip install datasets`). That
-> re-downloads ai4privacy, sha256-verifies the 15 documents, and writes a local, gitignored
-> `data/sessions-en/pii-eval-ai4privacy.local.jsonl` that the scorer picks up automatically.
-> Without it, EN-real is skipped gracefully; RU / EN-synth are unaffected. CONFIDE-Red attacks run
+> re-downloads ai4privacy and writes a local, gitignored
+> `data/sessions-en/pii-eval-ai4privacy.jsonl` that the scorer picks up automatically.
+> Without it, EN-real is skipped gracefully; RU / EN-synth / RU-adversarial / RU-real are unaffected. CONFIDE-Red attacks run
 > only against the fabricated therapy personas. Benchmark performance is **not** HIPAA or
 > GDPR anonymisation certification.
 
@@ -186,8 +187,8 @@ re-identification recipe.
   improve it; please credit and keep the synthetic-data notices intact.
 - **The one external slice** — EN-real comes from `ai4privacy/pii-masking-300k` and is
   carried under *that* dataset's own license (see the provenance note above), not CONFIDE's.
-  Its **source text is not redistributed**; the repo ships span offsets + sha256 only, and
-  `python -m confide_eval.data.fetch_ai4privacy` reconstructs it locally under ai4privacy's license.
+  Its gold, caches, and results are **not redistributed**; `python -m confide_eval.data.fetch_ai4privacy`
+  builds it locally under ai4privacy's license.
 - **Citing CONFIDE** — until a paper exists, cite the repository: *Gleb Kalinin and CONFIDE
   contributors, "CONFIDE: a therapy-transcript de-identification benchmark and red team,"
   2026, https://github.com/glebis/confide*. It is research-grade, **not** peer-reviewed; cite

@@ -8,9 +8,7 @@
   AI4Privacy's own license, before running the EN-real benchmark:
 
   ```bash
-  PYTHONPATH=src python3 -m confide_eval.data.build_dataset        # writes pii-eval-ai4privacy.jsonl (gitignored)
-  # or reconstruct text for an existing gold:
-  PYTHONPATH=src python3 -m confide_eval.data.fetch_ai4privacy     # writes pii-eval-ai4privacy.local.jsonl (gitignored)
+  PYTHONPATH=src python3 -m confide_eval.data.fetch_ai4privacy     # writes pii-eval-ai4privacy.jsonl (gitignored)
   ```
 
   The EN-real detector caches and results are likewise local-only and gitignored. You are

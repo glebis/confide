@@ -4,8 +4,7 @@ __pycache__/
 .env*
 eval/.opf-venv/
 
-# EN-real (ai4privacy) source text is fetched on demand under ai4privacy's
-# license and never committed (see src/confide_eval/data/fetch_ai4privacy.py).
+# Legacy EN-real local filename; kept ignored for existing worktrees.
 data/sessions-en/pii-eval-ai4privacy.local.jsonl
 
 # local code-search tooling (not part of CONFIDE)

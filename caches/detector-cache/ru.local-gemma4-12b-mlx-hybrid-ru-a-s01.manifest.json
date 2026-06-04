@@ -1,0 +1,21 @@
+{
+  "dataset": "ru",
+  "detector": "local-gemma4-12b-mlx-hybrid-ru-a-s01",
+  "n_docs": 1,
+  "n_spans": 0,
+  "invalid_spans": 0,
+  "empty_docs": 1,
+  "doc_ids": [
+    "ru-a-s01"
+  ],
+  "docs_sha": "3c98d9f9eb95",
+  "code_sha": "6aa33b16e445",
+  "model": "gemma4:12b-mlx",
+  "provider": "ollama",
+  "provider_base": "http://localhost:11434",
+  "prompt_file": "experiments/local-llm-deid/prompts/pii_v6_claude_hybrid.txt",
+  "prompt_sha": "aa468a9a85a5",
+  "chunk_chars": 0,
+  "chunk_overlap": 0,
+  "seconds": 180.1
+}

@@ -251,16 +251,17 @@ def main():
     md.append("Our eval differs deliberately and that explains the gap:")
     md.append("- **Different data:** 32 *therapy-style* curated snippets with hard cases "
               "(relative dates like \"last Tuesday\", short numeric PINs/account tails), "
-              "not the in-distribution 300k generic text. A real ai4privacy slice is also "
-              "provided (`pii-eval-ai4privacy.jsonl`) for an in-distribution comparison.")
+              "not the in-distribution 300k generic text. A real ai4privacy slice can be "
+              "built locally (`python -m confide_eval.data.fetch_ai4privacy`) for an "
+              "in-distribution comparison, but it is not redistributed.")
     md.append("- **Stricter accounting:** entity-level, with wrong-type counted as both FP+FN.")
     md.append("- **Small N:** 46 gold entities — each miss moves recall ~2pp. Treat per-type "
               "numbers as directional, not precise.")
     md.append("")
     md.append("**Honest read:** the model is strong on names/phones/emails/URLs and over-redacts "
               "very little (high precision), but on this hard set it misses relative dates and "
-              "short numeric secrets — exactly the recall failures that matter for de-id. Run the "
-              "ai4privacy slice to see in-distribution recall.")
+              "short numeric secrets — exactly the recall failures that matter for de-id. Build "
+              "the ai4privacy slice locally to see in-distribution recall.")
     md.append("")
     with open(os.path.join(HERE, f"{pfx}RESULTS.md"), "w") as f:
         f.write("\n".join(md) + "\n")

@@ -18,13 +18,12 @@ Built for a masterclass demo. Written so a non-ML clinical audience can read it.
 
 This eval **was executed** on an Apple Silicon laptop (26 GB RAM); the current OPF
 cache uses MPS acceleration when available.
-The numbers in `en-bench-results.json` and `en-real-bench-results.json` are our own
-measurement, not vendor marketing.
+The numbers in `en-bench-results.json` are our own measurement, not vendor marketing.
+EN-real is optional and local-only; its gold/results are not redistributed.
 
 | Dataset | Snippets | Gold PII | Recall | Precision | F1 | **F2 (headline)** |
 |---|--:|--:|--:|--:|--:|--:|
 | `pii-eval.jsonl` (curated therapy-style) | 32 | 46 | **0.783** | 0.953 | 0.860 | **0.812** |
-| `pii-eval-ai4privacy.jsonl` (real slice, in-distribution) | 15 | 80 | **0.975** | 0.780 | 0.867 | **0.929** |
 
 (Type-aware relaxed/overlap mode from `score_bench.py`; see `BENCHMARK.md`.)
 
@@ -110,12 +109,12 @@ cd eval
 pip install -r requirements.txt          # transformers, torch (datasets optional)
 
 python -m confide_eval.data.build_dataset                  # writes data/sessions-en/pii-eval.jsonl
-                                         # (+ real ai4privacy slice if datasets installed)
 
 python -m confide_eval.detectors.run_detectors --dataset en --detectors opf
 python -m confide_eval.scoring.score_bench --dataset en --out-prefix en-
 
 # Optional: the real, in-distribution ai4privacy slice
+python -m confide_eval.data.fetch_ai4privacy
 python -m confide_eval.detectors.run_detectors --dataset en-real --detectors opf
 python -m confide_eval.scoring.score_bench --dataset en-real --out-prefix en-real-
 ```
@@ -146,10 +145,11 @@ The model recognizes **8 PII categories**:
   data; therapy-flavoured so the demo lands with a clinical audience. Includes
   deliberately hard cases (relative dates like *"last Tuesday"*, short numeric
   PINs / account tails) — which is where the model's recall actually drops.
-- **`data/sessions-en/pii-eval-ai4privacy.jsonl`** — SECONDARY. A **real** 15-row
+- **`data/sessions-en/pii-eval-ai4privacy.jsonl`** — OPTIONAL LOCAL. A **real**
   slice of `ai4privacy/pii-masking-300k` (English `validation` split), with its
-  native labels mapped down to the model's 8 categories. Generic
-  (non-therapy) content; kept as an in-distribution sanity check.
+  native labels mapped down to the model's 8 categories. Generic (non-therapy)
+  content; kept as an in-distribution sanity check. Not redistributed; build it
+  with `python -m confide_eval.data.fetch_ai4privacy` only if licensed.
 
 Each line:
 ```json

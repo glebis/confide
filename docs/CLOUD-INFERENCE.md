@@ -9,6 +9,9 @@ CONFIDE's LLM transport is already engine-agnostic: set `LLM_API=openai`, `LLM_B
 /v1>`, `LLM_MODEL=<id>`, and the right `*_API_KEY` — `anonymize.run_ollama` + `confide_red.py` post
 to `/v1/chat/completions` unchanged.
 
+Before adding another cloud model/provider or promoting a cloud-backed stack combo, use
+`BENCHMARK-MODEL-STACK-CHECKLIST.md`.
+
 ## Providers (all OpenAI-compatible)
 
 | Provider | Key in env? | Endpoint | Best RU-capable big models | Speed | Cost |
@@ -37,6 +40,7 @@ qwen2.5:3b. The same cloud model then powers **R5** (N≥5 variance) without gri
 - Pin the served model id + record it in the run registry (digests aren't exposed by these APIs;
   record the `id` string + date).
 - Respect free-tier rate limits (batch/sleep between docs); fall back Cerebras→Groq→local on error.
+- Follow `BENCHMARK-MODEL-STACK-CHECKLIST.md` before publishing or promoting a cloud result.
 
 ## What actually ran (2026-06-02) — see `CLOUD-MODEL-RESULTS.md`
 

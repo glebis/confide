@@ -60,7 +60,7 @@ import Base from '../layouts/Base.astro';
       <h2 class="prose">Direct identifiers are table stakes; quasi-identifiers are the real surface.</h2>
       <div class="stats">
         <div class="stat g">
-          <div class="v mono">86%</div>
+          <div class="v mono">88%</div>
           <div class="l">RU default coverage</div>
           <div class="n">natasha + regex + qwen2.5:3b ★</div>
         </div>
@@ -81,6 +81,7 @@ import Base from '../layouts/Base.astro';
         </div>
       </div>
       <p class="prose note">Three <abbr title="Personally Identifiable Information">PII</abbr> types — age, medication, profession — sit near zero under the deterministic layers. The local LLM raises their mention-recall, but medication and profession stay low at the strict <em>entity</em> level, because every mention must be masked. Redaction of direct identifiers is necessary but not sufficient.</p>
+      <p class="prose note"><strong>Exploratory model-swap finding:</strong> Gemma3 and Gemma4 both beat the current Qwen baseline on completed full short slices; Gemma4 is strongest on quality, while Qwen remains the published default until variance and promotion gates pass.</p>
       <div class="flyout prose" style="border-left-color:var(--red)">
         <div class="t" style="color:var(--red)">our position</div>
         <p>We report the <span class="pill red">RED</span> residual-risk tier on purpose. De-identification is <strong>harm-reduction, not anonymization</strong> — it never replaces <strong>explicit, informed client consent</strong> and local-only handling for any real recording. A tool that promised "safe to upload" would be the dangerous one. <a href="/about#ethics">Read our ethics &amp; consent stance →</a></p>

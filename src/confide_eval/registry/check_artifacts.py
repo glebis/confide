@@ -14,7 +14,7 @@ stale number can never silently ship. Three independent checks:
      ONLY if BENCHMARK.md does not present a numeric row for it.
   3. Markdown ↔ JSON consistency — the headline numbers quoted in BENCHMARK.md and
      IAA-RESULTS.md (RU ★ coverage recall / entity recall / harm-weighted recall,
-     EN/EN-real Presidio + Philter coverage F2 + micro-F1, IAA F1 + κ) must equal
+     EN and optional local EN-real Presidio + Philter coverage F2 + micro-F1, IAA F1 + κ) must equal
      the values in the regenerated JSON.
 
 Usage:  python check_artifacts.py            # check, exit non-zero on drift
@@ -31,7 +31,8 @@ from confide_eval.scoring import score_bench as sb
 HERE = os.path.dirname(os.path.abspath(__file__))
 RESULTS = os.fspath(paths.RESULTS)
 DOCS = os.fspath(paths.DOCS)
-DATASETS = ["ru", "ru-adv", "en", "en-real", "ru-real"]
+PUBLIC_DATASETS = ["ru", "ru-adv", "en", "ru-real"]
+OPTIONAL_LOCAL_DATASETS = ["en-real"]
 PREFIX = {"ru": "ru-", "ru-adv": "ru-adv-", "en": "en-", "en-real": "en-real-",
           "ru-real": "ru-real-"}
 
@@ -94,31 +95,33 @@ def en_real_text_present():
     return paths.en_real_text_present()
 
 
+def active_datasets():
+    """Datasets that can be checked from the current checkout.
+
+    EN-real is ai4privacy-derived and local-only. Public checkouts must not
+    require its gold/results/caches; include it only after the local reconstruction
+    exists.
+    """
+    datasets = list(PUBLIC_DATASETS)
+    for ds in OPTIONAL_LOCAL_DATASETS:
+        if ds == "en-real" and en_real_text_present():
+            datasets.insert(3, ds)
+    return datasets
+
+
 def check_json_freshness():
     """Committed *-bench-results.json must equal a fresh rescore.
 
-    EN-real is fetch-required: its source text is not redistributed (ai4privacy
-    license). When the text-bearing `.local.jsonl` has NOT been fetched we cannot
-    re-score it, so we keep the committed en-real results AS-IS (they are our
-    derived measurements, computed when the text was present) and only validate
-    the stripped gold's doc_ids against the committed result. ru/en/ru-adv are
-    validated exactly as strictly as before."""
+    EN-real is fetch-required and ai4privacy-derived. When the local text-bearing
+    gold is absent, there must be no public dependency on it; active_datasets()
+    excludes it. Public datasets are validated exactly as strictly as before."""
     fresh = {}
-    for ds in DATASETS:
+    for ds in active_datasets():
         committed_path = os.path.join(RESULTS, f"{PREFIX[ds]}bench-results.json")
         if not os.path.exists(committed_path):
             fail(f"[json] {PREFIX[ds]}bench-results.json missing on disk")
             continue
         committed = json.load(open(committed_path, encoding="utf-8"))
-        if ds == "en-real" and not en_real_text_present():
-            # Fetch-required: keep committed results, validate stripped doc_ids only.
-            gold = sb.load_gold(ds)
-            gold_ids = [g["doc_id"] for g in gold]
-            if committed.get("n_docs") != len(gold_ids):
-                fail(f"[json] en-real: committed n_docs={committed.get('n_docs')} "
-                     f"!= stripped gold docs={len(gold_ids)}")
-            fresh[ds] = committed
-            continue
         now = rescore(ds)
         fresh[ds] = now
         # compare the JSON-normalized forms (round-trip to ignore key ordering)
@@ -152,14 +155,10 @@ def check_json_freshness():
 def check_manifests(fresh):
     """Every cache cited by a numeric BENCHMARK.md row must validate against gold."""
     bench = open(os.path.join(DOCS, "BENCHMARK.md"), encoding="utf-8").read()
-    for ds in DATASETS:
+    for ds in active_datasets():
         gold = sb.load_gold(ds)
         gold_ids = set(g["doc_id"] for g in gold)
-        # EN-real without the fetched text: validate caches by DOC-ID only (we
-        # cannot recompute docs_sha without the source text — it's not
-        # redistributed). The committed caches were built when text was present.
-        en_real_no_text = (ds == "en-real" and not en_real_text_present())
-        docs_sha = None if en_real_no_text else _docs_sha(gold)
+        docs_sha = _docs_sha(gold)
         # which detectors feed the combos that scored cleanly (have a numeric row)?
         cited = set()
         for name, members in sb.COMBOS[ds]:
@@ -220,13 +219,16 @@ def check_md_consistency(fresh):
     if mg and int(mg.group(1)) != fresh["ru"]["n_gold_mentions"]:
         fail(f"[md] RU gold mentions: md={mg.group(1)} json={fresh['ru']['n_gold_mentions']}")
 
-    # --- EN / EN-real baseline rows (presidio, philter) coverage F2 + micro-F1 ---
+    # --- EN / optional local EN-real baseline rows (presidio, philter) coverage F2 + micro-F1 ---
     # Scope each search to that dataset's section so the EN-synth `| presidio |`
     # row is not matched when checking EN-real (both sections share row labels).
     def _section(title):
         m = re.search(rf"\n## {re.escape(title)} —.*?(?=\n## )", bench, re.S)
         return m.group(0) if m else bench
-    for ds, sect in (("en", "EN-synth"), ("en-real", "EN-real")):
+    baseline_sections = [("en", "EN-synth")]
+    if "en-real" in fresh:
+        baseline_sections.append(("en-real", "EN-real"))
+    for ds, sect in baseline_sections:
         sect_md = _section(sect)
         for det in ("presidio", "philter"):
             e = fresh[ds]["combos"].get(det, {})

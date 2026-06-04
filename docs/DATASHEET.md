@@ -25,17 +25,17 @@ positioning memo and is explicitly marked needs-verification.
 - **Created by / for.** Built for the Psychodemia 2026 masterclass.
 
 ### 2. Composition
-- **Instances.** Five datasets:
+- **Instances.** Four public runnable datasets plus one optional local-only dataset:
   - **RU-synth** — 30 synthetic Russian therapy sessions (6 fictional clients × 5),
     1,058 gold PII mention-spans (v2, post-IAA adjudication).
   - **RU-adversarial** — 16 short Russian snippets, 20 spans, probing hard forms
     (patronymics, transliteration, handles, SNILS/INN/passport, code-switching).
   - **EN-synth** — 32 curated English therapy-style snippets, 46 spans.
-  - **EN-real** — 15-row slice of `ai4privacy/pii-masking-300k` (English validation),
-    80 spans (real, generic; in-distribution sanity check). **Source text NOT
-    redistributed** (ai4privacy license): the committed gold ships span offsets +
-    `text_sha256` + `text_len` only; reconstruct the text locally with
-    `python -m confide_eval.data.fetch_ai4privacy` (gitignored `.local.jsonl`).
+  - **EN-real (optional local)** — small slice of `ai4privacy/pii-masking-300k`
+    (English validation; real, generic; in-distribution sanity check). **Not
+    redistributed** (ai4privacy license): gold, detector caches, and result artifacts
+    are local-only and gitignored. Build it locally with
+    `python -m confide_eval.data.fetch_ai4privacy` only if you have rights to use it.
   - **RU-real (JayGuard)** — 60-doc slice of `just-ai/jayguard-ner-benchmark` (Just AI),
     77 spans of **real, anonymized conversational Russian** (NOT therapy).
     **License Apache-2.0** — redistribution permitted with attribution, so the
@@ -51,7 +51,7 @@ positioning memo and is explicitly marked needs-verification.
   `confidential_status`, `mask_decision` (MASK/GENERALIZE), `utility_tag`,
   `speaker_turn_id`/`speaker`, and `adjudicated` (v2 additions).
 - **Real vs synthetic.** RU and EN-synth are **fully fictional** — no real patients.
-  EN-real is real generic PII text (ai4privacy), not therapy. RU-real (JayGuard) is
+  Optional local EN-real is real generic PII text (ai4privacy), not therapy. RU-real (JayGuard) is
   real *anonymized* conversational RU text, not therapy — a real-TEXT RU proxy.
 - **Sensitive content.** Simulated mental-health disclosures (anxiety, perfectionism,
   family conflict). Fictional, but written to read as clinically plausible.
@@ -67,7 +67,7 @@ positioning memo and is explicitly marked needs-verification.
   (the answer keys explicitly label themselves "planted signal, not exact ground truth").
 - Gold spans are located programmatically (Cyrillic-morphology-aware regex over the raw
   transcripts) from six answer-key inventories, then hand-verified.
-- EN-synth is curated; EN-real is sampled from ai4privacy's published validation split.
+- EN-synth is curated; optional local EN-real is sampled from ai4privacy's published validation split.
 
 ### 4. Preprocessing / labeling
 - No text normalization — detectors and gold operate on the raw transcript characters
@@ -86,11 +86,10 @@ positioning memo and is explicitly marked needs-verification.
 
 ### 6. Distribution
 - Synthetic RU/EN-synth: releasable for research/teaching with this datasheet. EN-real
-  inherits ai4privacy's license; **its source text is NOT redistributed by this repo.**
-  The committed EN-real gold ships span offsets + `text_sha256` + `text_len` only; users
-  reconstruct the text locally under ai4privacy's own license via
+  inherits ai4privacy's license; **its gold, caches, and results are NOT redistributed
+  by this repo.** Users may build it locally under ai4privacy's own license via
   `python -m confide_eval.data.fetch_ai4privacy` (writes a gitignored
-  `data/sessions-en/pii-eval-ai4privacy.local.jsonl`). Consult ai4privacy's dataset card
+  `data/sessions-en/pii-eval-ai4privacy.jsonl`). Consult ai4privacy's dataset card
   before any redistribution. **RU-real (JayGuard)** is licensed **Apache-2.0**, which
   permits redistribution **with attribution** — so its source text IS committed
   (`data/sessions-ru-real/jayguard-ru.jsonl`), with attribution to **Just AI** in
@@ -110,7 +109,7 @@ positioning memo and is explicitly marked needs-verification.
   PII spoken naturally) so a de-id stack is tested on dialogue, not clean clinical notes.
 - **Language variety.** Russian (`ru-RU`) — colloquial therapy dialogue with morphology,
   patronymics, diminutives, transliteration and RU↔EN code-switching; English (`en-US/GB`)
-  — curated therapy-style + generic ai4privacy text.
+  — curated therapy-style text, plus optional local generic ai4privacy text when built.
 - **Speaker / author demographic.** Fictional clients: "client-a" (Марина, ~34,
   marketer), "client-b" (Игорь, ~41, backend developer), "client-c" (Алина, ~29,
   UX designer), "client-d" (Роман, ~45, entrepreneur), "client-e" (Вера, ~37,
@@ -125,6 +124,6 @@ positioning memo and is explicitly marked needs-verification.
   references, and narrative quasi-identifiers — the material that makes therapy text both
   useful and re-identifying.
 - **Provenance appendix.** RU answer keys: `data/sessions-ru/client-{a..f}/ANSWER-KEY.md`.
-  EN-real: `ai4privacy/pii-masking-300k` — source text not redistributed; reconstruct via
-  `python -m confide_eval.data.fetch_ai4privacy` (sha256-verified). Reconstruction/utility method: Staab et al.,
+  Optional local EN-real: `ai4privacy/pii-masking-300k` — not redistributed; build via
+  `python -m confide_eval.data.fetch_ai4privacy`. Reconstruction/utility method: Staab et al.,
   RAT-Bench, Tau-Eval (see `RESEARCH-FINDINGS.md` §10; verify before citing).

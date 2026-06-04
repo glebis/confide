@@ -3,7 +3,8 @@
 A benchmark is only trustworthy if its reporting choices are explicit. This documents
 **what CONFIDE puts in the headline, what it deliberately leaves out, and the reasoning** —
 so a reader can judge the numbers rather than take them on faith. (Pairs with
-`DATASHEET.md` for the *data*, `HARM-TAXONOMY.md` for severity, `ETHICS.md` for scope.)
+`DATASHEET.md` for the *data*, `HARM-TAXONOMY.md` for severity, `ETHICS.md` for scope,
+and `BENCHMARK-MODEL-STACK-CHECKLIST.md` for adding model/stack comparisons.)
 
 ## 1. The headline metric — and why it's recall-weighted
 
@@ -33,6 +34,7 @@ so a reader can judge the numbers rather than take them on faith. (Pairs with
 | **CONFIDE-Red: inference / singling-out / linkability** | Coverage ≠ safety. Maps to the three GDPR Art-29 / Anonymeter attacks — measures residual *re-identification* after redaction. |
 | **LLM-assisted consistency check (κ/F1 seed)** | A pattern-derived gold can miss surfaces; a single automated second pass helps find blind spots. This is not a human IAA claim. |
 | **Run records (lm-eval-harness style JSON/JSONL)** | Every headline number is traceable to a logged run with code/docs hashes. |
+| **Model/stack addition checklist** | New LLMs, providers, prompt variants, and fixed combos are added through `BENCHMARK-MODEL-STACK-CHECKLIST.md` so exploratory runs do not silently become defaults. |
 
 ## 3. What the report OMITS — and why
 

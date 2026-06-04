@@ -1,0 +1,19 @@
+{
+  "dataset": "ru",
+  "detector": "local-gemma3-latest-hybrid",
+  "n_docs": 1,
+  "n_spans": 42,
+  "invalid_spans": 0,
+  "empty_docs": 0,
+  "doc_ids": [
+    "ru-a-s01"
+  ],
+  "docs_sha": "3c98d9f9eb95",
+  "code_sha": "d05af59d147b",
+  "model": "gemma3:latest",
+  "provider": "ollama",
+  "provider_base": "http://localhost:11434",
+  "prompt_file": "experiments/local-llm-deid/prompts/pii_v6_claude_hybrid.txt",
+  "prompt_sha": "aa468a9a85a5",
+  "seconds": 23.8
+}
