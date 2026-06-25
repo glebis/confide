@@ -6,7 +6,7 @@
 PY ?= PYTHONPATH=src python3
 DATASETS := ru ru-adv en ru-real
 
-.PHONY: check test rescore ci report all
+.PHONY: check test rescore ci report site-data site-deploy site-update all
 
 ## check: fail if any committed artifact drifted from current gold + caches
 check:
@@ -34,6 +34,19 @@ report:
 	$(PY) -m confide_eval.scoring.regulatory
 	$(PY) -m confide_eval.report.make_benchmark
 	$(PY) -m confide_eval.report.make_tufte_report
+
+## site-data: sync generated benchmark data into the Astro site (site/src/data/)
+site-data:
+	$(PY) -m confide_eval.report.sync_site
+
+## site-deploy: build the site locally and ship the prebuilt output to Vercel prod
+## (cloud builds can't resolve ../docs imports, hence --prebuilt; see tools/update_site.sh)
+site-deploy:
+	cd site && vercel build --prod && vercel deploy --prebuilt --prod --yes
+
+## site-update: the standard "defaults changed" pipeline — reports → site data → deploy
+site-update:
+	./tools/update_site.sh
 
 ## all: full regeneration, then verify nothing is stale
 all: rescore ci report check

@@ -72,6 +72,13 @@ CLOUD_LLM = {
     "ru-adv": load("local-llm-gemma-cloud-ru-adv.json"),
     "en": load("local-llm-gemma-cloud-en.json"),
 }
+# GLiNER zero-shot NER layer (not an LLM swap): scored through the same
+# score_llm_experiment path, stack = NER backbone + regex + gliner.
+GLINER_NER = {
+    "ru": load("gliner-multi-ru.json"),
+    "ru-adv": load("gliner-multi-ru-adv.json"),
+    "en": load("gliner-multi-en.json"),
+}
 
 
 def combos_clean(res):
@@ -266,6 +273,7 @@ def gemma_stack_rows(ds_key):
         (LOCAL_LLM, "local-gemma3", "gemma3"),
         (LOCAL_LLM, "local-gemma4", "gemma4-12b-mlx"),
         (CLOUD_LLM, "cloud-hf-gemma4", "gemma4-26b·cloud"),
+        (GLINER_NER, "gliner", "gliner"),
     ):
         e = _local_llm_pick(source.get(ds_key), prefix)
         if not e:
@@ -298,7 +306,7 @@ def leaderboard_table(res, title, ds_key=None):
             cells += ["<td>—</td>", "<td>—</td>", "<td>—</td>"]
         cells.append(f"<td>{e['n_pred']}</td>")
         body.append(f"<tr{cls}>" + "".join(cells) + "</tr>")
-    gemma_note = (f"<p class='caption' style='text-align:left'>{t('◇ exploratory Gemma model swap of the ★ stack — separate detector cache, not a promoted default (variance and promotion gates pending; see the LLM model comparison section).')}</p>"
+    gemma_note = (f"<p class='caption' style='text-align:left'>{t('◇ exploratory swap in the ★ stack (Gemma LLM or GLiNER NER layer) — separate detector cache, not a promoted default (variance and promotion gates pending; see the model comparison section).')}</p>"
                   if gemma else "")
     return (f"<div class='table-wrapper'><table><thead>{head}</thead>"
             f"<tbody>{''.join(body)}</tbody></table></div>{gemma_note}{_legend(cols)}")
@@ -314,12 +322,16 @@ def _local_llm_pick(res, detector_prefix):
     return None
 
 
-def local_llm_compare_table():
-    """Exploratory model-swap table from score_llm_experiment.py outputs.
+def local_llm_compare_rows():
+    """Exploratory model-comparison rows from score_llm_experiment.py outputs,
+    as plain data: one dict per (dataset, model) stack. Shared by the HTML
+    table below and by sync_site.py (which feeds the Astro site), so the two
+    can never drift apart.
 
     These rows intentionally do not alter the ★ defaults. They document the
-    user's Gemma-vs-Qwen challenge, including local and approved synthetic cloud
-    probes, as a candidate comparison with separate cache names and manifests.
+    user's Gemma-vs-Qwen challenge (local and approved synthetic cloud probes)
+    plus the GLiNER zero-shot NER layer, each from separate cache names and
+    manifests.
     """
     dataset_order = [
         ("ru", "RU-synth long"),
@@ -332,34 +344,46 @@ def local_llm_compare_table():
         (LOCAL_LLM, "local-gemma3", "Gemma3"),
         (LOCAL_LLM, "local-gemma4", "Gemma4 12B-MLX"),
         (CLOUD_LLM, "cloud-hf-gemma4", "Gemma4 26B-A4B (HF cloud)"),
+        (GLINER_NER, "gliner", "GLiNER-multi PII (zero-shot NER)"),
     ]
     rows = []
     for ds, ds_label in dataset_order:
         for source, prefix, model_label in model_order:
-            res = source.get(ds)
-            if not res:
-                continue
-            e = _local_llm_pick(res, prefix)
+            e = _local_llm_pick(source.get(ds), prefix)
             if not e:
                 continue
-            cr = e["coverage_relaxed"]
-            tf2 = e["type_relaxed"]["f2"]
             ent = e.get("entity_level", {}).get("entity_recall")
-            ent_cell = f"{ent:.3f}" if ent is not None else "—"
-            rows.append(
-                f"<tr><td style='text-align:left'>{ds_label}</td>"
-                f"<td style='text-align:left'>{model_label}</td>"
-                f"<td>{cr['r']:.3f}</td><td>{tf2:.3f}</td>"
-                f"<td>{ent_cell}</td><td>{e['n_pred']}</td></tr>"
-            )
+            rows.append({
+                "dataset": ds,
+                "dataset_label": ds_label,
+                "model": model_label,
+                "cov_r": e["coverage_relaxed"]["r"],
+                "type_f2": e["type_relaxed"]["f2"],
+                "ent_r": ent,
+                "n_pred": e["n_pred"],
+            })
+    return rows
+
+
+def local_llm_compare_table():
+    """HTML rendering of local_llm_compare_rows()."""
+    rows = []
+    for r in local_llm_compare_rows():
+        ent_cell = f"{r['ent_r']:.3f}" if r["ent_r"] is not None else "—"
+        rows.append(
+            f"<tr><td style='text-align:left'>{r['dataset_label']}</td>"
+            f"<td style='text-align:left'>{r['model']}</td>"
+            f"<td>{r['cov_r']:.3f}</td><td>{r['type_f2']:.3f}</td>"
+            f"<td>{ent_cell}</td><td>{r['n_pred']}</td></tr>"
+        )
     if not rows:
         return ""
     head = ("<tr><th style='text-align:left'>dataset</th>"
             "<th style='text-align:left'>model</th>"
             f"{_th('cov R')}{_th('cov F2')}<th>ent&nbsp;R</th><th>preds</th></tr>")
     return (f"<div class='ornament'>:::</div>"
-            f"<h2>2c. {t('LLM model comparison')}</h2>"
-            f"<p class='state-line'>{t('Exploratory model swaps show Gemma beating the Qwen baseline on every completed full short slice; local Gemma4 is strongest on quality, while HF cloud Gemma4 is close on RU-adversarial but partial on English because provider billing stopped 13 requests. The ★ defaults are unchanged until variance and promotion gates pass.')}</p>"
+            f"<h2>2c. {t('Model comparison')}</h2>"
+            f"<p class='state-line'>{t('Exploratory model swaps show Gemma beating the Qwen baseline on every full short slice; local Gemma4 is strongest on the Russian sets, while HF cloud Gemma4 leads the English stack and is stable across 5 replicates. GLiNER-multi, a local zero-shot NER layer, is reported on the same footing. The ★ defaults are unchanged until variance and promotion gates pass.')}</p>"
             f"<div class='table-wrapper'><table><thead>{head}</thead>"
             f"<tbody>{''.join(rows)}</tbody></table></div>"
             f"<p class='caption' style='text-align:left'>{t('Rows are stack scores from separate detector caches, generated by score_llm_experiment.py. Cloud rows used synthetic text only. Long-RU Gemma3 chunking is included as a recall/noise tradeoff, not a promoted default; missing rows are omitted, not scored as zero.')}</p>")
@@ -485,7 +509,8 @@ h2 {{ font-size:1.5rem; font-variant:small-caps; font-weight:400; border-top:1px
 .status-value {{ font-family:'Monaspace Argon',monospace; font-size:1.5rem; }}
 .status-note {{ font-size:.78rem; color:var(--ink-light); font-style:italic; }}
 .g {{ border-left-color:var(--green); }} .a {{ border-left-color:var(--amber); }} .r {{ border-left-color:var(--red); }} .b {{ border-left-color:var(--c3); }}
-.aside-container {{ display:grid; grid-template-columns:1fr 280px; gap:2rem; align-items:start; margin:1.2rem 0; }}
+.aside-container {{ display:grid; grid-template-columns:minmax(0,1fr) 280px; gap:2rem; align-items:start; margin:1.2rem 0; }}
+.aside-container > * {{ min-width:0; }} /* grid items default to min-width:auto, letting wide tables blow out the track and force page-level horizontal scroll on phones */
 .aside {{ font-size:.9rem; line-height:1.55; color:var(--ink-light); }}
 .aside .t {{ font-variant:small-caps; letter-spacing:.06em; font-size:.82rem; color:var(--ink); margin-bottom:.4rem; }}
 .aside p {{ margin:.5rem 0; }} .aside strong {{ color:var(--ink); }}
@@ -493,9 +518,12 @@ h2 {{ font-size:1.5rem; font-variant:small-caps; font-weight:400; border-top:1px
 .caption {{ font-size:.82rem; font-style:italic; color:var(--ink-muted); text-align:center; margin:.4rem 0 0; }}
 table {{ border-collapse:collapse; width:100%; font-size:.92rem; }}
 th {{ font-variant:small-caps; color:var(--ink-muted); font-weight:400; text-align:right; padding:.3rem .5rem; border-bottom:1px solid var(--rule); }}
-td {{ font-family:'Monaspace Argon',monospace; font-variant-numeric:tabular-nums; text-align:right; padding:.28rem .5rem; border-bottom:1px solid #eee; }}
+td {{ font-family:'Monaspace Argon',monospace; font-variant-numeric:tabular-nums; text-align:right; padding:.28rem .5rem; border-bottom:1px solid #eee; transition:background .2s ease; }}
 td:first-child {{ font-family:'EB Garamond',serif; }}
 .highlight-row td {{ background:#f4efe0; }}
+/* active-row highlight on hover; placed after .highlight-row so ★ rows darken too */
+tbody tr:hover td {{ background:#f1ecdc; }}
+@media (prefers-reduced-motion: reduce) {{ td {{ transition:none; }} }}
 .table-wrapper {{ overflow-x:auto; }}
 th[title] {{ cursor:help; border-bottom:1px dotted var(--ink-muted); }}
 .dir {{ font-family:'Monaspace Argon',monospace; font-size:.7em; color:var(--c2); padding-left:.15em; }}

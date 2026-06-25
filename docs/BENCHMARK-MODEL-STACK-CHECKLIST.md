@@ -5,7 +5,7 @@ Use this checklist when adding any new LLM model, prompt/runtime variant, provid
 ## 1. Scope the Change
 
 - [ ] State the research question before running anything: model swap, prompt comparison, runtime comparison, cloud scale-up, or new fixed stack combo.
-- [ ] Name the candidate with a stable detector id, for example `local-gemma3-4b-chunk2k` or `cloud-qwen3-32b-r5`. Do not use names reserved by `RESERVED_DETECTORS` in `src/confide_eval/detectors/run_llm_detector.py`; it currently includes `ollama`, `natasha`, `regex`, `opf`, `presidio`, and `philter`.
+- [ ] Name the candidate with a stable detector id, for example `local-gemma3-4b-chunk2k` or `cloud-qwen3-32b-r5`. Do not use names reserved by `RESERVED_DETECTORS` in `src/confide_eval/detectors/run_llm_detector.py`; it currently includes `ollama`, `natasha`, `regex`, `opf`, `presidio`, `philter`, and `gliner`.
 - [ ] Choose the datasets up front: `ru`, `ru-adv`, `ru-real`, `en`, and/or `en-real`.
 - [ ] Confirm the privacy boundary:
   - local models may run on committed synthetic/proxy benchmark data;

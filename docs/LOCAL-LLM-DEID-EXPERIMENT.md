@@ -65,9 +65,9 @@ OPENAI_API_KEY=... PYTHONPATH=src python3 -m confide_eval.detectors.run_llm_dete
   --allow-remote
 ```
 
-- **Hugging Face Inference Providers Router** - the practical immediate cloud test path. It exposes an OpenAI-compatible `/v1/chat/completions` endpoint at `https://router.huggingface.co/v1` and supports suffixes like `:fastest`. The current `HF_TOKEN` worked for `google/gemma-4-26B-A4B-it:fastest`, but English synthetic expansion hit `402 Payment Required` after the free/credit allowance.
+- **Hugging Face Inference Providers Router** - the practical immediate cloud test path. It exposes an OpenAI-compatible `/v1/chat/completions` endpoint at `https://router.huggingface.co/v1` and supports suffixes like `:fastest`. The current `HF_TOKEN` worked for `google/gemma-4-26B-A4B-it:fastest`; the English synthetic run was later resumed and completed in full (32/32 docs).
 - **Hugging Face Inference Endpoints** - managed dedicated endpoint around Hugging Face-hosted Gemma weights. Requires Gemma access approval and `HF_TOKEN`; useful for more reliable hosted inference without operating GKE.
-- **Hugging Face on Vertex AI** - good when we want Google Cloud billing/governance but Hugging Face model packaging and containers.
+- **Hugging Face on Vertex AI** - good when we want Google Cloud governance and procurement but Hugging Face model packaging and containers.
 - **Groq** - configured locally and useful for a larger Qwen comparison (`qwen/qwen3-32b` is listed), but its model list does not currently expose Gemma with this account.
 - **Ollama cloud tags** - quickest exploratory route where available, but treat as remote processing. Do not use raw private transcripts unless the account, region, retention, and legal terms are acceptable.
 
@@ -238,12 +238,12 @@ Completed full short-slice propagation:
 | `en` | Qwen baseline: `opf+regex+ollama` | 0.978 | 0.870 | - | 66 | cached |
 | `en` | `opf+regex+gemma3` | 1.000 | 0.904 | - | 62 | 30.7s |
 | `en` | `opf+regex+gemma4-12b-mlx` | 1.000 | 0.955 | - | 54 | 191.0s |
-| `en` | `opf+regex+gemma4-26b-a4b-hf-cloud` | 0.935 | 0.914 | - | 48 | 22.0s partial |
+| `en` | `opf+regex+gemma4-26b-a4b-hf-cloud` | 1.000 | 0.962 | - | 52 | 65.4s (resumed) |
 
 Interpretation:
 
-- Gemma4 12B-MLX is the best-quality candidate on the completed full short slices: equal or better recall than Gemma3, better type-F2, and fewer predictions.
-- Hugging Face cloud Gemma4 26B-A4B is close to local Gemma4 on `ru-adv` and much faster wall-clock, but the English run is not reliable evidence because 13 of 32 requests returned `402 Payment Required`.
+- Gemma4 12B-MLX is the best-quality candidate on the Russian short slices: equal or better recall than Gemma3, better type-F2, and fewer predictions.
+- Hugging Face cloud Gemma4 26B-A4B is close to local Gemma4 on `ru-adv` and much faster wall-clock. The initially interrupted English run was resumed and completed in full (32/32 docs); the complete stack now leads EN-synth with coverage F2 0.962.
 - Gemma3 is much faster locally and still beats the Qwen baseline on these slices.
 - Main long-RU full propagation confirms the tradeoff: Gemma3 chunked improves stack recall from 0.875 to 0.954 and entity recall from 0.726 to 0.850, but over-redacts badly: type-F2 falls from 0.802 to 0.362 with 9,093 predictions. Do not promote this as a default.
 - The next long-RU step should be a smaller Gemma4 MLX variant, a stricter prompt/post-filter for Gemma3 chunking, or a cloud/GPU Gemma4 run on synthetic text only.

@@ -9,8 +9,11 @@ import argparse
 import hashlib
 import json
 import os
+import subprocess
 import sys
 import time
+import urllib.error
+import urllib.request
 from urllib.parse import urlparse
 
 from confide_eval import paths
@@ -20,12 +23,94 @@ sys.path.insert(0, os.fspath(paths.ANONYMIZER_SCRIPTS))
 
 CACHE = os.fspath(paths.CACHE)
 DATASETS = {k: os.fspath(v) for k, v in paths.GOLD.items()}
-RESERVED_DETECTORS = {"ollama", "natasha", "regex", "opf", "presidio", "philter"}
+RESERVED_DETECTORS = {"ollama", "natasha", "regex", "opf", "presidio", "philter", "gliner"}
 
 
 def _is_local_base(url: str) -> bool:
     host = (urlparse(url).hostname or "").lower()
     return host in {"localhost", "127.0.0.1", "::1", ""}
+
+
+# --- memory guard -----------------------------------------------------------
+# A 2026-06-06 kernel panic (watchdog timeout) was traced to two Ollama models
+# resident at once on 24 GB with zero free swap. Before loading a model we
+# unload every other resident model, and refuse to start if the system is
+# already memory-starved. See docs/LOCAL-LLM-DEID-EXPERIMENT.md.
+
+MIN_SWAP_FREE_MB = 1024
+MIN_RAM_AVAIL_MB = 8192
+
+
+def _ollama_json(base: str, path: str, payload: dict | None = None) -> dict | None:
+    """GET (payload=None) or POST a JSON request to Ollama; None on any failure."""
+    req = urllib.request.Request(
+        f"{base.rstrip('/')}{path}",
+        data=None if payload is None else json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return json.loads(resp.read() or "{}")
+    except (urllib.error.URLError, OSError, json.JSONDecodeError):
+        return None
+
+
+def _ollama_loaded_models(base: str) -> list[str]:
+    ps = _ollama_json(base, "/api/ps")
+    return [m["name"] for m in (ps or {}).get("models", []) if m.get("name")]
+
+
+def _ollama_unload(base: str, model: str) -> bool:
+    """Ask Ollama to evict a model immediately (keep_alive=0)."""
+    return _ollama_json(base, "/api/generate", {"model": model, "keep_alive": 0}) is not None
+
+
+def _unload_other_models(base: str, model: str) -> None:
+    for loaded in _ollama_loaded_models(base):
+        if loaded == model:
+            continue
+        ok = _ollama_unload(base, loaded)
+        print(f"[guard] unloading resident model {loaded!r}: {'ok' if ok else 'FAILED'}",
+              file=sys.stderr)
+
+
+def _memory_headroom_mb() -> tuple[float, float] | None:
+    """Return (free_swap_mb, avail_ram_mb) on macOS; None if undeterminable."""
+    if sys.platform != "darwin":
+        return None
+    try:
+        swap = subprocess.run(["sysctl", "-n", "vm.swapusage"],
+                              capture_output=True, text=True, check=True).stdout
+        # "total = 7168.00M  used = 6196.38M  free = 971.62M  (encrypted)"
+        swap_free = float(swap.split("free =")[1].split("M")[0])
+        vm = subprocess.run(["vm_stat"], capture_output=True, text=True, check=True).stdout
+        page_size = int(vm.split("page size of")[1].split("bytes")[0])
+        pages = {}
+        for line in vm.splitlines()[1:]:
+            if ":" in line:
+                k, v = line.split(":", 1)
+                pages[k.strip()] = int(v.strip().rstrip("."))
+        avail = (pages.get("Pages free", 0) + pages.get("Pages inactive", 0)
+                 + pages.get("Pages purgeable", 0)) * page_size / 1024 / 1024
+        return swap_free, avail
+    except (subprocess.CalledProcessError, FileNotFoundError, IndexError, ValueError):
+        return None
+
+
+def _check_memory_or_die(force: bool) -> None:
+    headroom = _memory_headroom_mb()
+    if headroom is None:
+        return
+    swap_free, ram_avail = headroom
+    if swap_free >= MIN_SWAP_FREE_MB or ram_avail >= MIN_RAM_AVAIL_MB:
+        return
+    msg = (f"[guard] system memory-starved: swap free {swap_free:.0f} MB "
+           f"(< {MIN_SWAP_FREE_MB}), RAM available {ram_avail:.0f} MB "
+           f"(< {MIN_RAM_AVAIL_MB}); loading a model now risks a watchdog panic")
+    if force:
+        print(msg + " — proceeding due to --force", file=sys.stderr)
+        return
+    raise SystemExit(msg + "; free memory/disk or rerun with --force")
 
 
 def _load_docs(dataset: str) -> list[dict]:
@@ -125,6 +210,10 @@ def main():
                     help="character overlap when --chunk-chars is enabled")
     ap.add_argument("--resume", action="store_true",
                     help="reuse completed rows from an existing cache and process only missing docs")
+    ap.add_argument("--keep-loaded", action="store_true",
+                    help="leave the model resident after the run (default: unload)")
+    ap.add_argument("--force", action="store_true",
+                    help="proceed even if the system looks memory-starved")
     args = ap.parse_args()
 
     if args.detector in RESERVED_DETECTORS:
@@ -140,6 +229,10 @@ def main():
     os.environ["LLM_API"] = args.api
     if args.base_url:
         os.environ["LLM_BASE_URL"] = args.base_url
+
+    if args.api == "ollama":
+        _unload_other_models(base, args.model)
+        _check_memory_or_die(args.force)
 
     prompt = _prompt_template(args.prompt_file)
     docs = _select_docs(_load_docs(args.dataset), args.doc_ids, args.limit_docs)
@@ -166,26 +259,32 @@ def main():
         if d["doc_id"] in existing
     }
     processed_any = False
-    for d in docs:
-        cached = rows.get(d["doc_id"])
-        if cached is not None:
-            continue
-        if args.chunk_chars:
-            raw_spans = anonymize.run_ollama_chunked(
-                d["text"],
-                args.model,
-                prompt_template=prompt,
-                chunk_chars=args.chunk_chars,
-                overlap=args.chunk_overlap,
-            )
-        else:
-            raw_spans = anonymize.run_ollama(d["text"], args.model, prompt_template=prompt)
-        spans = _to_dicts(raw_spans)
-        rows[d["doc_id"]] = {"doc_id": d["doc_id"], "spans": spans}
-        processed_any = True
-        _write_cache_checkpoint(out, docs, rows)
-        if args.sleep:
-            time.sleep(args.sleep)
+    try:
+        for d in docs:
+            cached = rows.get(d["doc_id"])
+            if cached is not None:
+                continue
+            if args.chunk_chars:
+                raw_spans = anonymize.run_ollama_chunked(
+                    d["text"],
+                    args.model,
+                    prompt_template=prompt,
+                    chunk_chars=args.chunk_chars,
+                    overlap=args.chunk_overlap,
+                )
+            else:
+                raw_spans = anonymize.run_ollama(d["text"], args.model, prompt_template=prompt)
+            spans = _to_dicts(raw_spans)
+            rows[d["doc_id"]] = {"doc_id": d["doc_id"], "spans": spans}
+            processed_any = True
+            _write_cache_checkpoint(out, docs, rows)
+            if args.sleep:
+                time.sleep(args.sleep)
+    finally:
+        if args.api == "ollama" and processed_any and not args.keep_loaded:
+            ok = _ollama_unload(base, args.model)
+            print(f"[guard] unloading {args.model!r} after run: {'ok' if ok else 'FAILED'}",
+                  file=sys.stderr)
 
     if rows and not os.path.exists(out):
         _write_cache_checkpoint(out, docs, rows)

@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import { Content as Changelog } from '../data/CHANGELOG.md';
+---
+<Base page="changelog" title="Changelog" description="What changed in CONFIDE — the anonymizer, the benchmark, the reports, and this site. Regenerated alongside every default update.">
+  <section class="hero">
+    <div class="wrap">
+      <div class="prose">
+        <p class="eyebrow">Project log</p>
+        <h1>Changelog</h1>
+        <p class="sub">What changed and when — across the anonymizer, the benchmark, the reports, and this site. The canonical source is <a href="https://github.com/glebis/confide/blob/main/docs/CHANGELOG.md"><code>docs/CHANGELOG.md</code></a>; this page is synced from it by the standard update pipeline.</p>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="wrap">
+      <div class="prose changelog-body">
+        <Changelog />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .changelog-body :global(h1) { display: none; }
+  .changelog-body :global(h2) {
+    margin-top: 2.2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule, #ddd);
+  }
+  .changelog-body :global(h3) {
+    font-variant: small-caps;
+    letter-spacing: 0.04em;
+  }
+  .changelog-body :global(li) { margin: 0.35rem 0; }
+</style>

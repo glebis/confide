@@ -49,8 +49,9 @@ _Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **
 | regex+ollama | **0.379** | 0.342 | 0.344 | 0.505 | 0.469 | 0.359 | 0.463 | 0.475 | 480 |
 | natasha+regex+ollama ★ | **0.811** | 0.875 | 0.802 | 0.574 | 0.726 | 0.679 | 0.815 | 0.644 | 1392 |
 | natasha+regex+gemma3 ◇ | **0.366** | 0.954 | 0.362 | 0.350 | 0.850 | 0.833 | 0.907 | 0.797 | 9093 |
+| natasha+regex+gliner ◇ | **0.412** | 0.980 | 0.407 | 0.332 | 0.885 | 0.880 | 0.889 | 0.881 | 7927 |
 
-_◇ exploratory Gemma model swap of the ★ stack — separate detector cache (score_llm_experiment.py), not a promoted default; variance and promotion gates pending (see “LLM model comparison”)._
+_◇ exploratory swap in the ★ stack (Gemma LLM or GLiNER NER layer) — separate detector cache (score_llm_experiment.py), not a promoted default; variance and promotion gates pending (see “Model comparison”)._
 
 ### Dev / test split (★ stack, reporting only — nothing tuned on test)
 
@@ -94,9 +95,10 @@ _Bootstrap 95% CI (2000 resamples, opf+regex+ollama ★): coverage recall **0.98
 | presidio+regex+ollama | **0.880** | 0.935 | 0.800 | 0.737 | 0.767 | 66 |
 | opf+regex+gemma3 ◇ | **0.945** | 1.000 | 0.904 | 0.836 | 0.881 | 62 |
 | opf+regex+gemma4-12b-mlx ◇ | **0.976** | 1.000 | 0.955 | 0.921 | 0.933 | 54 |
-| opf+regex+gemma4-26b-cloud ◇ | **0.935** | 0.935 | 0.914 | 0.915 | 0.923 | 48 |
+| opf+regex+gemma4-26b-cloud ◇ | **0.984** | 1.000 | 0.962 | 0.940 | 0.947 | 52 |
+| opf+regex+gliner ◇ | **0.800** | 0.957 | 0.782 | 0.628 | 0.826 | 91 |
 
-_◇ exploratory Gemma model swap of the ★ stack — separate detector cache (score_llm_experiment.py), not a promoted default; variance and promotion gates pending (see “LLM model comparison”)._
+_◇ exploratory swap in the ★ stack (Gemma LLM or GLiNER NER layer) — separate detector cache (score_llm_experiment.py), not a promoted default; variance and promotion gates pending (see “Model comparison”)._
 
 ### Per-category recall (relaxed, type-agnostic) — *which layer catches what*
 
@@ -132,8 +134,9 @@ _Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **
 | natasha+regex+gemma3 ◇ | **0.917** | 1.000 | 0.917 | 0.924 | 1.000 | 1.000 | 1.000 | 1.000 | 32 |
 | natasha+regex+gemma4-12b-mlx ◇ | **0.948** | 1.000 | 0.948 | 0.936 | 1.000 | 1.000 | 1.000 | 1.000 | 28 |
 | natasha+regex+gemma4-26b-cloud ◇ | **0.943** | 1.000 | 0.943 | 0.931 | 1.000 | 1.000 | 1.000 | 1.000 | 26 |
+| natasha+regex+gliner ◇ | **0.826** | 1.000 | 0.826 | 0.896 | 1.000 | 1.000 | 1.000 | 1.000 | 41 |
 
-_◇ exploratory Gemma model swap of the ★ stack — separate detector cache (score_llm_experiment.py), not a promoted default; variance and promotion gates pending (see “LLM model comparison”)._
+_◇ exploratory swap in the ★ stack (Gemma LLM or GLiNER NER layer) — separate detector cache (score_llm_experiment.py), not a promoted default; variance and promotion gates pending (see “Model comparison”)._
 
 ### Per-category recall (relaxed, type-agnostic) — *which layer catches what*
 
@@ -165,7 +168,7 @@ _Bootstrap 95% CI (2000 resamples, natasha+regex+ollama ★): coverage recall **
 | natasha+regex+gemma3 ◇ | **0.772** | 0.961 | 0.730 | 0.653 | 0.961 | 0.964 | 0.970 | 0.900 | 201 |
 | natasha+regex+gemma4-12b-mlx ◇ | **0.830** | 1.000 | 0.820 | 0.782 | 1.000 | 1.000 | 1.000 | 1.000 | 172 |
 
-_◇ exploratory Gemma model swap of the ★ stack — separate detector cache (score_llm_experiment.py), not a promoted default; variance and promotion gates pending (see “LLM model comparison”)._
+_◇ exploratory swap in the ★ stack (Gemma LLM or GLiNER NER layer) — separate detector cache (score_llm_experiment.py), not a promoted default; variance and promotion gates pending (see “Model comparison”)._
 
 ### Per-category recall (relaxed, type-agnostic) — *which layer catches what*
 

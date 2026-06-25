@@ -18,6 +18,9 @@ Detectors:
   philter  — Philter (philter-lite, UCSF clinical de-id, HIPAA Safe-Harbor rule
              set). High-recall PHI scrubber; most spans come back as type OTHER
              (Philter redacts broadly rather than typing precisely). EN only.
+  gliner   — GLiNER zero-shot multilingual PII NER (urchade/gliner_multi_pii-v1,
+             ~1.2 GB, Apache-2.0). Deterministic, local, works on RU and EN;
+             candidate cheap NER layer alongside the LLM.
 
 Output: detector-cache/<dataset>.<detector>.jsonl, one row per input doc:
   {"doc_id": "...", "spans": [{"start","end","type","source"}]}
@@ -174,6 +177,81 @@ def run_presidio(text):
     return spans
 
 
+# --- GLiNER (zero-shot multilingual PII NER), lazily loaded once ---------------
+_GLINER = None
+# Zero-shot label prompts -> the benchmark's raw labels (CANON maps them onward).
+# Phrasings matter for GLiNER: "social security number" / "passport number" hit
+# where a bare "id number" misses; structured IDs (SNILS/INN/IBAN) stay the
+# regex layer's job under the span-union design.
+_GLINER_LABELS = {
+    "person": "PERSON",
+    "location": "LOCATION",
+    "address": "ADDRESS",
+    "organization": "ORG",
+    "phone number": "PHONE",
+    "email": "EMAIL",
+    "url": "URL",
+    "social security number": "ID",
+    "passport number": "ID",
+    "account number": "ID",
+    "id number": "ID",
+    "date": "DATE",
+    "medication": "MEDICATION",
+    "age": "AGE",
+    "profession": "PROFESSION",
+}
+_GLINER_MODEL = "urchade/gliner_multi_pii-v1"
+_GLINER_THRESHOLD = 0.4
+
+
+def _gliner_model():
+    global _GLINER
+    if _GLINER is None:
+        from gliner import GLiNER
+        _GLINER = GLiNER.from_pretrained(_GLINER_MODEL)
+        print(f"[gliner] model={_GLINER_MODEL} threshold={_GLINER_THRESHOLD}")
+    return _GLINER
+
+
+def run_gliner(text, window=1200, overlap=150):
+    """Returns list of {start,end,type,source} from GLiNER zero-shot NER.
+    Long docs are processed in overlapping char windows (GLiNER truncates past
+    its max sequence length, which would silently drop PII on full transcripts);
+    offsets map back to absolute positions and window-overlap duplicates are
+    dropped. Same edge-trim convention as the OPF/Presidio paths."""
+    model = _gliner_model()
+    labels = list(_GLINER_LABELS)
+    raw = []
+    if len(text) <= window:
+        raw = model.predict_entities(text, labels, threshold=_GLINER_THRESHOLD)
+    else:
+        pos = 0
+        while pos < len(text):
+            chunk = text[pos:pos + window]
+            for e in model.predict_entities(chunk, labels,
+                                            threshold=_GLINER_THRESHOLD):
+                e = dict(e)
+                e["start"] = int(e["start"]) + pos
+                e["end"] = int(e["end"]) + pos
+                raw.append(e)
+            pos += window - overlap
+    spans, seen = [], set()
+    for e in raw:
+        typ = _GLINER_LABELS.get(e["label"])
+        if typ is None:
+            continue
+        s, t = int(e["start"]), int(e["end"])
+        while s < t and text[s] in " \t\n.,;:!?\"'()[]":
+            s += 1
+        while t > s and text[t - 1] in " \t\n.,;:!?\"'()[]":
+            t -= 1
+        if t > s and (s, t, typ) not in seen:
+            seen.add((s, t, typ))
+            spans.append({"start": s, "end": t, "type": typ, "source": "gliner"})
+    spans.sort(key=lambda x: x["start"])
+    return spans
+
+
 # --- Philter (philter-lite, UCSF clinical de-id), lazily loaded once -----------
 _PHILTER_PATS = None
 
@@ -254,6 +332,7 @@ def main():
         "opf":     run_opf_transformers,
         "presidio": run_presidio,
         "philter":  run_philter,
+        "gliner":   run_gliner,
     }
 
     # code version = hash of anonymize.py (regex/natasha/ollama) + run_detectors.py

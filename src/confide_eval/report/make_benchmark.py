@@ -56,6 +56,12 @@ GEMMA_CLOUD = {
     "ru-adv": _load_json("local-llm-gemma-cloud-ru-adv.json"),
     "en": _load_json("local-llm-gemma-cloud-en.json"),
 }
+# GLiNER zero-shot NER layer (not an LLM swap); same exploratory scoring path.
+GLINER_NER = {
+    "ru": _load_json("gliner-multi-ru.json"),
+    "ru-adv": _load_json("gliner-multi-ru-adv.json"),
+    "en": _load_json("gliner-multi-en.json"),
+}
 
 
 def gemma_stack_rows(ds):
@@ -65,6 +71,7 @@ def gemma_stack_rows(ds):
         (GEMMA_LLM, "local-gemma3", "gemma3"),
         (GEMMA_LLM, "local-gemma4", "gemma4-12b-mlx"),
         (GEMMA_CLOUD, "cloud-hf-gemma4", "gemma4-26b-cloud"),
+        (GLINER_NER, "gliner", "gliner"),
     ):
         res = source.get(ds)
         if not res:
@@ -108,9 +115,9 @@ def leaderboard(res, ds=None):
             lines.append(f"| {name} | **{cr['f2']:.3f}** | {cr['r']:.3f} | {tr['f2']:.3f} | "
                          f"{tr['overall']['f1'] if 'overall' in tr else tr['f1']:.3f} | {tr['macro_f1']:.3f} | {e['n_pred']} |")
     if gemma:
-        lines += ["", "_◇ exploratory Gemma model swap of the ★ stack — separate detector "
-                  "cache (score_llm_experiment.py), not a promoted default; variance and "
-                  "promotion gates pending (see “LLM model comparison”)._"]
+        lines += ["", "_◇ exploratory swap in the ★ stack (Gemma LLM or GLiNER NER layer) — "
+                  "separate detector cache (score_llm_experiment.py), not a promoted default; "
+                  "variance and promotion gates pending (see “Model comparison”)._"]
     return "\n".join(lines)
 
 

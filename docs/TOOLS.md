@@ -22,6 +22,7 @@ LLMs are used **only** for benchmark experiments on **synthetic** data, never on
 | **Microsoft Presidio** | PII detection/anonymization framework | Established-system EN baseline in the benchmark | [github.com/microsoft/presidio](https://github.com/microsoft/presidio) | MIT |
 | **Philter** (`philter-lite`) | UCSF clinical de-id (HIPAA Safe-Harbor) | Clinical-de-id EN baseline | [github.com/SironaMedical/philter-lite](https://github.com/SironaMedical/philter-lite) | BSD/MIT |
 | **OpenAI Privacy Filter** (`opf`) | Token-classification PII model (~1.5B) | Tested as an EN layer; kept as a *lesson* (slow on CPU), not the RU default | [huggingface.co/openai/privacy-filter](https://huggingface.co/openai/privacy-filter) | Apache-2.0 |
+| **GLiNER-multi PII** (`gliner`) | Zero-shot multilingual NER (`gliner_multi_pii-v1`, ~1.2 GB) | Exploratory deterministic local NER layer, RU+EN; candidate alongside the LLM layer | [huggingface.co/urchade/gliner_multi_pii-v1](https://huggingface.co/urchade/gliner_multi_pii-v1) | Apache-2.0 |
 | **spaCy** | Industrial NLP (tokenization, NER) | Underlies Presidio's recognizers | [spacy.io](https://spacy.io) · [github.com/explosion/spaCy](https://github.com/explosion/spaCy) | MIT |
 
 ## Red team (re-identification measurement)
