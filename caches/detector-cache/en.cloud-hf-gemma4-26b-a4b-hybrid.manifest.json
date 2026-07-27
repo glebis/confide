@@ -2,9 +2,9 @@
   "dataset": "en",
   "detector": "cloud-hf-gemma4-26b-a4b-hybrid",
   "n_docs": 32,
-  "n_spans": 26,
+  "n_spans": 50,
   "invalid_spans": 0,
-  "empty_docs": 13,
+  "empty_docs": 0,
   "doc_ids": [
     "en-000",
     "en-001",
@@ -48,6 +48,6 @@
   "prompt_sha": "aa468a9a85a5",
   "chunk_chars": 0,
   "chunk_overlap": 0,
-  "resumed_docs": 0,
-  "seconds": 22.0
+  "resumed_docs": 19,
+  "seconds": 65.4
 }

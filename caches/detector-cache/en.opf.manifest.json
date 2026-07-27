@@ -39,5 +39,6 @@
     "en-031"
   ],
   "code_sha": "opf-transformers-route",
-  "model": "openai/privacy-filter"
+  "model": "openai/privacy-filter",
+  "docs_sha": "bf6b55b6300c"
 }
